@@ -621,13 +621,21 @@ try {
         function loadPage(page) {
             closeSidebar();
             
-            // TODO: Завантаження різних сторінок адмінки
-            console.log('Loading page:', page);
-            
-            if (page === 'settings') {
+            if (page === 'dashboard') {
+                window.location.href = 'dashboard.php';
+            } else if (page === 'settings') {
                 window.location.href = 'settings.php';
             } else if (page === 'categories') {
                 window.location.href = 'categories.php';
+            } else if (page === 'users') {
+                // TODO: window.location.href = 'users.php';
+                console.log('Users page - coming soon');
+            } else if (page === 'ads') {
+                // TODO: window.location.href = 'ads.php';
+                console.log('Ads page - coming soon');
+            } else if (page === 'logs') {
+                // TODO: window.location.href = 'logs.php';
+                console.log('Logs page - coming soon');
             }
         }
         

@@ -364,6 +364,51 @@ function createAlertContainer() {
     return container;
 }
 
+// Функція для показу/приховування пароля
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = input.nextElementSibling.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// Функція виходу з системи
+function handleLogout() {
+    if (confirm('Ви дійсно хочете вийти з системи?')) {
+        fetch('ajax/auth.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=logout'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                // Перезавантажуємо сторінку для оновлення навігації
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showAlert(data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Помилка виходу:', error);
+            showAlert('Помилка з\'єднання', 'danger');
+        });
+    }
+}
+
 // CSS стилі для ripple ефекту
 const style = document.createElement('style');
 style.textContent = `

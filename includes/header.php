@@ -32,17 +32,17 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">
+                        <a class="nav-link" href="index.php" data-spa data-page="home">
                             <i class="fas fa-home me-1"></i>Головна
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/categories.php">
+                        <a class="nav-link" href="pages/categories.php" data-spa data-page="categories">
                             <i class="fas fa-list me-1"></i>Категорії
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/search.php">
+                        <a class="nav-link" href="pages/search.php" data-spa data-page="search">
                             <i class="fas fa-search me-1"></i>Пошук
                         </a>
                     </li>
@@ -55,36 +55,36 @@
                                 <i class="fas fa-user me-1"></i><?php echo $_SESSION['username']; ?>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="pages/profile.php">
+                                <li><a class="dropdown-item" href="pages/profile.php" data-spa data-page="profile">
                                     <i class="fas fa-user-circle me-1"></i>Мій профіль
                                 </a></li>
-                                <li><a class="dropdown-item" href="pages/my_ads.php">
+                                <li><a class="dropdown-item" href="pages/my_ads.php" data-spa data-page="my_ads">
                                     <i class="fas fa-list-ul me-1"></i>Мої оголошення
                                 </a></li>
-                                <li><a class="dropdown-item" href="pages/favorites.php">
+                                <li><a class="dropdown-item" href="pages/favorites.php" data-spa data-page="favorites">
                                     <i class="fas fa-heart me-1"></i>Вподобання
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="pages/logout.php">
+                                <li><a class="dropdown-item" href="#" onclick="handleLogout(); return false;">
                                     <i class="fas fa-sign-out-alt me-1"></i>Вихід
                                 </a></li>
                             </ul>
                         </li>
                     <?php else: ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="pages/login.php">
+                            <a class="nav-link" href="pages/login.php" data-spa data-page="login">
                                 <i class="fas fa-sign-in-alt me-1"></i>Вхід
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="pages/register.php">
+                            <a class="nav-link" href="pages/register.php" data-spa data-page="register">
                                 <i class="fas fa-user-plus me-1"></i>Реєстрація
                             </a>
                         </li>
                     <?php endif; ?>
                     
                     <li class="nav-item">
-                        <a class="btn btn-warning ms-2 text-dark fw-bold" href="pages/add_ad.php">
+                        <a class="btn btn-warning ms-2 text-dark fw-bold" href="pages/add_ad.php" data-spa data-page="add_ad">
                             <i class="fas fa-plus me-1"></i>Подати оголошення
                         </a>
                     </li>

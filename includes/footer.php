@@ -68,6 +68,8 @@
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
     <!-- Custom JS -->
     <script src="assets/js/main.js"></script>
+    <!-- SPA JS -->
+    <script src="assets/js/spa.js"></script>
     
     <script>
         // Initialize AOS

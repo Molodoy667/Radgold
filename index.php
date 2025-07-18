@@ -39,6 +39,8 @@ $stats = $stats_stmt->fetch(PDO::FETCH_ASSOC);
 include 'includes/header.php';
 ?>
 
+<!-- Main Content Container -->
+<main id="main-content">
 <!-- Hero Section -->
 <section class="search-container">
     <div class="container">
@@ -272,5 +274,6 @@ include 'includes/header.php';
         </div>
     </div>
 </section>
+</main>
 
 <?php include 'includes/footer.php'; ?>

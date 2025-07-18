@@ -1,4 +1,10 @@
 <?php
+// Перевіряємо, чи система встановлена
+if (!file_exists('config/installed.lock')) {
+    header('Location: install/index.php');
+    exit();
+}
+
 require_once 'config/config.php';
 require_once 'config/database.php';
 

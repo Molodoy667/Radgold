@@ -1,0 +1,83 @@
+# Apache конфігурація для дошки оголошень
+
+# Включення mod_rewrite
+RewriteEngine On
+
+# Безпека
+# Заборона доступу до конфігураційних файлів
+<FilesMatch "\.(ini|log|sh|sql|conf)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Заборона доступу до папки config
+<IfModule mod_alias.c>
+    RedirectMatch 403 ^/.*config/.*$
+</IfModule>
+
+# Захист від XSS
+Header always set X-XSS-Protection "1; mode=block"
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+
+# Кешування статичних файлів
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+</IfModule>
+
+# Стиснення файлів
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# Красиві URL для оголошень
+RewriteRule ^ad/([0-9]+)/?$ pages/ad_detail.php?id=$1 [L,QSA]
+RewriteRule ^category/([0-9]+)/?$ pages/category.php?id=$1 [L,QSA]
+RewriteRule ^user/([a-zA-Z0-9_]+)/?$ pages/user_profile.php?username=$1 [L,QSA]
+
+# Перенаправлення з www на без www
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# Заборона прямого доступу до PHP файлів в певних папках
+RewriteCond %{REQUEST_URI} ^/(config|includes)/.*\.php$
+RewriteRule ^.*$ - [F,L]
+
+# Обмеження розміру завантажуваних файлів (5MB)
+php_value upload_max_filesize 5M
+php_value post_max_size 5M
+
+# Встановлення часової зони
+php_value date.timezone "Europe/Kiev"
+
+# Заборона виконання PHP в папці uploads
+<Directory "assets/uploads">
+    php_flag engine off
+    Options -ExecCGI
+    AddHandler cgi-script .php .pl .py .jsp .asp .sh .cgi
+</Directory>
+
+# Помилка 404 для неіснуючих файлів
+ErrorDocument 404 /pages/404.php
+
+# Заборона відображення індексу папок
+Options -Indexes
+
+# Встановлення кодування за замовчуванням
+AddDefaultCharset UTF-8

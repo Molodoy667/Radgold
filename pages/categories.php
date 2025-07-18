@@ -2,7 +2,10 @@
 require_once '../config/config.php';
 require_once '../config/database.php';
 
-$page_title = 'Категорії';
+// Налаштування META тегів
+$page_title = 'Категорії - ' . Settings::get('site_name', 'Дошка Оголошень');
+$page_description = 'Переглядайте всі категорії оголошень на ' . Settings::get('site_name', 'Дошка Оголошень');
+$page_keywords = 'категорії, розділи, оголошення, ' . Settings::get('site_keywords', '');
 
 // Підключення до бази даних
 $database = new Database();

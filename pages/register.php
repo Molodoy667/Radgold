@@ -2,7 +2,10 @@
 require_once '../config/config.php';
 require_once '../config/database.php';
 
-$page_title = 'Реєстрація';
+// Налаштування META тегів
+$page_title = 'Реєстрація - ' . Settings::get('site_name', 'Дошка Оголошень');
+$page_description = 'Створіть безкоштовний обліковий запис на ' . Settings::get('site_name', 'Дошка Оголошень');
+$page_keywords = 'реєстрація, створити акаунт, безкоштовно, ' . Settings::get('site_keywords', '');
 $error_message = '';
 $success_message = '';
 

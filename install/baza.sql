@@ -181,24 +181,65 @@ CREATE TABLE `settings` (
 
 -- Дані для таблиці `settings`
 INSERT INTO `settings` (`setting_key`, `setting_value`, `setting_type`, `description`) VALUES
+-- Основні налаштування сайту
 ('site_name', 'Дошка Оголошень', 'string', 'Назва сайту'),
-('site_description', 'Найбільша дошка оголошень в Україні', 'string', 'Опис сайту'),
-('site_keywords', 'оголошення, купівля, продаж, товари, послуги', 'string', 'Ключові слова сайту'),
+('site_title', 'Дошка Оголошень - Купуй та продавай легко', 'string', 'META title сайту'),
+('site_description', 'Найбільша дошка оголошень в Україні. Купуй та продавай товари та послуги легко та безпечно. Тисячі оголошень щодня.', 'string', 'META description сайту'),
+('site_keywords', 'оголошення, купівля, продаж, товари, послуги, дошка оголошень, безкоштовні оголошення, Україна', 'string', 'META keywords сайту'),
+('site_logo', 'assets/images/logo.svg', 'string', 'Логотип сайту'),
+('site_favicon', 'assets/images/favicon.ico', 'string', 'Фавікон сайту'),
+('site_url', 'http://localhost', 'string', 'URL сайту'),
+('site_language', 'uk', 'string', 'Мова сайту'),
+('site_timezone', 'Europe/Kiev', 'string', 'Часовий пояс'),
+
+-- Технічні налаштування
 ('admin_email', 'admin@example.com', 'string', 'Email адміністратора'),
 ('items_per_page', '12', 'integer', 'Кількість оголошень на сторінці'),
 ('max_images_per_ad', '5', 'integer', 'Максимальна кількість зображень на оголошення'),
 ('max_image_size', '5242880', 'integer', 'Максимальний розмір зображення в байтах (5MB)'),
-('allowed_image_types', 'jpg,jpeg,png,gif', 'string', 'Дозволені типи зображень'),
+('allowed_image_types', 'jpg,jpeg,png,gif,webp', 'string', 'Дозволені типи зображень'),
 ('registration_enabled', '1', 'boolean', 'Чи дозволена реєстрація'),
 ('moderation_enabled', '0', 'boolean', 'Чи увімкнена модерація оголошень'),
 ('ads_auto_expire_days', '30', 'integer', 'Через скільки днів оголошення автоматично архівуються'),
+
+-- Контактна інформація
 ('contact_phone', '+380 (44) 123-45-67', 'string', 'Контактний телефон'),
+('contact_email', 'info@example.com', 'string', 'Контактний email'),
 ('contact_address', 'м. Київ, вул. Хрещатик, 1', 'string', 'Контактна адреса'),
+
+-- Соціальні мережі
 ('social_facebook', '', 'string', 'Посилання на Facebook'),
 ('social_instagram', '', 'string', 'Посилання на Instagram'),
 ('social_telegram', '', 'string', 'Посилання на Telegram'),
+('social_twitter', '', 'string', 'Посилання на Twitter'),
+('social_youtube', '', 'string', 'Посилання на YouTube'),
+
+-- SEO та аналітика
 ('analytics_google', '', 'string', 'Google Analytics код'),
-('maintenance_mode', '0', 'boolean', 'Режим обслуговування');
+('analytics_yandex', '', 'string', 'Yandex Metrica код'),
+('google_site_verification', '', 'string', 'Google Site Verification'),
+('yandex_verification', '', 'string', 'Yandex Verification'),
+
+-- Зовнішній вигляд
+('theme_color', '#007bff', 'string', 'Основний колір теми'),
+('theme_secondary_color', '#6c757d', 'string', 'Додатковий колір теми'),
+('header_background', '#ffffff', 'string', 'Колір фону шапки'),
+('footer_background', '#343a40', 'string', 'Колір фону підвалу'),
+
+-- Функціонал
+('enable_comments', '1', 'boolean', 'Дозволити коментарі'),
+('enable_ratings', '1', 'boolean', 'Дозволити рейтинги'),
+('enable_favorites', '1', 'boolean', 'Дозволити вподобання'),
+('enable_sharing', '1', 'boolean', 'Дозволити поділитися'),
+('enable_search', '1', 'boolean', 'Дозволити пошук'),
+
+-- Системні налаштування
+('maintenance_mode', '0', 'boolean', 'Режим обслуговування'),
+('maintenance_message', 'Сайт тимчасово недоступний через технічні роботи. Вибачте за незручності.', 'string', 'Повідомлення при обслуговуванні'),
+('max_login_attempts', '5', 'integer', 'Максимальна кількість спроб входу'),
+('session_lifetime', '3600', 'integer', 'Час життя сесії в секундах'),
+('backup_enabled', '1', 'boolean', 'Автоматичне резервне копіювання'),
+('debug_mode', '0', 'boolean', 'Режим налагодження');
 
 -- --------------------------------------------------------
 

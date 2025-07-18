@@ -42,6 +42,11 @@ $stats_stmt = $db->prepare($stats_query);
 $stats_stmt->execute();
 $stats = $stats_stmt->fetch(PDO::FETCH_ASSOC);
 
+// Налаштування META тегів для головної сторінки
+$page_title = Settings::get('site_title', 'Дошка Оголошень - Купуй та продавай легко');
+$page_description = Settings::get('site_description', 'Найбільша дошка оголошень в Україні');
+$page_keywords = Settings::get('site_keywords', 'оголошення, купівля, продаж, товари, послуги');
+
 include 'includes/header.php';
 ?>
 

@@ -104,12 +104,17 @@ function completeInstallation() {
             throw new Exception('Не вдалося імпортувати базу даних');
         }
         
-        // 3. Створюємо адміністратора
+        // 3. Оновлюємо налаштування сайту
+        if (!updateSiteSettings()) {
+            throw new Exception('Не вдалося оновити налаштування сайту');
+        }
+        
+        // 4. Створюємо адміністратора
         if (!createAdmin()) {
             throw new Exception('Не вдалося створити адміністратора');
         }
         
-        // 4. Створюємо файл блокування
+        // 5. Створюємо файл блокування
         file_put_contents('../config/installed.lock', date('Y-m-d H:i:s'));
         
         return ['success' => true, 'message' => 'Встановлення завершено успішно!', 'redirect' => '../admin/index.php'];
@@ -153,6 +158,33 @@ class Database {
 ?>";
     
     return file_put_contents('../config/database.php', $content) !== false;
+}
+
+function updateSiteSettings() {
+    $config = $_SESSION['db_config'];
+    
+    try {
+        $pdo = new PDO(
+            "mysql:host={$config['db_host']};dbname={$config['db_name']}", 
+            $config['db_username'], 
+            $config['db_password']
+        );
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Отримуємо поточну URL сайту
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        $host = $_SERVER['HTTP_HOST'];
+        $current_url = $protocol . $host;
+        
+        // Оновлюємо URL сайту в налаштуваннях
+        $stmt = $pdo->prepare("UPDATE settings SET setting_value = ? WHERE setting_key = 'site_url'");
+        $stmt->execute([$current_url]);
+        
+        return true;
+    } catch (Exception $e) {
+        error_log("Settings update error: " . $e->getMessage());
+        return false;
+    }
 }
 
 function importDatabase() {

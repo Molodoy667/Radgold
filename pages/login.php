@@ -2,7 +2,10 @@
 require_once '../config/config.php';
 require_once '../config/database.php';
 
-$page_title = 'Вхід';
+// Налаштування META тегів
+$page_title = 'Вхід - ' . Settings::get('site_name', 'Дошка Оголошень');
+$page_description = 'Увійдіть у свій обліковий запис на ' . Settings::get('site_name', 'Дошка Оголошень');
+$page_keywords = 'вхід, авторизація, логін, ' . Settings::get('site_keywords', '');
 $error_message = '';
 
 // Перевіряємо, чи користувач вже авторизований

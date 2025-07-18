@@ -235,9 +235,25 @@ function performInstallation() {
     
     fetch('', {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(text => {
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            console.error('Response text:', text);
+            throw new Error('Invalid JSON response');
+        }
+    })
     .then(data => {
         const resultDiv = document.getElementById('installationResult');
         

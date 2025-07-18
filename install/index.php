@@ -40,12 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         case 3:
             if (isset($_POST['test_db'])) {
+                header('Content-Type: application/json; charset=utf-8');
                 $result = testDatabaseConnection();
                 if ($result['success']) {
                     $_SESSION['db_config'] = $_POST;
                     $_SESSION['db_tested'] = true;
                 }
-                echo json_encode($result);
+                echo json_encode($result, JSON_UNESCAPED_UNICODE);
                 exit();
             }
             if (isset($_POST['save_db']) && $_SESSION['db_tested']) {
@@ -56,8 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         case 4:
             if (isset($_POST['install'])) {
+                header('Content-Type: application/json; charset=utf-8');
                 $result = completeInstallation();
-                echo json_encode($result);
+                echo json_encode($result, JSON_UNESCAPED_UNICODE);
                 exit();
             }
             break;
@@ -80,11 +82,14 @@ function testDatabaseConnection() {
         
         if (!$stmt->fetch()) {
             // Створюємо базу даних якщо не існує
-            $pdo->exec("CREATE DATABASE `$database` CHARACTER SET utf8 COLLATE utf8_general_ci");
+            $pdo->exec("CREATE DATABASE `$database` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
         }
         
         // Підключаємося до бази
-        $pdo = new PDO("mysql:host=$host;dbname=$database", $username, $password);
+        $pdo = new PDO("mysql:host=$host;dbname=$database;charset=utf8mb4", $username, $password, array(
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ));
         
         return ['success' => true, 'message' => 'Підключення до бази даних успішне!'];
     } catch (PDOException $e) {
@@ -94,38 +99,65 @@ function testDatabaseConnection() {
 
 function completeInstallation() {
     try {
+        error_log("Installation started");
+        
         // 1. Створюємо конфігурацію бази даних
+        error_log("Creating database config");
         if (!createDatabaseConfig()) {
+            error_log("Failed to create database config");
             throw new Exception('Не вдалося створити конфігурацію бази даних');
         }
+        error_log("Database config created successfully");
         
         // 2. Імпортуємо SQL дамп
+        error_log("Importing database");
         if (!importDatabase()) {
+            error_log("Failed to import database");
             throw new Exception('Не вдалося імпортувати базу даних');
         }
+        error_log("Database imported successfully");
         
         // 3. Оновлюємо налаштування сайту
+        error_log("Updating site settings");
         if (!updateSiteSettings()) {
+            error_log("Failed to update site settings");
             throw new Exception('Не вдалося оновити налаштування сайту');
         }
+        error_log("Site settings updated successfully");
         
         // 4. Створюємо адміністратора
+        error_log("Creating admin user");
         if (!createAdmin()) {
+            error_log("Failed to create admin");
             throw new Exception('Не вдалося створити адміністратора');
         }
+        error_log("Admin user created successfully");
         
         // 5. Створюємо файл блокування
-        file_put_contents('../config/installed.lock', date('Y-m-d H:i:s'));
+        error_log("Creating lock file");
+        if (!file_put_contents('../config/installed.lock', date('Y-m-d H:i:s'))) {
+            error_log("Failed to create lock file");
+            throw new Exception('Не вдалося створити файл блокування');
+        }
+        error_log("Lock file created successfully");
         
+        error_log("Installation completed successfully");
         return ['success' => true, 'message' => 'Встановлення завершено успішно!', 'redirect' => '../admin/index.php'];
         
     } catch (Exception $e) {
+        error_log("Installation failed: " . $e->getMessage());
+        error_log("Stack trace: " . $e->getTraceAsString());
         return ['success' => false, 'message' => $e->getMessage()];
     }
 }
 
 function createDatabaseConfig() {
     $config = $_SESSION['db_config'];
+    
+    // Створюємо папку config якщо не існує
+    if (!file_exists('../config')) {
+        mkdir('../config', 0755, true);
+    }
     
     $content = "<?php
 // Конфігурація бази даних
@@ -141,7 +173,7 @@ class Database {
         \$this->conn = null;
         
         try {
-            \            $this->conn = new PDO(
+            \$this->conn = new PDO(
                 \"mysql:host=\" . \$this->host . \";dbname=\" . \$this->db_name . \";charset=utf8mb4\",
                 \$this->username,
                 \$this->password,
@@ -152,7 +184,6 @@ class Database {
                     PDO::ATTR_EMULATE_PREPARES => false
                 )
             );
-            \$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException \$exception) {
             echo \"Помилка підключення: \" . \$exception->getMessage();
         }
@@ -170,11 +201,14 @@ function updateSiteSettings() {
     
     try {
         $pdo = new PDO(
-            "mysql:host={$config['db_host']};dbname={$config['db_name']}", 
+            "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4", 
             $config['db_username'], 
-            $config['db_password']
+            $config['db_password'],
+            array(
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            )
         );
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         // Отримуємо поточну URL сайту
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
@@ -197,19 +231,29 @@ function importDatabase() {
     
     try {
         $pdo = new PDO(
-            "mysql:host={$config['db_host']};dbname={$config['db_name']}", 
+            "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4", 
             $config['db_username'], 
-            $config['db_password']
+            $config['db_password'],
+            array(
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            )
         );
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         $sql = file_get_contents('baza.sql');
         if ($sql === false) {
             throw new Exception('Не вдалося прочитати файл baza.sql');
         }
         
-        // Виконуємо SQL запити
-        $pdo->exec($sql);
+        // Розбиваємо SQL на окремі запити
+        $queries = explode(';', $sql);
+        
+        foreach ($queries as $query) {
+            $query = trim($query);
+            if (!empty($query)) {
+                $pdo->exec($query);
+            }
+        }
         
         return true;
     } catch (Exception $e) {
@@ -231,9 +275,13 @@ function createAdmin() {
     
     try {
         $pdo = new PDO(
-            "mysql:host={$config['db_host']};dbname={$config['db_name']}", 
+            "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4", 
             $config['db_username'], 
-            $config['db_password']
+            $config['db_password'],
+            array(
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            )
         );
         
         $hashed_password = password_hash($admin_password, PASSWORD_DEFAULT);

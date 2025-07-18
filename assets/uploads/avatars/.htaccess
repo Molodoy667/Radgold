@@ -1,0 +1,27 @@
+# Заборона виконання PHP файлів
+<Files "*.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Дозволені типи файлів
+<FilesMatch "\.(jpg|jpeg|png|gif)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Заборона всіх інших файлів
+<FilesMatch "\.">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Переадресація на головну при спробі перегляду папки
+Options -Indexes
+DirectoryIndex index.html
+
+# Заголовки безпеки для зображень
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+</IfModule>

@@ -5,6 +5,8 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+SET NAMES utf8mb4;
+SET character_set_client = utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -19,7 +21,7 @@ CREATE TABLE `categories` (
   `is_active` tinyint(1) DEFAULT 1,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дані для таблиці `categories`
 INSERT INTO `categories` (`id`, `name`, `description`, `icon`, `color`, `sort_order`, `is_active`) VALUES
@@ -225,6 +227,9 @@ INSERT INTO `settings` (`setting_key`, `setting_value`, `setting_type`, `descrip
 ('theme_secondary_color', '#6c757d', 'string', 'Додатковий колір теми'),
 ('header_background', '#ffffff', 'string', 'Колір фону шапки'),
 ('footer_background', '#343a40', 'string', 'Колір фону підвалу'),
+('default_theme_gradient', 'gradient-2', 'string', 'Стандартний градієнт теми'),
+('default_dark_mode', '0', 'boolean', 'Стандартний темний режим'),
+('enable_theme_switcher', '1', 'boolean', 'Дозволити зміну теми користувачами'),
 
 -- Функціонал
 ('enable_comments', '1', 'boolean', 'Дозволити коментарі'),
@@ -277,6 +282,23 @@ CREATE TABLE `admin_logs` (
   KEY `admin_id` (`admin_id`),
   CONSTRAINT `admin_logs_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+-- Структура таблиці `user_themes`
+CREATE TABLE `user_themes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `session_id` varchar(255) DEFAULT NULL,
+  `theme_gradient` varchar(50) DEFAULT 'gradient-1',
+  `dark_mode` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `session_id` (`session_id`),
+  CONSTRAINT `user_themes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 

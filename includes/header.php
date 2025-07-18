@@ -30,41 +30,84 @@ $theme_color = Settings::get('theme_color', '#007bff');
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/assets/css/style.css">
     
-    <!-- Динамічні CSS змінні для кольорів теми -->
+    <!-- Динамічні CSS теми -->
     <style>
-        :root {
-            --theme-color: <?php echo Settings::get('theme_color', '#007bff'); ?>;
-            --theme-secondary: <?php echo Settings::get('theme_secondary_color', '#6c757d'); ?>;
-            --header-bg: <?php echo Settings::get('header_background', '#ffffff'); ?>;
-            --footer-bg: <?php echo Settings::get('footer_background', '#343a40'); ?>;
-        }
+        <?php echo Theme::generateCSS(); ?>
         
         .navbar-brand img {
             max-height: 40px;
             width: auto;
         }
         
-        .navbar {
-            background-color: var(--header-bg) !important;
+        /* Стилі для панелі тем */
+        .theme-panel {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1050;
         }
         
-        .btn-primary {
-            background-color: var(--theme-color);
-            border-color: var(--theme-color);
+        .theme-toggle-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--theme-gradient);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
         }
         
-        .btn-primary:hover {
-            background-color: var(--theme-color);
-            border-color: var(--theme-color);
-            opacity: 0.9;
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
         }
         
-        .text-primary {
-            color: var(--theme-color) !important;
+        .gradient-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
         }
         
-        .bg-primary {
-            background-color: var(--theme-color) !important;
+        .gradient-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .gradient-option.active {
+            border-color: #fff;
+            box-shadow: 0 0 0 2px var(--theme-primary);
+        }
+        
+        .gradient-option.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+        }
+        
+        .theme-modal .modal-content {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-modal .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .theme-modal .btn-close {
+            filter: var(--theme-mode) == 'dark' ? invert(1) : none;
         }
     </style>
     
@@ -168,6 +211,72 @@ $theme_color = Settings::get('theme_color', '#007bff');
 
 <!-- Alert Container for notifications -->
 <div id="alert-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
+<!-- Theme Panel -->
+<?php if (Theme::isThemeSwitcherEnabled()): ?>
+<div class="theme-panel">
+    <button class="theme-toggle-btn" data-bs-toggle="modal" data-bs-target="#themeModal" title="Налаштування теми">
+        <i class="fas fa-palette"></i>
+    </button>
+</div>
+
+<!-- Theme Modal -->
+<div class="modal fade theme-modal" id="themeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-palette me-2"></i>Оформлення сторінки
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Dark Mode Toggle -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Темний режим</h6>
+                            <small class="text-muted">Зменшує навантаження на очі</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="darkModeSwitch" 
+                                   <?php echo Theme::getCurrentTheme()['dark_mode'] ? 'checked' : ''; ?>>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Gradient Selection -->
+                <div class="mb-3">
+                    <h6 class="mb-3">Колірна тема</h6>
+                    <div class="row g-2">
+                        <?php 
+                        $gradients = Theme::getGradients();
+                        $current_gradient = Theme::getCurrentTheme()['gradient'];
+                        foreach ($gradients as $key => $gradient): 
+                        ?>
+                            <div class="col-3">
+                                <div class="gradient-option <?php echo $current_gradient === $key ? 'active' : ''; ?>" 
+                                     data-gradient="<?php echo $key; ?>"
+                                     style="background: linear-gradient(135deg, <?php echo $gradient[0]; ?> 0%, <?php echo $gradient[1]; ?> 100%);"
+                                     title="<?php echo htmlspecialchars($gradient[2]); ?>">
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                <button type="button" class="btn btn-primary" id="resetTheme">
+                    <i class="fas fa-undo me-1"></i>Скинути
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Loading Spinner -->
 <div id="page-loader" class="d-none">

@@ -10,6 +10,7 @@ if (!file_exists(__DIR__ . '/installed.lock')) {
 
 // Підключаємо класи
 require_once __DIR__ . '/../includes/settings.php';
+require_once __DIR__ . '/../includes/theme.php';
 
 // Базові константи (використовуються якщо БД недоступна)
 define('UPLOAD_DIR', 'assets/uploads/');
@@ -23,8 +24,9 @@ if (file_exists(__DIR__ . '/installed.lock')) {
         $database = new Database();
         $db = $database->getConnection();
         
-        // Ініціалізуємо налаштування
+        // Ініціалізуємо налаштування та теми
         Settings::init($db);
+        Theme::init($db);
         
         // Перевіряємо режим обслуговування
         if (Settings::isMaintenanceMode() && !isset($_SESSION['admin_logged_in'])) {

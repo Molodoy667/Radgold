@@ -438,3 +438,174 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Theme System
+class ThemeManager {
+    constructor() {
+        this.currentTheme = null;
+        this.init();
+    }
+    
+    init() {
+        // Обробники подій для зміни теми
+        document.addEventListener('DOMContentLoaded', () => {
+            this.bindEvents();
+        });
+    }
+    
+    bindEvents() {
+        // Градієнти
+        document.querySelectorAll('.gradient-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const gradient = e.target.dataset.gradient;
+                const darkMode = document.getElementById('darkModeSwitch')?.checked || false;
+                this.changeTheme(gradient, darkMode);
+            });
+        });
+        
+        // Темний режим
+        const darkModeSwitch = document.getElementById('darkModeSwitch');
+        if (darkModeSwitch) {
+            darkModeSwitch.addEventListener('change', (e) => {
+                const currentGradient = document.querySelector('.gradient-option.active')?.dataset.gradient || 'gradient-2';
+                this.changeTheme(currentGradient, e.target.checked);
+            });
+        }
+        
+        // Скидання теми
+        const resetBtn = document.getElementById('resetTheme');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.resetTheme();
+            });
+        }
+    }
+    
+    changeTheme(gradient, darkMode) {
+        // Показуємо індикатор завантаження
+        this.showLoading(true);
+        
+        fetch('ajax/theme.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'change_theme',
+                gradient: gradient,
+                dark_mode: darkMode
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                this.applyTheme(data.css, data.theme);
+                this.updateUI(data.theme);
+                this.showNotification('Тему змінено!', 'success');
+            } else {
+                this.showNotification(data.message || 'Помилка зміни теми', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Theme error:', error);
+            this.showNotification('Помилка зміни теми', 'error');
+        })
+        .finally(() => {
+            this.showLoading(false);
+        });
+    }
+    
+    resetTheme() {
+        this.showLoading(true);
+        
+        fetch('ajax/theme.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'reset_theme'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                this.applyTheme(data.css, data.theme);
+                this.updateUI(data.theme);
+                this.showNotification('Тему скинуто!', 'success');
+                
+                // Закриваємо модальне вікно
+                const modal = bootstrap.Modal.getInstance(document.getElementById('themeModal'));
+                if (modal) modal.hide();
+            } else {
+                this.showNotification(data.message || 'Помилка скидання теми', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Reset theme error:', error);
+            this.showNotification('Помилка скидання теми', 'error');
+        })
+        .finally(() => {
+            this.showLoading(false);
+        });
+    }
+    
+    applyTheme(css, theme) {
+        // Видаляємо попередні стилі теми
+        const existingStyle = document.getElementById('dynamic-theme-styles');
+        if (existingStyle) {
+            existingStyle.remove();
+        }
+        
+        // Додаємо нові стилі
+        const style = document.createElement('style');
+        style.id = 'dynamic-theme-styles';
+        style.textContent = css;
+        document.head.appendChild(style);
+        
+        this.currentTheme = theme;
+    }
+    
+    updateUI(theme) {
+        // Оновлюємо активний градієнт
+        document.querySelectorAll('.gradient-option').forEach(option => {
+            option.classList.remove('active');
+        });
+        
+        const activeOption = document.querySelector(`[data-gradient="${theme.gradient}"]`);
+        if (activeOption) {
+            activeOption.classList.add('active');
+        }
+        
+        // Оновлюємо перемикач темного режиму
+        const darkModeSwitch = document.getElementById('darkModeSwitch');
+        if (darkModeSwitch) {
+            darkModeSwitch.checked = theme.dark_mode;
+        }
+    }
+    
+    showLoading(show) {
+        const themeModal = document.getElementById('themeModal');
+        if (themeModal) {
+            if (show) {
+                themeModal.style.opacity = '0.6';
+                themeModal.style.pointerEvents = 'none';
+            } else {
+                themeModal.style.opacity = '1';
+                themeModal.style.pointerEvents = 'auto';
+            }
+        }
+    }
+    
+    showNotification(message, type) {
+        // Використовуємо існуючу систему повідомлень
+        if (typeof showToast === 'function') {
+            showToast(message, type);
+        } else {
+            console.log(`Theme notification [${type}]: ${message}`);
+        }
+    }
+}
+
+// Ініціалізуємо менеджер тем
+const themeManager = new ThemeManager();

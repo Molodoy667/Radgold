@@ -85,7 +85,12 @@
                 
                 <div class="alert alert-warning small mt-3">
                     <i class="fas fa-exclamation-triangle me-1"></i>
-                    <strong>Увага:</strong> Якщо база даних існує, всі дані будуть замінені!
+                    <strong>Увага:</strong> Якщо в базі даних є таблиці, вони будуть видалені!
+                </div>
+                
+                <div class="alert alert-info small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    <strong>Автоочищення:</strong> Інсталятор автоматично очистить базу перед створенням нових таблиць.
                 </div>
             </div>
         </div>

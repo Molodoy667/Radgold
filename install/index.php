@@ -226,6 +226,78 @@ function updateSiteSettings() {
     }
 }
 
+function clearDatabase($pdo) {
+    try {
+        error_log("Starting database cleanup");
+        
+        // Отключаем проверку внешних ключей
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+        
+        // Получаем список всех таблиц в базе данных (только обычные таблицы, не системные)
+        $stmt = $pdo->query("
+            SELECT TABLE_NAME 
+            FROM INFORMATION_SCHEMA.TABLES 
+            WHERE TABLE_SCHEMA = DATABASE() 
+            AND TABLE_TYPE = 'BASE TABLE'
+        ");
+        $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        if (!empty($tables)) {
+            error_log("Found " . count($tables) . " tables to drop: " . implode(', ', $tables));
+            
+            // Создаем резервную копию списка таблиц (на случай восстановления)
+            $backup_info = [
+                'timestamp' => date('Y-m-d H:i:s'),
+                'tables' => $tables,
+                'database' => $pdo->query("SELECT DATABASE()")->fetchColumn()
+            ];
+            error_log("Backup info: " . json_encode($backup_info));
+            
+            // Удаляем все таблицы
+            foreach ($tables as $table) {
+                try {
+                    $pdo->exec("DROP TABLE IF EXISTS `$table`");
+                    error_log("Successfully dropped table: $table");
+                } catch (Exception $e) {
+                    error_log("Failed to drop table $table: " . $e->getMessage());
+                    // Продолжаем с другими таблицами
+                }
+            }
+            
+            error_log("Database cleanup completed");
+        } else {
+            error_log("No user tables found in database");
+        }
+        
+        // Включаем обратно проверку внешних ключей
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
+        
+        // Дополнительная проверка - убеждаемся что таблицы действительно удалены
+        $stmt = $pdo->query("SHOW TABLES");
+        $remaining_tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        if (!empty($remaining_tables)) {
+            error_log("Warning: Some tables still exist: " . implode(', ', $remaining_tables));
+        } else {
+            error_log("Database completely cleaned");
+        }
+        
+        return true;
+    } catch (Exception $e) {
+        error_log("Database cleanup error: " . $e->getMessage());
+        error_log("Error details: " . $e->getTraceAsString());
+        
+        // Включаем обратно проверку внешних ключей даже в случае ошибки
+        try {
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
+        } catch (Exception $ignored) {
+            error_log("Failed to restore FOREIGN_KEY_CHECKS");
+        }
+        
+        return false;
+    }
+}
+
 function importDatabase() {
     $config = $_SESSION['db_config'];
     
@@ -240,24 +312,48 @@ function importDatabase() {
             )
         );
         
+        // Проверяем есть ли таблицы в базе данных
+        $stmt = $pdo->query("SHOW TABLES");
+        $existing_tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        if (!empty($existing_tables)) {
+            error_log("Found existing tables in database: " . implode(', ', $existing_tables));
+            error_log("Clearing database before importing new structure");
+            
+            if (!clearDatabase($pdo)) {
+                throw new Exception('Не вдалося очистити існуючі таблиці');
+            }
+            
+            error_log("Database cleared successfully");
+        } else {
+            error_log("Database is empty, proceeding with import");
+        }
+        
         $sql = file_get_contents('baza.sql');
         if ($sql === false) {
             throw new Exception('Не вдалося прочитати файл baza.sql');
         }
         
+        error_log("Starting SQL import from baza.sql");
+        
         // Розбиваємо SQL на окремі запити
         $queries = explode(';', $sql);
+        $executed_queries = 0;
         
         foreach ($queries as $query) {
             $query = trim($query);
             if (!empty($query)) {
                 $pdo->exec($query);
+                $executed_queries++;
             }
         }
+        
+        error_log("Successfully executed $executed_queries SQL queries");
         
         return true;
     } catch (Exception $e) {
         error_log("Database import error: " . $e->getMessage());
+        error_log("Stack trace: " . $e->getTraceAsString());
         return false;
     }
 }

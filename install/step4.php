@@ -69,6 +69,8 @@
                 <h6>Що відбудеться:</h6>
                 <ol class="small">
                     <li>Створення конфігурації БД</li>
+                    <li>Перевірка існуючих таблиць</li>
+                    <li>Очищення БД (якщо потрібно)</li>
                     <li>Імпорт структури БД</li>
                     <li>Створення адміністратора</li>
                     <li>Блокування інсталятора</li>
@@ -204,6 +206,8 @@ function startInstallation() {
     const steps = [
         'Створення конфігурації бази даних...',
         'Підключення до бази даних...',
+        'Перевірка існуючих таблиць...',
+        'Очищення бази даних (якщо потрібно)...',
         'Створення структури таблиць...',
         'Імпорт початкових даних...',
         'Створення адміністратора...',
@@ -212,7 +216,8 @@ function startInstallation() {
     
     let stepIndex = 0;
     const progressInterval = setInterval(() => {
-        progress += 20;
+        progress += Math.floor(100 / steps.length);
+        if (progress > 100) progress = 100;
         progressBar.style.width = progress + '%';
         
         if (stepIndex < steps.length) {
@@ -225,7 +230,7 @@ function startInstallation() {
             // Виконуємо фактичне встановлення
             performInstallation();
         }
-    }, 800);
+    }, 600);
 }
 
 function performInstallation() {

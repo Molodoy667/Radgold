@@ -18,10 +18,10 @@ $db = $database->getConnection();
 try {
     $db->beginTransaction();
     
-    $form_type = $_POST['form_type'] ?? '';
+    $action = $_POST['action'] ?? $_POST['form_type'] ?? '';
     $response = ['success' => false, 'message' => ''];
     
-    switch ($form_type) {
+    switch ($action) {
         case 'generalForm':
             // Основні налаштування
             $fields = ['site_name', 'site_language', 'site_description', 'site_email', 'site_phone'];
@@ -164,8 +164,88 @@ try {
             $response['message'] = 'Функціональні налаштування успішно збережені!';
             break;
             
+        case 'save_theme':
+            // Налаштування теми та оформлення
+            $theme_fields = [
+                'default_theme_gradient', 'custom_css'
+            ];
+            
+            foreach ($theme_fields as $field) {
+                if (isset($_POST[$field])) {
+                    $value = clean_input($_POST[$field]);
+                    
+                    // Валідація градієнта
+                    if ($field === 'default_theme_gradient') {
+                        $gradients = Theme::getGradients();
+                        if (!array_key_exists($value, $gradients)) {
+                            throw new Exception('Невірний градієнт');
+                        }
+                    }
+                    
+                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
+                                         ON DUPLICATE KEY UPDATE setting_value = ?");
+                    $stmt->execute([$field, $value, $value]);
+                }
+            }
+            
+            // Булеві налаштування теми
+            $theme_checkboxes = ['enable_theme_switcher', 'default_dark_mode'];
+            foreach ($theme_checkboxes as $checkbox) {
+                $value = isset($_POST[$checkbox]) ? '1' : '0';
+                
+                $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
+                                     ON DUPLICATE KEY UPDATE setting_value = ?");
+                $stmt->execute([$checkbox, $value, $value]);
+            }
+            
+            $response['message'] = 'Налаштування теми успішно збережені!';
+            break;
+            
+        case 'save_maintenance':
+            // Налаштування технічного обслуговування
+            $maintenance_fields = [
+                'maintenance_title', 'maintenance_message', 'maintenance_end_time',
+                'maintenance_contact_email', 'maintenance_custom_html'
+            ];
+            
+            foreach ($maintenance_fields as $field) {
+                if (isset($_POST[$field])) {
+                    $value = clean_input($_POST[$field]);
+                    
+                    // Валідація email
+                    if ($field === 'maintenance_contact_email' && !empty($value) && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        throw new Exception('Невірний формат контактного email');
+                    }
+                    
+                    // Валідація дати
+                    if ($field === 'maintenance_end_time' && !empty($value)) {
+                        $datetime = DateTime::createFromFormat('Y-m-d\TH:i', $value);
+                        if (!$datetime) {
+                            throw new Exception('Невірний формат дати завершення');
+                        }
+                    }
+                    
+                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
+                                         ON DUPLICATE KEY UPDATE setting_value = ?");
+                    $stmt->execute([$field, $value, $value]);
+                }
+            }
+            
+            // Булеві налаштування обслуговування
+            $maintenance_checkboxes = ['maintenance_mode', 'maintenance_show_progress'];
+            foreach ($maintenance_checkboxes as $checkbox) {
+                $value = isset($_POST[$checkbox]) ? '1' : '0';
+                
+                $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
+                                     ON DUPLICATE KEY UPDATE setting_value = ?");
+                $stmt->execute([$checkbox, $value, $value]);
+            }
+            
+            $response['message'] = 'Налаштування технічного обслуговування успішно збережені!';
+            break;
+            
         default:
-            throw new Exception('Невідомий тип форми');
+            throw new Exception('Невідомий тип дії');
     }
     
     // Логування
@@ -173,7 +253,7 @@ try {
                              VALUES (?, 'settings_update', ?, ?, ?)");
     $log_stmt->execute([
         $_SESSION['admin_id'],
-        'Оновлення налаштувань: ' . $form_type,
+        'Оновлення налаштувань: ' . $action,
         $_SERVER['REMOTE_ADDR'] ?? '',
         $_SERVER['HTTP_USER_AGENT'] ?? ''
     ]);

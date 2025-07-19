@@ -192,12 +192,94 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
             margin-top: 0.5rem;
         }
         
+        /* Градієнтна сітка */
+        .gradient-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .gradient-option {
+            text-align: center;
+        }
+        
+        .gradient-option input[type="radio"] {
+            display: none;
+        }
+        
         .gradient-preview {
+            display: block;
             width: 100%;
-            height: 60px;
-            border-radius: 8px;
+            height: 80px;
+            border-radius: 12px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gradient-preview:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .gradient-option input[type="radio"]:checked + .gradient-preview {
+            border-color: white;
+            box-shadow: 0 0 0 3px var(--theme-primary);
+            transform: scale(1.05);
+        }
+        
+        .gradient-check {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        
+        .gradient-option input[type="radio"]:checked + .gradient-preview .gradient-check {
+            opacity: 1;
+        }
+        
+        .gradient-name {
+            display: block;
             margin-top: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        /* Стилі технічного обслуговування */
+        .maintenance-icon {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+        }
+        
+        .maintenance-toggle:checked {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+        }
+        
+        .maintenance-label {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        
+        .maintenance-settings {
+            background: var(--surface-color);
             border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .maintenance-toggle:checked ~ .maintenance-label {
+            color: #dc3545;
         }
         
         /* Анімація завантаження */
@@ -512,6 +594,168 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
                         </div>
                     </div>
 
+                    <!-- Оформлення та теми -->
+                    <div class="settings-block" onclick="toggleBlock(this)">
+                        <div class="block-header">
+                            <div class="block-icon">
+                                <i class="fas fa-paint-brush"></i>
+                            </div>
+                            <div class="block-info">
+                                <h5>Оформлення та теми</h5>
+                                <p>Вибір градієнтів, кольорової схеми та стилю сайту</p>
+                            </div>
+                            <i class="fas fa-chevron-down block-chevron"></i>
+                        </div>
+                        <div class="block-content">
+                            <form id="themeForm">
+                                <div class="form-group mb-4">
+                                    <label class="form-label">
+                                        <i class="fas fa-palette me-2"></i>Градієнт за замовчуванням
+                                    </label>
+                                    <div class="gradient-grid">
+                                        <?php 
+                                        $gradients = Theme::getGradients();
+                                        $current_gradient = $all_settings['default_theme_gradient'] ?? 'gradient-2';
+                                        foreach ($gradients as $gradient_id => $gradient_data): 
+                                        ?>
+                                            <div class="gradient-option" data-gradient="<?php echo $gradient_id; ?>">
+                                                <input type="radio" 
+                                                       name="default_theme_gradient" 
+                                                       value="<?php echo $gradient_id; ?>" 
+                                                       id="gradient_<?php echo $gradient_id; ?>"
+                                                       <?php echo $current_gradient === $gradient_id ? 'checked' : ''; ?>>
+                                                <label for="gradient_<?php echo $gradient_id; ?>" 
+                                                       class="gradient-preview"
+                                                       style="background: linear-gradient(135deg, <?php echo $gradient_data[0]; ?>, <?php echo $gradient_data[1]; ?>);"
+                                                       title="<?php echo $gradient_data[2]; ?>">
+                                                    <i class="fas fa-check gradient-check"></i>
+                                                </label>
+                                                <small class="gradient-name"><?php echo $gradient_data[2]; ?></small>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="enable_theme_switcher" 
+                                                   <?php echo ($all_settings['enable_theme_switcher'] ?? '1') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label">Дозволити зміну теми користувачам</label>
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="default_dark_mode" 
+                                                   <?php echo ($all_settings['default_dark_mode'] ?? '0') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label">Темна тема за замовчуванням</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Кастомний CSS</label>
+                                            <textarea class="form-control" name="custom_css" rows="4" 
+                                                      placeholder="/* Додайте свій CSS код тут */"><?php echo htmlspecialchars($all_settings['custom_css'] ?? ''); ?></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn-save">
+                                    <i class="fas fa-save me-2"></i>Зберегти налаштування теми
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Технічне обслуговування -->
+                    <div class="settings-block" onclick="toggleBlock(this)">
+                        <div class="block-header">
+                            <div class="block-icon maintenance-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div class="block-info">
+                                <h5>Технічне обслуговування</h5>
+                                <p>Закриття сайту для обслуговування та налагодження</p>
+                            </div>
+                            <i class="fas fa-chevron-down block-chevron"></i>
+                        </div>
+                        <div class="block-content">
+                            <form id="maintenanceForm">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>Увага!</strong> При включенні режиму обслуговування сайт буде недоступний для звичайних користувачів. 
+                                    Доступ матимуть тільки адміністратори.
+                                </div>
+                                
+                                <div class="form-check form-switch mb-4">
+                                    <input class="form-check-input maintenance-toggle" type="checkbox" name="maintenance_mode" 
+                                           id="maintenanceMode" <?php echo ($all_settings['maintenance_mode'] ?? '0') ? 'checked' : ''; ?>>
+                                    <label class="form-check-label maintenance-label" for="maintenanceMode">
+                                        <strong>Увімкнути режим технічного обслуговування</strong>
+                                    </label>
+                                </div>
+                                
+                                <div class="maintenance-settings" style="<?php echo ($all_settings['maintenance_mode'] ?? '0') ? '' : 'display: none;'; ?>">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-heading me-2"></i>Заголовок сторінки обслуговування
+                                        </label>
+                                        <input type="text" class="form-control" name="maintenance_title" 
+                                               value="<?php echo htmlspecialchars($all_settings['maintenance_title'] ?? 'Сайт на технічному обслуговуванні'); ?>"
+                                               placeholder="Сайт на технічному обслуговуванні">
+                                    </div>
+                                    
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-comment-alt me-2"></i>Повідомлення для користувачів
+                                        </label>
+                                        <textarea class="form-control" name="maintenance_message" rows="4" 
+                                                  placeholder="Наразі ми проводимо технічні роботи для покращення роботи сайту..."><?php echo htmlspecialchars($all_settings['maintenance_message'] ?? 'Наразі ми проводимо технічні роботи для покращення роботи сайту. Вибачте за тимчасові незручності. Сайт буде доступний найближчим часом.'); ?></textarea>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">
+                                                    <i class="fas fa-clock me-2"></i>Очікуваний час завершення
+                                                </label>
+                                                <input type="datetime-local" class="form-control" name="maintenance_end_time" 
+                                                       value="<?php echo $all_settings['maintenance_end_time'] ?? ''; ?>">
+                                                <small class="form-text text-muted">Необов'язково. Буде показано користувачам.</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">
+                                                    <i class="fas fa-envelope me-2"></i>Контактний email
+                                                </label>
+                                                <input type="email" class="form-control" name="maintenance_contact_email" 
+                                                       value="<?php echo htmlspecialchars($all_settings['maintenance_contact_email'] ?? $all_settings['site_email'] ?? ''); ?>"
+                                                       placeholder="admin@example.com">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="maintenance_show_progress" 
+                                               <?php echo ($all_settings['maintenance_show_progress'] ?? '1') ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Показати анімацію прогресу</label>
+                                    </div>
+                                    
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-code me-2"></i>Додатковий HTML/CSS для сторінки обслуговування
+                                        </label>
+                                        <textarea class="form-control" name="maintenance_custom_html" rows="3" 
+                                                  placeholder="<!-- Додайте свій HTML код -->"><?php echo htmlspecialchars($all_settings['maintenance_custom_html'] ?? ''); ?></textarea>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn-save">
+                                    <i class="fas fa-save me-2"></i>Зберегти налаштування обслуговування
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                     <!-- Функціональність -->
                     <div class="settings-block" onclick="toggleBlock(this)">
                         <div class="block-header">
@@ -554,11 +798,6 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
                                             <input class="form-check-input" type="checkbox" name="moderation_required" 
                                                    <?php echo ($all_settings['moderation_required'] ?? '0') ? 'checked' : ''; ?>>
                                             <label class="form-check-label">Модерація оголошень</label>
-                                        </div>
-                                        <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" name="maintenance_mode" 
-                                                   <?php echo ($all_settings['maintenance_mode'] ?? '0') ? 'checked' : ''; ?>>
-                                            <label class="form-check-label">Режим обслуговування</label>
                                         </div>
                                     </div>
                                 </div>
@@ -681,6 +920,69 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
             const toast = new bootstrap.Toast(document.getElementById(toastId));
             toast.show();
         }
+        
+        // Обробка режиму технічного обслуговування
+        const maintenanceToggle = document.getElementById('maintenanceMode');
+        const maintenanceSettings = document.querySelector('.maintenance-settings');
+        
+        if (maintenanceToggle) {
+            maintenanceToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    maintenanceSettings.style.display = 'block';
+                    maintenanceSettings.style.animation = 'slideIn 0.3s ease';
+                } else {
+                    maintenanceSettings.style.display = 'none';
+                }
+            });
+        }
+        
+        // Обробка форми теми
+        const themeForm = document.getElementById('themeForm');
+        if (themeForm) {
+            themeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                formData.append('action', 'save_theme');
+                
+                submitForm(formData, 'Налаштування теми збережено!');
+            });
+        }
+        
+        // Обробка форми технічного обслуговування
+        const maintenanceForm = document.getElementById('maintenanceForm');
+        if (maintenanceForm) {
+            maintenanceForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                formData.append('action', 'save_maintenance');
+                
+                // Спеціальне повідомлення якщо включений режим обслуговування
+                const isMaintenanceEnabled = document.getElementById('maintenanceMode').checked;
+                const message = isMaintenanceEnabled ? 
+                    'Режим технічного обслуговування увімкнено! Сайт тепер недоступний для користувачів.' :
+                    'Налаштування технічного обслуговування збережено!';
+                
+                submitForm(formData, message);
+            });
+        }
+        
+        // Анімація для CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
         
         // Закриття бокової панелі при кліку поза нею
         document.addEventListener('click', function(e) {

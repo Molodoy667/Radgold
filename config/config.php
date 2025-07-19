@@ -29,9 +29,8 @@ if (file_exists(__DIR__ . '/installed.lock')) {
         Theme::init($db);
         
         // Перевіряємо режим обслуговування
-        if (Settings::isMaintenanceMode() && !isset($_SESSION['admin_logged_in'])) {
-            // Показуємо сторінку обслуговування
-            showMaintenancePage();
+        if (Settings::isMaintenanceMode()) {
+            Settings::showMaintenancePage();
         }
         
     } catch (Exception $e) {
@@ -64,59 +63,7 @@ function clean_input($data) {
     return $data;
 }
 
-/**
- * Функція для показу сторінки обслуговування
- */
-function showMaintenancePage() {
-    $message = Settings::get('maintenance_message', 'Сайт тимчасово недоступний через технічні роботи. Вибачте за незручності.');
-    $site_name = Settings::get('site_name', 'Дошка Оголошень');
-    
-    http_response_code(503);
-    header('Retry-After: 3600'); // Повторити через годину
-    
-    echo "<!DOCTYPE html>
-<html lang=\"uk\">
-<head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>Технічні роботи - {$site_name}</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: white;
-            text-align: center;
-        }
-        .maintenance-container {
-            max-width: 600px;
-            padding: 2rem;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
-        p { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9; }
-        .icon { font-size: 4rem; margin-bottom: 1rem; }
-    </style>
-</head>
-<body>
-    <div class=\"maintenance-container\">
-        <div class=\"icon\">🔧</div>
-        <h1>Технічні роботи</h1>
-        <p>" . htmlspecialchars($message) . "</p>
-        <small>Дякуємо за розуміння!</small>
-    </div>
-</body>
-</html>";
-    exit();
-}
+
 
 /**
  * Отримання поточної URL сторінки

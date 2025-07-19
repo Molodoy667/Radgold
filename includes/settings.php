@@ -315,5 +315,39 @@ class Settings {
             'analytics' => $ga_script . $ym_script
         ];
     }
+    
+    /**
+     * Перевірка чи увімкнений режим технічного обслуговування
+     */
+    public static function isMaintenanceMode() {
+        return (bool)self::get('maintenance_mode', false);
+    }
+    
+    /**
+     * Показати сторінку технічного обслуговування
+     */
+    public static function showMaintenancePage() {
+        // Перевіряємо чи це не адміністратор
+        if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in']) {
+            return false; // Адміністратори мають доступ
+        }
+        
+        // Перевіряємо чи це не сторінка входу в адмінку
+        $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+        if (strpos($request_uri, '/admin/') !== false) {
+            return false; // Дозволяємо доступ до адмінки
+        }
+        
+        // Показуємо сторінку технічного обслуговування
+        include __DIR__ . '/../maintenance.php';
+        exit();
+    }
+    
+    /**
+     * Очищення кешу налаштувань
+     */
+    public static function clearCache() {
+        self::$settings = null;
+    }
 }
 ?>

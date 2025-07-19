@@ -142,14 +142,188 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
         }
         
         .form-control, .form-select {
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             background: var(--surface-color);
             color: var(--text-color);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-control::before, .form-select::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--theme-gradient);
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .form-control:hover, .form-select:hover {
+            border-color: transparent;
+            background: var(--card-bg);
+            box-shadow: 0 0 0 2px transparent;
+            background-image: var(--theme-gradient);
+            background-size: 100% 2px;
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+            animation: gradientBorder 0.3s ease forwards;
+        }
+        
+        @keyframes gradientBorder {
+            0% {
+                background-size: 0% 2px;
+            }
+            100% {
+                background-size: 100% 2px;
+            }
         }
         
         .form-control:focus, .form-select:focus {
-            border-color: var(--theme-primary);
-            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25);
+            border-color: transparent;
+            background: var(--card-bg);
+            color: var(--text-color);
+            box-shadow: 
+                0 0 0 3px rgba(var(--theme-primary-rgb), 0.1),
+                0 8px 25px rgba(var(--theme-primary-rgb), 0.15);
+            transform: translateY(-2px);
+            background-image: var(--theme-gradient);
+            background-size: 100% 2px;
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+        }
+        
+        /* Специальные эффекты для textarea */
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+            padding: 1rem;
+        }
+        
+        textarea.form-control:hover {
+            background: var(--card-bg);
+            background-image: 
+                linear-gradient(to right, var(--theme-gradient)),
+                linear-gradient(to bottom, var(--theme-gradient)),
+                linear-gradient(to left, var(--theme-gradient)),
+                linear-gradient(to top, var(--theme-gradient));
+            background-size: 
+                100% 2px,
+                2px 100%, 
+                100% 2px, 
+                2px 100%;
+            background-position: 
+                0 0,
+                100% 0,
+                0 100%,
+                0 0;
+            background-repeat: no-repeat;
+            animation: textareaGradient 0.3s ease forwards;
+        }
+        
+        textarea.form-control:focus {
+            background: var(--card-bg);
+            background-image: 
+                linear-gradient(to right, var(--theme-gradient)),
+                linear-gradient(to bottom, var(--theme-gradient)),
+                linear-gradient(to left, var(--theme-gradient)),
+                linear-gradient(to top, var(--theme-gradient));
+            background-size: 
+                100% 3px,
+                3px 100%, 
+                100% 3px, 
+                3px 100%;
+            background-position: 
+                0 0,
+                100% 0,
+                0 100%,
+                0 0;
+            background-repeat: no-repeat;
+            box-shadow: 
+                0 0 0 3px rgba(var(--theme-primary-rgb), 0.1),
+                0 8px 25px rgba(var(--theme-primary-rgb), 0.15);
+        }
+        
+        @keyframes textareaGradient {
+            0% {
+                background-size: 
+                    0% 2px,
+                    2px 0%, 
+                    0% 2px, 
+                    2px 0%;
+            }
+            100% {
+                background-size: 
+                    100% 2px,
+                    2px 100%, 
+                    100% 2px, 
+                    2px 100%;
+            }
+        }
+        
+        /* Градиентные placeholder */
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus::placeholder {
+            opacity: 0.5;
+            transform: translateY(-2px);
+        }
+        
+        /* Волновой эффект при клике */
+        .form-control {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-control::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--theme-primary) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 1;
+        }
+        
+        .form-control:active::after {
+            width: 200px;
+            height: 200px;
+            opacity: 0.3;
+        }
+        
+        /* Специальные эффекты для file input */
+        input[type="file"].form-control {
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+        
+        input[type="file"].form-control:hover {
+            background: var(--card-bg);
+            border: 2px dashed var(--theme-primary);
+            background-image: none;
+        }
+        
+        input[type="file"].form-control:focus {
+            background: var(--card-bg);
+            border: 2px dashed var(--theme-primary);
+            background-image: none;
+            box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.1);
         }
         
         .btn-save {

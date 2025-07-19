@@ -226,12 +226,42 @@ $meta_data = Settings::getMetaTags($page_title, $page_description, $page_keyword
             color: var(--text-color);
             font-size: 1.1rem;
             padding-left: 50px;
+            position: relative;
+        }
+        
+        .form-floating .form-control:hover {
+            border-color: transparent;
+            background: var(--card-bg);
+            background-image: var(--theme-gradient);
+            background-size: 100% 3px;
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+            box-shadow: 0 6px 20px rgba(var(--theme-primary-rgb), 0.15);
+            transform: translateY(-1px);
         }
         
         .form-floating .form-control:focus {
-            border-color: var(--theme-primary);
-            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25);
-            background: var(--surface-color);
+            border-color: transparent;
+            background: var(--card-bg);
+            color: var(--text-color);
+            box-shadow: 
+                0 0 0 4px rgba(var(--theme-primary-rgb), 0.2),
+                0 10px 30px rgba(var(--theme-primary-rgb), 0.25);
+            transform: translateY(-3px);
+            background-image: var(--theme-gradient);
+            background-size: 100% 3px;
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+        }
+        
+        .form-floating .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .form-floating .form-control:focus::placeholder {
+            opacity: 0.5;
             transform: translateY(-2px);
         }
         

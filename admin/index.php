@@ -286,17 +286,48 @@ if (isset($_COOKIE['admin_remember']) && !isset($_SESSION['admin_logged_in'])) {
         
         .form-floating .form-control {
             border: 2px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 12px;
             height: 58px;
             transition: all 0.3s ease;
             background: var(--surface-color);
             color: var(--text-color);
+            position: relative;
+        }
+        
+        .form-floating .form-control:hover {
+            border-color: transparent;
+            background: var(--card-bg);
+            background-image: var(--theme-gradient);
+            background-size: 100% 2px;
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+            box-shadow: 0 4px 15px rgba(var(--theme-primary-rgb), 0.1);
+            transform: translateY(-1px);
         }
         
         .form-floating .form-control:focus {
-            border-color: var(--theme-primary);
-            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25);
-            background: var(--surface-color);
+            border-color: transparent;
+            background: var(--card-bg);
+            color: var(--text-color);
+            box-shadow: 
+                0 0 0 3px rgba(var(--theme-primary-rgb), 0.15),
+                0 8px 25px rgba(var(--theme-primary-rgb), 0.2);
+            transform: translateY(-2px);
+            background-image: var(--theme-gradient);
+            background-size: 100% 2px;
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+        }
+        
+        .form-floating .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .form-floating .form-control:focus::placeholder {
+            opacity: 0.5;
+            transform: translateY(-2px);
         }
         
         .form-floating label {

@@ -275,16 +275,48 @@ try {
         
         .profile-modal .form-control {
             background: var(--surface-color) !important;
-            border: 1px solid var(--border-color) !important;
+            border: 2px solid var(--border-color) !important;
             color: var(--text-color) !important;
-            border-radius: 10px !important;
+            border-radius: 12px !important;
+            padding: 0.75rem 1rem !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+        }
+        
+        .profile-modal .form-control:hover {
+            border-color: transparent !important;
+            background: var(--card-bg) !important;
+            background-image: var(--theme-gradient) !important;
+            background-size: 100% 2px !important;
+            background-position: 0 100% !important;
+            background-repeat: no-repeat !important;
+            box-shadow: 0 4px 15px rgba(var(--theme-primary-rgb), 0.1) !important;
+            transform: translateY(-1px) !important;
         }
         
         .profile-modal .form-control:focus {
-            background: var(--surface-color) !important;
-            border-color: var(--theme-primary) !important;
+            background: var(--card-bg) !important;
+            border-color: transparent !important;
             color: var(--text-color) !important;
-            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25) !important;
+            box-shadow: 
+                0 0 0 3px rgba(var(--theme-primary-rgb), 0.15) !important,
+                0 8px 25px rgba(var(--theme-primary-rgb), 0.2) !important;
+            transform: translateY(-2px) !important;
+            background-image: var(--theme-gradient) !important;
+            background-size: 100% 2px !important;
+            background-position: 0 100% !important;
+            background-repeat: no-repeat !important;
+        }
+        
+        .profile-modal .form-control::placeholder {
+            color: var(--text-muted) !important;
+            opacity: 0.7 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .profile-modal .form-control:focus::placeholder {
+            opacity: 0.5 !important;
+            transform: translateY(-2px) !important;
         }
         
         .profile-modal .form-label {

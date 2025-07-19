@@ -108,19 +108,19 @@ try {
         .sidebar {
             position: fixed;
             top: 0;
-            right: -350px;
+            left: -350px;
             width: 350px;
             height: 100vh;
             background: var(--card-bg);
-            border-left: 1px solid var(--border-color);
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             z-index: 1050;
             overflow-y: auto;
         }
         
         .sidebar.active {
-            right: 0;
+            left: 0;
         }
         
         .sidebar-header {
@@ -516,23 +516,35 @@ try {
             </button>
         </div>
         <div class="sidebar-menu">
-            <a href="#" class="menu-item" onclick="loadPage('dashboard')">
+            <a href="dashboard.php" class="menu-item active">
                 <i class="fas fa-tachometer-alt me-3"></i>Головна панель
             </a>
-            <a href="#" class="menu-item" onclick="loadPage('settings')">
+            <a href="settings.php" class="menu-item">
                 <i class="fas fa-cog me-3"></i>Генеральні налаштування
             </a>
-            <a href="#" class="menu-item" onclick="loadPage('categories')">
+            <a href="categories.php" class="menu-item">
                 <i class="fas fa-list me-3"></i>Категорії
             </a>
-            <a href="#" class="menu-item" onclick="loadPage('users')">
+            <a href="users.php" class="menu-item">
                 <i class="fas fa-users me-3"></i>Користувачі
             </a>
-            <a href="#" class="menu-item" onclick="loadPage('ads')">
+            <a href="ads.php" class="menu-item">
                 <i class="fas fa-bullhorn me-3"></i>Оголошення
             </a>
-            <a href="#" class="menu-item" onclick="loadPage('logs')">
+            <a href="logs.php" class="menu-item">
                 <i class="fas fa-history me-3"></i>Логи системи
+            </a>
+            <a href="analytics.php" class="menu-item">
+                <i class="fas fa-chart-bar me-3"></i>Аналітика
+            </a>
+            <a href="themes.php" class="menu-item">
+                <i class="fas fa-paint-brush me-3"></i>Теми та дизайн
+            </a>
+            <a href="backup.php" class="menu-item">
+                <i class="fas fa-download me-3"></i>Резервні копії
+            </a>
+            <a href="../index.php" class="menu-item" target="_blank">
+                <i class="fas fa-external-link-alt me-3"></i>Переглянути сайт
             </a>
         </div>
     </div>

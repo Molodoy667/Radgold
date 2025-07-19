@@ -128,6 +128,24 @@ try {
             border-bottom: 1px solid var(--border-color);
             background: var(--theme-gradient);
             color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .close-sidebar:hover {
+            background: rgba(255,255,255,0.2);
         }
         
         .sidebar-menu {
@@ -319,10 +337,15 @@ try {
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
     <div class="sidebar" id="adminSidebar">
         <div class="sidebar-header">
-            <h5 class="mb-0">
-                <i class="fas fa-cogs me-2"></i>Панель управління
-            </h5>
-            <small>Адміністрування сайту</small>
+            <div>
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>Панель управління
+                </h5>
+                <small>Адміністрування сайту</small>
+            </div>
+            <button class="close-sidebar" onclick="closeSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
         <div class="sidebar-menu">
             <a href="#" class="menu-item" onclick="loadPage('dashboard')">

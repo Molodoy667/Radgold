@@ -20,108 +20,6 @@ $admin_stmt = $db->prepare($admin_query);
 $admin_stmt->execute([$_SESSION['admin_id']]);
 $admin = $admin_stmt->fetch(PDO::FETCH_ASSOC);
 
-$success_message = '';
-$error_message = '';
-
-// Обробка збереження налаштувань
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $db->beginTransaction();
-        
-        foreach ($_POST as $key => $value) {
-            if ($key !== 'submit' && $key !== 'action') {
-                $clean_value = clean_input($value);
-                
-                $update_query = "UPDATE settings SET setting_value = ? WHERE setting_key = ?";
-                $update_stmt = $db->prepare($update_query);
-                $update_stmt->execute([$clean_value, $key]);
-            }
-        }
-        
-        // Обробка завантаження лого
-        if (isset($_FILES['site_logo']) && $_FILES['site_logo']['error'] === UPLOAD_ERR_OK) {
-            $upload_dir = '../assets/uploads/';
-            if (!is_dir($upload_dir)) {
-                mkdir($upload_dir, 0755, true);
-            }
-            
-            $file_info = pathinfo($_FILES['site_logo']['name']);
-            $extension = strtolower($file_info['extension']);
-            $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
-            
-            if (in_array($extension, $allowed_extensions) && $_FILES['site_logo']['size'] <= 2097152) {
-                $filename = 'logo_' . time() . '.' . $extension;
-                $target_path = $upload_dir . $filename;
-                
-                if (move_uploaded_file($_FILES['site_logo']['tmp_name'], $target_path)) {
-                    // Видаляємо старе лого
-                    $old_logo = Settings::get('site_logo');
-                    if ($old_logo && file_exists('../' . $old_logo)) {
-                        unlink('../' . $old_logo);
-                    }
-                    
-                    $logo_path = 'assets/uploads/' . $filename;
-                    $update_query = "UPDATE settings SET setting_value = ? WHERE setting_key = 'site_logo'";
-                    $update_stmt = $db->prepare($update_query);
-                    $update_stmt->execute([$logo_path]);
-                }
-            }
-        }
-        
-        // Обробка завантаження favicon
-        if (isset($_FILES['site_favicon']) && $_FILES['site_favicon']['error'] === UPLOAD_ERR_OK) {
-            $upload_dir = '../assets/uploads/';
-            if (!is_dir($upload_dir)) {
-                mkdir($upload_dir, 0755, true);
-            }
-            
-            $file_info = pathinfo($_FILES['site_favicon']['name']);
-            $extension = strtolower($file_info['extension']);
-            $allowed_extensions = ['ico', 'png', 'jpg', 'jpeg'];
-            
-            if (in_array($extension, $allowed_extensions) && $_FILES['site_favicon']['size'] <= 1048576) {
-                $filename = 'favicon_' . time() . '.' . $extension;
-                $target_path = $upload_dir . $filename;
-                
-                if (move_uploaded_file($_FILES['site_favicon']['tmp_name'], $target_path)) {
-                    // Видаляємо старий favicon
-                    $old_favicon = Settings::get('site_favicon');
-                    if ($old_favicon && file_exists('../' . $old_favicon)) {
-                        unlink('../' . $old_favicon);
-                    }
-                    
-                    $favicon_path = 'assets/uploads/' . $filename;
-                    $update_query = "UPDATE settings SET setting_value = ? WHERE setting_key = 'site_favicon'";
-                    $update_stmt = $db->prepare($update_query);
-                    $update_stmt->execute([$favicon_path]);
-                }
-            }
-        }
-        
-        $db->commit();
-        
-        // Логування
-        $log_query = "INSERT INTO admin_logs (admin_id, action, description, ip_address, user_agent) 
-                     VALUES (?, 'settings_update', 'Оновлення налаштувань сайту', ?, ?)";
-        $log_stmt = $db->prepare($log_query);
-        $log_stmt->execute([
-            $_SESSION['admin_id'],
-            $_SERVER['REMOTE_ADDR'] ?? '',
-            $_SERVER['HTTP_USER_AGENT'] ?? ''
-        ]);
-        
-        $success_message = 'Налаштування успішно збережені!';
-        
-        // Очищуємо кеш налаштувань
-        Settings::clearCache();
-        
-    } catch (Exception $e) {
-        $db->rollback();
-        $error_message = 'Помилка збереження: ' . $e->getMessage();
-        error_log("Settings update error: " . $e->getMessage());
-    }
-}
-
 // Отримуємо всі налаштування
 $all_settings = [];
 $settings_query = "SELECT setting_key, setting_value FROM settings";
@@ -164,802 +62,634 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
         
         .settings-block:hover {
-            box-shadow: var(--shadow);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-3px);
+        }
+        
+        .settings-block.expanded {
+            cursor: default;
+            transform: none;
         }
         
         .block-header {
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
         }
         
         .block-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: white;
+            background: var(--theme-gradient);
         }
         
-        .block-title {
+        .block-info h5 {
             color: var(--text-color);
             margin: 0;
-            font-size: 1.4rem;
             font-weight: 600;
         }
         
-        .block-description {
+        .block-info p {
             color: var(--text-muted);
             margin: 0;
             font-size: 0.9rem;
         }
         
+        .block-chevron {
+            margin-left: auto;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+        
+        .settings-block.expanded .block-chevron {
+            transform: rotate(180deg);
+        }
+        
+        .block-content {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .settings-block.expanded .block-content {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+        
         .form-control, .form-select {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            background: var(--surface-color);
             color: var(--text-color);
         }
         
         .form-control:focus, .form-select:focus {
             border-color: var(--theme-primary);
-            box-shadow: 0 0 0 0.2rem rgba(240, 147, 251, 0.25);
-            background: var(--card-bg);
-            color: var(--text-color);
-        }
-        
-        .form-label {
-            color: var(--text-color);
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25);
         }
         
         .btn-save {
             background: var(--theme-gradient);
             border: none;
-            padding: 12px 30px;
+            color: white;
+            padding: 0.75rem 2rem;
             border-radius: 10px;
             font-weight: 600;
-            color: white;
             transition: all 0.3s ease;
         }
         
         .btn-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(240, 147, 251, 0.3);
-            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         
-        .color-picker-preview {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            cursor: pointer;
+        .btn-back {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
             transition: all 0.3s ease;
         }
         
-        .color-picker-preview:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow);
+        .btn-back:hover {
+            background: var(--theme-primary);
+            color: white;
+            transform: translateY(-2px);
         }
         
-        .file-upload-preview {
+        .file-preview {
             max-width: 200px;
             max-height: 100px;
             border-radius: 8px;
-            border: 2px solid var(--border-color);
-            margin-top: 10px;
+            margin-top: 0.5rem;
         }
         
-        .gradient-option {
-            width: 60px;
+        .gradient-preview {
+            width: 100%;
             height: 60px;
-            border-radius: 12px;
-            border: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 5px;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Анімація завантаження */
+        .loading {
             position: relative;
+            pointer-events: none;
         }
         
-        .gradient-option:hover {
-            transform: scale(1.1);
-            border-color: var(--theme-primary);
-        }
-        
-        .gradient-option.active {
-            border-color: var(--theme-primary);
-            box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.3);
-        }
-        
-        .gradient-option::after {
+        .loading::after {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: white;
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-        
-        .gradient-option.active::after {
-            opacity: 1;
-            background: var(--theme-primary);
-        }
-        
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
+            background: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
         }
         
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background: var(--card-bg);
+            border-left: 1px solid var(--border-color);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 1050;
+            overflow-y: auto;
         }
         
-        input:checked + .slider {
+        .sidebar.active {
+            right: 0;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
             background: var(--theme-gradient);
+            color: white;
+            display: flex;
+            justify-content: between;
+            align-items: center;
         }
         
-        input:checked + .slider:before {
-            transform: translateX(26px);
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
         }
         
-        .navbar-brand {
-            font-weight: 600;
-            color: var(--text-color) !important;
+        .close-sidebar:hover {
+            background: rgba(255,255,255,0.2);
         }
         
-        .nav-link {
-            color: var(--text-color) !important;
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+        
+        .sidebar-menu .menu-item {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-color);
             transition: all 0.3s ease;
         }
         
-        .nav-link:hover {
-            color: var(--theme-primary) !important;
+        .sidebar-menu .menu-item:hover {
+            background: var(--surface-color);
+            color: var(--theme-primary);
+            padding-left: 2rem;
+        }
+        
+        .sidebar-menu .menu-item.active {
+            background: var(--theme-primary);
+            color: white;
         }
     </style>
 </head>
 <body>
-    <!-- Admin Navbar -->
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg admin-navbar fixed-top">
         <div class="container-fluid">
-            <div class="navbar-brand d-flex align-items-center">
-                <a href="dashboard.php" class="btn btn-outline-primary me-3">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <span>Генеральні налаштування</span>
-            </div>
+            <a class="navbar-brand d-flex align-items-center" href="dashboard.php">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Адмін панель
+            </a>
             
-            <div class="navbar-brand mx-auto">
-                <?php 
-                $logo_path = Settings::get('site_logo', '');
-                if (!empty($logo_path) && file_exists('../' . $logo_path)): 
-                ?>
-                    <img src="../<?php echo Settings::getLogoUrl(); ?>" alt="<?php echo htmlspecialchars(Settings::get('site_name')); ?>" style="max-height: 40px;">
-                <?php else: ?>
-                    <i class="fas fa-cog me-2"></i><?php echo htmlspecialchars(Settings::get('site_name', 'Дошка Оголошень')); ?>
-                <?php endif; ?>
-            </div>
-            
-            <div class="navbar-nav">
-                <a href="../index.php" class="nav-link" target="_blank" title="Відвідати сайт">
-                    <i class="fas fa-external-link-alt"></i>
-                    <span class="d-none d-md-inline ms-1">Сайт</span>
-                </a>
-                <a href="logout.php" class="nav-link text-danger" title="Вихід">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="d-none d-md-inline ms-1">Вихід</span>
-                </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+                        <?php if (!empty($admin['avatar'])): ?>
+                            <img src="../<?php echo htmlspecialchars($admin['avatar']); ?>" alt="Avatar" 
+                                 class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                        <?php else: ?>
+                            <div class="bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center" 
+                                 style="width: 32px; height: 32px; font-size: 14px; color: white;">
+                                <?php echo strtoupper(substr($admin['username'], 0, 2)); ?>
+                            </div>
+                        <?php endif; ?>
+                        <?php echo htmlspecialchars($admin['username']); ?>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="../index.php"><i class="fas fa-home me-2"></i>На сайт</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Вийти</a></li>
+                    </ul>
+                </div>
+                
+                <button class="btn btn-outline-primary ms-2" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
     </nav>
-    
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div>
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>Налаштування
+                </h5>
+                <small>Адміністрування системи</small>
+            </div>
+            <button class="close-sidebar" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <a href="dashboard.php" class="menu-item">
+                <i class="fas fa-tachometer-alt me-2"></i>Дашборд
+            </a>
+            <a href="settings.php" class="menu-item active">
+                <i class="fas fa-cog me-2"></i>Генеральні налаштування
+            </a>
+            <a href="categories.php" class="menu-item">
+                <i class="fas fa-list me-2"></i>Категорії
+            </a>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <div class="settings-container">
         <div class="container-fluid">
-            <!-- Alert Messages -->
-            <?php if ($success_message): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <?php echo $success_message; ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
-            
-            <?php if ($error_message): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <?php echo $error_message; ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
-            
-            <form method="POST" enctype="multipart/form-data" id="settingsForm">
-                <!-- Основні налаштування -->
-                <div class="settings-block">
-                    <div class="block-header">
-                        <div class="block-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                            <i class="fas fa-globe"></i>
-                        </div>
+            <div class="row justify-content-center">
+                <div class="col-xl-10">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h3 class="block-title">Основні налаштування</h3>
-                            <p class="block-description">Базова інформація про сайт</p>
+                            <h2 class="mb-1">
+                                <i class="fas fa-cogs me-2 text-primary"></i>
+                                Генеральні налаштування
+                            </h2>
+                            <p class="text-muted mb-0">Налаштування загальних параметрів сайту</p>
+                        </div>
+                        <a href="dashboard.php" class="btn-back">
+                            <i class="fas fa-arrow-left me-2"></i>До дашборду
+                        </a>
+                    </div>
+
+                    <!-- Основні налаштування -->
+                    <div class="settings-block" onclick="toggleBlock(this)">
+                        <div class="block-header">
+                            <div class="block-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="block-info">
+                                <h5>Основні налаштування</h5>
+                                <p>Назва сайту, опис, мова та інші базові параметри</p>
+                            </div>
+                            <i class="fas fa-chevron-down block-chevron"></i>
+                        </div>
+                        <div class="block-content">
+                            <form id="generalForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Назва сайту</label>
+                                            <input type="text" class="form-control" name="site_name" 
+                                                   value="<?php echo htmlspecialchars($all_settings['site_name'] ?? ''); ?>" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Мова сайту</label>
+                                            <select class="form-select" name="site_language">
+                                                <option value="uk" <?php echo ($all_settings['site_language'] ?? '') === 'uk' ? 'selected' : ''; ?>>Українська</option>
+                                                <option value="ru" <?php echo ($all_settings['site_language'] ?? '') === 'ru' ? 'selected' : ''; ?>>Русский</option>
+                                                <option value="en" <?php echo ($all_settings['site_language'] ?? '') === 'en' ? 'selected' : ''; ?>>English</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Опис сайту</label>
+                                    <textarea class="form-control" name="site_description" rows="3"><?php echo htmlspecialchars($all_settings['site_description'] ?? ''); ?></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Адреса електронної пошти</label>
+                                            <input type="email" class="form-control" name="site_email" 
+                                                   value="<?php echo htmlspecialchars($all_settings['site_email'] ?? ''); ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Телефон</label>
+                                            <input type="text" class="form-control" name="site_phone" 
+                                                   value="<?php echo htmlspecialchars($all_settings['site_phone'] ?? ''); ?>">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-save">
+                                    <i class="fas fa-save me-2"></i>Зберегти зміни
+                                </button>
+                            </form>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="site_name" class="form-label">
-                                <i class="fas fa-tag me-1"></i>Назва сайту
-                            </label>
-                            <input type="text" class="form-control" id="site_name" name="site_name" 
-                                   value="<?php echo htmlspecialchars($all_settings['site_name'] ?? ''); ?>" required>
+
+                    <!-- SEO налаштування -->
+                    <div class="settings-block" onclick="toggleBlock(this)">
+                        <div class="block-header">
+                            <div class="block-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="block-info">
+                                <h5>SEO налаштування</h5>
+                                <p>Мета-теги, ключові слова та налаштування для пошукових систем</p>
+                            </div>
+                            <i class="fas fa-chevron-down block-chevron"></i>
                         </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="site_url" class="form-label">
-                                <i class="fas fa-link me-1"></i>URL сайту
-                            </label>
-                            <input type="url" class="form-control" id="site_url" name="site_url" 
-                                   value="<?php echo htmlspecialchars($all_settings['site_url'] ?? ''); ?>" required>
-                        </div>
-                        
-                        <div class="col-12 mb-3">
-                            <label for="site_description" class="form-label">
-                                <i class="fas fa-align-left me-1"></i>Опис сайту
-                            </label>
-                            <textarea class="form-control" id="site_description" name="site_description" 
-                                      rows="3"><?php echo htmlspecialchars($all_settings['site_description'] ?? ''); ?></textarea>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="site_language" class="form-label">
-                                <i class="fas fa-language me-1"></i>Мова сайту
-                            </label>
-                            <select class="form-select" id="site_language" name="site_language">
-                                <option value="uk" <?php echo ($all_settings['site_language'] ?? '') === 'uk' ? 'selected' : ''; ?>>Українська</option>
-                                <option value="ru" <?php echo ($all_settings['site_language'] ?? '') === 'ru' ? 'selected' : ''; ?>>Русский</option>
-                                <option value="en" <?php echo ($all_settings['site_language'] ?? '') === 'en' ? 'selected' : ''; ?>>English</option>
-                            </select>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="site_timezone" class="form-label">
-                                <i class="fas fa-clock me-1"></i>Часовий пояс
-                            </label>
-                            <select class="form-select" id="site_timezone" name="site_timezone">
-                                <option value="Europe/Kiev" <?php echo ($all_settings['site_timezone'] ?? '') === 'Europe/Kiev' ? 'selected' : ''; ?>>Київ (UTC+2)</option>
-                                <option value="Europe/Moscow" <?php echo ($all_settings['site_timezone'] ?? '') === 'Europe/Moscow' ? 'selected' : ''; ?>>Москва (UTC+3)</option>
-                                <option value="UTC" <?php echo ($all_settings['site_timezone'] ?? '') === 'UTC' ? 'selected' : ''; ?>>UTC</option>
-                            </select>
+                        <div class="block-content">
+                            <form id="seoForm">
+                                <div class="form-group">
+                                    <label class="form-label">Мета-заголовок</label>
+                                    <input type="text" class="form-control" name="meta_title" 
+                                           value="<?php echo htmlspecialchars($all_settings['meta_title'] ?? ''); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Мета-опис</label>
+                                    <textarea class="form-control" name="meta_description" rows="3"><?php echo htmlspecialchars($all_settings['meta_description'] ?? ''); ?></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Ключові слова</label>
+                                    <input type="text" class="form-control" name="meta_keywords" 
+                                           value="<?php echo htmlspecialchars($all_settings['meta_keywords'] ?? ''); ?>"
+                                           placeholder="ключове слово 1, ключове слово 2">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Google Analytics код</label>
+                                    <textarea class="form-control" name="analytics_code" rows="4" placeholder="Вставте код Google Analytics"><?php echo htmlspecialchars($all_settings['analytics_code'] ?? ''); ?></textarea>
+                                </div>
+                                <button type="submit" class="btn-save">
+                                    <i class="fas fa-save me-2"></i>Зберегти зміни
+                                </button>
+                            </form>
                         </div>
                     </div>
+
+                    <!-- Брендинг -->
+                    <div class="settings-block" onclick="toggleBlock(this)">
+                        <div class="block-header">
+                            <div class="block-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <div class="block-info">
+                                <h5>Брендинг</h5>
+                                <p>Логотип, фавікон та візуальне оформлення</p>
+                            </div>
+                            <i class="fas fa-chevron-down block-chevron"></i>
+                        </div>
+                        <div class="block-content">
+                            <form id="brandingForm" enctype="multipart/form-data">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Логотип сайту</label>
+                                            <input type="file" class="form-control" name="site_logo" accept="image/*">
+                                            <?php if (!empty($all_settings['site_logo'])): ?>
+                                                <img src="../<?php echo htmlspecialchars($all_settings['site_logo']); ?>" 
+                                                     alt="Logo" class="file-preview">
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Фавікон</label>
+                                            <input type="file" class="form-control" name="site_favicon" accept=".ico,.png,.jpg,.jpeg">
+                                            <?php if (!empty($all_settings['site_favicon'])): ?>
+                                                <img src="../<?php echo htmlspecialchars($all_settings['site_favicon']); ?>" 
+                                                     alt="Favicon" class="file-preview" style="max-width: 32px; max-height: 32px;">
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-save">
+                                    <i class="fas fa-save me-2"></i>Зберегти зміни
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Функціональність -->
+                    <div class="settings-block" onclick="toggleBlock(this)">
+                        <div class="block-header">
+                            <div class="block-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="block-info">
+                                <h5>Функціональність</h5>
+                                <p>Увімкнення/вимкнення функцій сайту</p>
+                            </div>
+                            <i class="fas fa-chevron-down block-chevron"></i>
+                        </div>
+                        <div class="block-content">
+                            <form id="functionalityForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="enable_registration" 
+                                                   <?php echo ($all_settings['enable_registration'] ?? '1') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label">Дозволити реєстрацію</label>
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="enable_comments" 
+                                                   <?php echo ($all_settings['enable_comments'] ?? '1') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label">Дозволити коментарі</label>
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="enable_search" 
+                                                   <?php echo ($all_settings['enable_search'] ?? '1') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label">Пошук оголошень</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="enable_favorites" 
+                                                   <?php echo ($all_settings['enable_favorites'] ?? '1') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label">Улюблені оголошення</label>
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="moderation_required" 
+                                                   <?php echo ($all_settings['moderation_required'] ?? '0') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label">Модерація оголошень</label>
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="maintenance_mode" 
+                                                   <?php echo ($all_settings['maintenance_mode'] ?? '0') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label">Режим обслуговування</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-save">
+                                    <i class="fas fa-save me-2"></i>Зберегти зміни
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
-                
-                <!-- SEO налаштування -->
-                <div class="settings-block">
-                    <div class="block-header">
-                        <div class="block-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <div>
-                            <h3 class="block-title">SEO налаштування</h3>
-                            <p class="block-description">Оптимізація для пошукових систем</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="site_title" class="form-label">
-                                <i class="fas fa-heading me-1"></i>Meta Title
-                            </label>
-                            <input type="text" class="form-control" id="site_title" name="site_title" 
-                                   value="<?php echo htmlspecialchars($all_settings['site_title'] ?? ''); ?>">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="site_author" class="form-label">
-                                <i class="fas fa-user-edit me-1"></i>Автор
-                            </label>
-                            <input type="text" class="form-control" id="site_author" name="site_author" 
-                                   value="<?php echo htmlspecialchars($all_settings['site_author'] ?? ''); ?>">
-                        </div>
-                        
-                        <div class="col-12 mb-3">
-                            <label for="site_keywords" class="form-label">
-                                <i class="fas fa-tags me-1"></i>Ключові слова (через кому)
-                            </label>
-                            <textarea class="form-control" id="site_keywords" name="site_keywords" 
-                                      rows="2" placeholder="оголошення, дошка, купити, продати"><?php echo htmlspecialchars($all_settings['site_keywords'] ?? ''); ?></textarea>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="google_analytics" class="form-label">
-                                <i class="fab fa-google me-1"></i>Google Analytics ID
-                            </label>
-                            <input type="text" class="form-control" id="google_analytics" name="google_analytics" 
-                                   value="<?php echo htmlspecialchars($all_settings['google_analytics'] ?? ''); ?>" 
-                                   placeholder="G-XXXXXXXXXX">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="analytics_yandex" class="form-label">
-                                <i class="fab fa-yandex me-1"></i>Yandex Metrica ID
-                            </label>
-                            <input type="text" class="form-control" id="analytics_yandex" name="analytics_yandex" 
-                                   value="<?php echo htmlspecialchars($all_settings['analytics_yandex'] ?? ''); ?>" 
-                                   placeholder="12345678">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="google_site_verification" class="form-label">
-                                <i class="fas fa-shield-alt me-1"></i>Google Site Verification
-                            </label>
-                            <input type="text" class="form-control" id="google_site_verification" name="google_site_verification" 
-                                   value="<?php echo htmlspecialchars($all_settings['google_site_verification'] ?? ''); ?>">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="yandex_verification" class="form-label">
-                                <i class="fas fa-check-circle me-1"></i>Yandex Verification
-                            </label>
-                            <input type="text" class="form-control" id="yandex_verification" name="yandex_verification" 
-                                   value="<?php echo htmlspecialchars($all_settings['yandex_verification'] ?? ''); ?>">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Логотип та Брендинг -->
-                <div class="settings-block">
-                    <div class="block-header">
-                        <div class="block-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                            <i class="fas fa-image"></i>
-                        </div>
-                        <div>
-                            <h3 class="block-title">Логотип та Брендинг</h3>
-                            <p class="block-description">Візуальна ідентифікація сайту</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="site_logo" class="form-label">
-                                <i class="fas fa-star me-1"></i>Логотип сайту
-                            </label>
-                            <input type="file" class="form-control" id="site_logo" name="site_logo" 
-                                   accept="image/*" onchange="previewImage(this, 'logoPreview')">
-                            <small class="text-muted">SVG, PNG, JPG до 2MB</small>
-                            <?php if (!empty($all_settings['site_logo'])): ?>
-                                <img src="../<?php echo htmlspecialchars($all_settings['site_logo']); ?>" 
-                                     alt="Логотип" class="file-upload-preview" id="logoPreview">
-                            <?php else: ?>
-                                <div id="logoPreview" class="file-upload-preview d-none"></div>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="site_favicon" class="form-label">
-                                <i class="fas fa-bookmark me-1"></i>Favicon
-                            </label>
-                            <input type="file" class="form-control" id="site_favicon" name="site_favicon" 
-                                   accept=".ico,.png,.jpg,.jpeg" onchange="previewImage(this, 'faviconPreview')">
-                            <small class="text-muted">ICO, PNG до 1MB</small>
-                            <?php if (!empty($all_settings['site_favicon'])): ?>
-                                <img src="../<?php echo htmlspecialchars($all_settings['site_favicon']); ?>" 
-                                     alt="Favicon" class="file-upload-preview" id="faviconPreview">
-                            <?php else: ?>
-                                <div id="faviconPreview" class="file-upload-preview d-none"></div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Тема оформлення -->
-                <div class="settings-block">
-                    <div class="block-header">
-                        <div class="block-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                        <div>
-                            <h3 class="block-title">Тема оформлення</h3>
-                            <p class="block-description">Кольори та стиль сайту</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-fill-drip me-1"></i>Градієнт за замовчуванням
-                            </label>
-                            <div class="d-flex flex-wrap">
-                                <?php foreach (Theme::getGradients() as $gradient_key => $gradient_data): ?>
-                                    <input type="radio" name="default_theme_gradient" value="<?php echo $gradient_key; ?>" 
-                                           id="gradient_<?php echo $gradient_key; ?>" class="d-none"
-                                           <?php echo ($all_settings['default_theme_gradient'] ?? 'gradient-2') === $gradient_key ? 'checked' : ''; ?>>
-                                    <label for="gradient_<?php echo $gradient_key; ?>" 
-                                           class="gradient-option <?php echo ($all_settings['default_theme_gradient'] ?? 'gradient-2') === $gradient_key ? 'active' : ''; ?>"
-                                           style="background: linear-gradient(135deg, <?php echo $gradient_data[0]; ?> 0%, <?php echo $gradient_data[1]; ?> 100%);"
-                                           title="<?php echo $gradient_data[2]; ?>"></label>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-moon me-1"></i>Темний режим за замовчуванням
-                            </label>
-                            <div class="d-flex align-items-center">
-                                <label class="switch">
-                                    <input type="checkbox" name="default_dark_mode" value="1" 
-                                           <?php echo ($all_settings['default_dark_mode'] ?? '0') === '1' ? 'checked' : ''; ?>>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="ms-2">Увімкнути темний режим</span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-toggle-on me-1"></i>Перемикач тем
-                            </label>
-                            <div class="d-flex align-items-center">
-                                <label class="switch">
-                                    <input type="checkbox" name="enable_theme_switcher" value="1" 
-                                           <?php echo ($all_settings['enable_theme_switcher'] ?? '1') === '1' ? 'checked' : ''; ?>>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="ms-2">Дозволити користувачам змінювати тему</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Контактна інформація -->
-                <div class="settings-block">
-                    <div class="block-header">
-                        <div class="block-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                            <i class="fas fa-address-book"></i>
-                        </div>
-                        <div>
-                            <h3 class="block-title">Контактна інформація</h3>
-                            <p class="block-description">Контакти та соціальні мережі</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="contact_email" class="form-label">
-                                <i class="fas fa-envelope me-1"></i>Email для зв'язку
-                            </label>
-                            <input type="email" class="form-control" id="contact_email" name="contact_email" 
-                                   value="<?php echo htmlspecialchars($all_settings['contact_email'] ?? ''); ?>">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="contact_phone" class="form-label">
-                                <i class="fas fa-phone me-1"></i>Телефон
-                            </label>
-                            <input type="tel" class="form-control" id="contact_phone" name="contact_phone" 
-                                   value="<?php echo htmlspecialchars($all_settings['contact_phone'] ?? ''); ?>">
-                        </div>
-                        
-                        <div class="col-12 mb-3">
-                            <label for="contact_address" class="form-label">
-                                <i class="fas fa-map-marker-alt me-1"></i>Адреса
-                            </label>
-                            <textarea class="form-control" id="contact_address" name="contact_address" 
-                                      rows="2"><?php echo htmlspecialchars($all_settings['contact_address'] ?? ''); ?></textarea>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="social_facebook" class="form-label">
-                                <i class="fab fa-facebook me-1"></i>Facebook
-                            </label>
-                            <input type="url" class="form-control" id="social_facebook" name="social_facebook" 
-                                   value="<?php echo htmlspecialchars($all_settings['social_facebook'] ?? ''); ?>" 
-                                   placeholder="https://facebook.com/yourpage">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="social_twitter" class="form-label">
-                                <i class="fab fa-twitter me-1"></i>Twitter
-                            </label>
-                            <input type="url" class="form-control" id="social_twitter" name="social_twitter" 
-                                   value="<?php echo htmlspecialchars($all_settings['social_twitter'] ?? ''); ?>" 
-                                   placeholder="https://twitter.com/youraccount">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="social_instagram" class="form-label">
-                                <i class="fab fa-instagram me-1"></i>Instagram
-                            </label>
-                            <input type="url" class="form-control" id="social_instagram" name="social_instagram" 
-                                   value="<?php echo htmlspecialchars($all_settings['social_instagram'] ?? ''); ?>" 
-                                   placeholder="https://instagram.com/youraccount">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="social_youtube" class="form-label">
-                                <i class="fab fa-youtube me-1"></i>YouTube
-                            </label>
-                            <input type="url" class="form-control" id="social_youtube" name="social_youtube" 
-                                   value="<?php echo htmlspecialchars($all_settings['social_youtube'] ?? ''); ?>" 
-                                   placeholder="https://youtube.com/yourchannel">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Функціональні налаштування -->
-                <div class="settings-block">
-                    <div class="block-header">
-                        <div class="block-icon" style="background: linear-gradient(135deg, #96fbc4 0%, #f9f047 100%);">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        <div>
-                            <h3 class="block-title">Функціональні налаштування</h3>
-                            <p class="block-description">Включення/відключення функцій</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-comments me-1"></i>Коментарі
-                            </label>
-                            <div class="d-flex align-items-center">
-                                <label class="switch">
-                                    <input type="checkbox" name="enable_comments" value="1" 
-                                           <?php echo ($all_settings['enable_comments'] ?? '1') === '1' ? 'checked' : ''; ?>>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="ms-2">Дозволити коментарі</span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-star me-1"></i>Рейтинги
-                            </label>
-                            <div class="d-flex align-items-center">
-                                <label class="switch">
-                                    <input type="checkbox" name="enable_ratings" value="1" 
-                                           <?php echo ($all_settings['enable_ratings'] ?? '1') === '1' ? 'checked' : ''; ?>>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="ms-2">Система рейтингів</span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-heart me-1"></i>Обране
-                            </label>
-                            <div class="d-flex align-items-center">
-                                <label class="switch">
-                                    <input type="checkbox" name="enable_favorites" value="1" 
-                                           <?php echo ($all_settings['enable_favorites'] ?? '1') === '1' ? 'checked' : ''; ?>>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="ms-2">Додавання в обране</span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-share me-1"></i>Поширення
-                            </label>
-                            <div class="d-flex align-items-center">
-                                <label class="switch">
-                                    <input type="checkbox" name="enable_sharing" value="1" 
-                                           <?php echo ($all_settings['enable_sharing'] ?? '1') === '1' ? 'checked' : ''; ?>>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="ms-2">Кнопки поширення</span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="max_login_attempts" class="form-label">
-                                <i class="fas fa-shield-alt me-1"></i>Макс. спроб входу
-                            </label>
-                            <input type="number" class="form-control" id="max_login_attempts" name="max_login_attempts" 
-                                   value="<?php echo htmlspecialchars($all_settings['max_login_attempts'] ?? '5'); ?>" 
-                                   min="1" max="20">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="session_lifetime" class="form-label">
-                                <i class="fas fa-clock me-1"></i>Час життя сесії (хвилин)
-                            </label>
-                            <input type="number" class="form-control" id="session_lifetime" name="session_lifetime" 
-                                   value="<?php echo htmlspecialchars($all_settings['session_lifetime'] ?? '60'); ?>" 
-                                   min="15" max="480">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Розширені налаштування -->
-                <div class="settings-block">
-                    <div class="block-header">
-                        <div class="block-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-                            <i class="fas fa-tools"></i>
-                        </div>
-                        <div>
-                            <h3 class="block-title">Розширені налаштування</h3>
-                            <p class="block-description">Технічні та додаткові параметри</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <label for="maintenance_message" class="form-label">
-                                <i class="fas fa-wrench me-1"></i>Повідомлення про технічні роботи
-                            </label>
-                            <textarea class="form-control" id="maintenance_message" name="maintenance_message" 
-                                      rows="3" placeholder="Сайт тимчасово недоступний через технічні роботи..."><?php echo htmlspecialchars($all_settings['maintenance_message'] ?? ''); ?></textarea>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-bug me-1"></i>Режим відлагодження
-                            </label>
-                            <div class="d-flex align-items-center">
-                                <label class="switch">
-                                    <input type="checkbox" name="debug_mode" value="1" 
-                                           <?php echo ($all_settings['debug_mode'] ?? '0') === '1' ? 'checked' : ''; ?>>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="ms-2">Показувати помилки</span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-save me-1"></i>Автоматичні резервні копії
-                            </label>
-                            <div class="d-flex align-items-center">
-                                <label class="switch">
-                                    <input type="checkbox" name="backup_enabled" value="1" 
-                                           <?php echo ($all_settings['backup_enabled'] ?? '0') === '1' ? 'checked' : ''; ?>>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="ms-2">Створювати backup бази даних</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Кнопка збереження -->
-                <div class="text-center mb-4">
-                    <button type="submit" class="btn btn-save btn-lg px-5">
-                        <i class="fas fa-save me-2"></i>Зберегти всі налаштування
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
-    
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="successMessage">Зміни успішно збережені!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+        
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span id="errorMessage">Помилка збереження!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Попередній перегляд зображень
-        function previewImage(input, previewId) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById(previewId);
-                    preview.src = e.target.result;
-                    preview.classList.remove('d-none');
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+        // Функція для перемикання бокової панелі
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
         }
         
-        // Обробка вибору градієнтів
-        document.querySelectorAll('input[name="default_theme_gradient"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                document.querySelectorAll('.gradient-option').forEach(option => {
-                    option.classList.remove('active');
-                });
-                document.querySelector(`label[for="${this.id}"]`).classList.add('active');
-            });
-        });
-        
-        // Валідація форми
-        document.getElementById('settingsForm').addEventListener('submit', function(e) {
-            const requiredFields = ['site_name', 'site_url'];
-            let hasErrors = false;
+        // Функція для перемикання блоків налаштувань
+        function toggleBlock(block) {
+            // Не перемикати якщо клікнули на форму
+            if (event.target.closest('.block-content')) {
+                return;
+            }
             
-            requiredFields.forEach(fieldName => {
-                const field = document.getElementById(fieldName);
-                if (!field.value.trim()) {
-                    field.classList.add('is-invalid');
-                    hasErrors = true;
-                } else {
-                    field.classList.remove('is-invalid');
+            block.classList.toggle('expanded');
+        }
+        
+        // Обробка форм
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = ['generalForm', 'seoForm', 'brandingForm', 'functionalityForm'];
+            
+            forms.forEach(formId => {
+                const form = document.getElementById(formId);
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        saveSettings(this, formId);
+                    });
                 }
             });
-            
-            if (hasErrors) {
-                e.preventDefault();
-                alert('Будь ласка, заповніть всі обов\'язкові поля');
-            }
         });
         
-        // Автозбереження (кожні 5 хвилин)
-        setInterval(function() {
-            const formData = new FormData(document.getElementById('settingsForm'));
+        // Функція збереження налаштувань
+        function saveSettings(form, formType) {
+            const formData = new FormData(form);
+            formData.append('form_type', formType);
             
-            fetch('ajax/autosave.php', {
+            // Показати індикатор завантаження
+            const submitBtn = form.querySelector('.btn-save');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Збереження...';
+            submitBtn.disabled = true;
+            
+            fetch('ajax/save_settings.php', {
                 method: 'POST',
                 body: formData
-            }).then(response => response.json()).then(data => {
+            })
+            .then(response => response.json())
+            .then(data => {
                 if (data.success) {
-                    console.log('Автозбереження виконано');
-                }
-            }).catch(error => {
-                console.error('Помилка автозбереження:', error);
-            });
-        }, 300000); // 5 хвилин
-        
-        // Підсвічування змінених полів
-        document.querySelectorAll('input, textarea, select').forEach(field => {
-            const originalValue = field.value;
-            field.addEventListener('input', function() {
-                if (this.value !== originalValue) {
-                    this.style.borderColor = '#f093fb';
+                    showToast('success', data.message || 'Зміни успішно збережені!');
+                    
+                    // Перенаправлення на дашборд через 2 секунди
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.php';
+                    }, 2000);
                 } else {
-                    this.style.borderColor = '';
+                    showToast('error', data.message || 'Помилка збереження!');
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'Помилка з\'єднання з сервером!');
+            })
+            .finally(() => {
+                // Повернути кнопку в початковий стан
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             });
+        }
+        
+        // Функція показу повідомлень
+        function showToast(type, message) {
+            const toastId = type === 'success' ? 'successToast' : 'errorToast';
+            const messageId = type === 'success' ? 'successMessage' : 'errorMessage';
+            
+            document.getElementById(messageId).textContent = message;
+            
+            const toast = new bootstrap.Toast(document.getElementById(toastId));
+            toast.show();
+        }
+        
+        // Закриття бокової панелі при кліку поза нею
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.querySelector('[onclick="toggleSidebar()"]');
+            
+            if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target) && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
         });
     </script>
 </body>

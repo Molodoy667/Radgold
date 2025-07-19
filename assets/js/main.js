@@ -448,15 +448,26 @@ class ThemeManager {
     
     init() {
         // Обробники подій для зміни теми
-        document.addEventListener('DOMContentLoaded', () => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.bindEvents();
+            });
+        } else {
+            // DOM вже завантажений
             this.bindEvents();
-        });
+        }
     }
     
     bindEvents() {
+        console.log('ThemeManager: Binding events');
+        
         // Градієнти
-        document.querySelectorAll('.gradient-option').forEach(option => {
+        const gradientOptions = document.querySelectorAll('.gradient-option');
+        console.log('ThemeManager: Found gradient options:', gradientOptions.length);
+        
+        gradientOptions.forEach(option => {
             option.addEventListener('click', (e) => {
+                console.log('ThemeManager: Gradient clicked:', e.target.dataset.gradient);
                 const gradient = e.target.dataset.gradient;
                 const darkMode = document.getElementById('darkModeSwitch')?.checked || false;
                 this.changeTheme(gradient, darkMode);

@@ -10,9 +10,9 @@
                         ?>
                             <img src="<?php echo Settings::getLogoUrl(); ?>" alt="<?php echo htmlspecialchars(Settings::get('site_name')); ?>" class="me-2" style="max-height: 30px;">
                         <?php else: ?>
-                            <i class="fas fa-bullhorn me-2"></i>
+                            <div class="default-logo-circle me-2" style="width: 30px; height: 30px; font-size: 10px;">CMS</div>
                         <?php endif; ?>
-                        <?php echo htmlspecialchars(Settings::get('site_name', 'Дошка Оголошень')); ?>
+                        <span class="gradient-site-name"><?php echo htmlspecialchars(Settings::get('site_name', 'Дошка Оголошень')); ?></span>
                     </h5>
                     <p class="text-muted"><?php echo htmlspecialchars(Settings::get('site_description', 'Найкраща дошка оголошень в Україні')); ?></p>
                     

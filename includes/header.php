@@ -42,27 +42,38 @@ $theme_color = Settings::get('theme_color', '#007bff');
         /* Стилі для панелі тем */
         .theme-panel {
             position: fixed;
-            left: 20px;
+            left: 0;
             top: 50%;
             transform: translateY(-50%);
             z-index: 1050;
         }
         
         .theme-toggle-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 60px;
+            height: 120px;
+            border-radius: 0 15px 15px 0;
             background: var(--theme-gradient);
             border: none;
             color: white;
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
-            box-shadow: var(--shadow);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
         }
         
         .theme-toggle-btn:hover {
-            transform: scale(1.1);
+            width: 70px;
+            box-shadow: 3px 0 15px rgba(0,0,0,0.3);
+        }
+        
+        .theme-toggle-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.3);
         }
         
         .gradient-option {
@@ -109,6 +120,36 @@ $theme_color = Settings::get('theme_color', '#007bff');
         .theme-modal .btn-close {
             filter: var(--theme-mode) == 'dark' ? invert(1) : none;
         }
+        
+        .default-logo-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--theme-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .gradient-site-name {
+            background: var(--theme-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-shadow: none;
+        }
+        
+        /* Fallback для браузерів без підтримки background-clip */
+        @supports not (-webkit-background-clip: text) {
+            .gradient-site-name {
+                color: var(--theme-primary);
+            }
+        }
     </style>
     
     <?php echo $meta_data['analytics']; ?>
@@ -125,9 +166,9 @@ $theme_color = Settings::get('theme_color', '#007bff');
             ?>
                 <img src="<?php echo $logo_url; ?>" alt="<?php echo htmlspecialchars($site_name); ?>" class="me-2">
             <?php else: ?>
-                <i class="fas fa-bullhorn me-2 text-primary"></i>
+                <div class="default-logo-circle me-2">CMS</div>
             <?php endif; ?>
-            <?php echo htmlspecialchars($site_name); ?>
+            <span class="gradient-site-name"><?php echo htmlspecialchars($site_name); ?></span>
         </a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -287,3 +328,140 @@ $theme_color = Settings::get('theme_color', '#007bff');
         </div>
     </div>
 </div>
+
+<!-- Theme Manager для всіх сторінок -->
+<script>
+// Простий ThemeManager для роботи на всіх сторінках
+function initHeaderThemeManager() {
+    console.log('Header ThemeManager: Initializing');
+    
+    // Градієнти
+    const gradientOptions = document.querySelectorAll('.gradient-option');
+    console.log('Header ThemeManager: Found gradient options:', gradientOptions.length);
+    
+    gradientOptions.forEach(option => {
+        option.addEventListener('click', (e) => {
+            console.log('Header ThemeManager: Gradient clicked:', e.target.dataset.gradient);
+            const gradient = e.target.dataset.gradient;
+            const darkMode = document.getElementById('darkModeSwitch')?.checked || false;
+            changeHeaderTheme(gradient, darkMode);
+        });
+    });
+    
+    // Темний режим
+    const darkModeSwitch = document.getElementById('darkModeSwitch');
+    if (darkModeSwitch) {
+        darkModeSwitch.addEventListener('change', (e) => {
+            const currentGradient = document.querySelector('.gradient-option.active')?.dataset.gradient || 'gradient-2';
+            changeHeaderTheme(currentGradient, e.target.checked);
+        });
+    }
+    
+    // Скидання теми
+    const resetBtn = document.getElementById('resetTheme');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            resetHeaderTheme();
+        });
+    }
+}
+
+function changeHeaderTheme(gradient, darkMode) {
+    console.log('Header ThemeManager: Changing theme to', gradient, 'dark mode:', darkMode);
+    
+    fetch('<?php echo getBaseUrl(); ?>/ajax/theme.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=change_theme&gradient=${gradient}&dark_mode=${darkMode ? 1 : 0}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            applyHeaderTheme(data.css, data.theme);
+            updateHeaderUI(data.theme);
+            showHeaderNotification('Тема змінена успішно!', 'success');
+        } else {
+            showHeaderNotification(data.message || 'Помилка зміни теми', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Theme change error:', error);
+        showHeaderNotification('Помилка зміни теми', 'error');
+    });
+}
+
+function resetHeaderTheme() {
+    fetch('<?php echo getBaseUrl(); ?>/ajax/theme.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'action=reset_theme'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            applyHeaderTheme(data.css, data.theme);
+            updateHeaderUI(data.theme);
+            showHeaderNotification('Тема скинута до значень за замовчуванням', 'success');
+            
+            // Закриваємо модальне вікно
+            const modal = bootstrap.Modal.getInstance(document.getElementById('themeModal'));
+            if (modal) modal.hide();
+        } else {
+            showHeaderNotification(data.message || 'Помилка скидання теми', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Theme reset error:', error);
+        showHeaderNotification('Помилка скидання теми', 'error');
+    });
+}
+
+function applyHeaderTheme(css, theme) {
+    // Видаляємо попередні динамічні стилі
+    const existingStyle = document.getElementById('dynamic-theme-styles');
+    if (existingStyle) {
+        existingStyle.remove();
+    }
+    
+    // Додаємо нові стилі
+    const style = document.createElement('style');
+    style.id = 'dynamic-theme-styles';
+    style.textContent = css;
+    document.head.appendChild(style);
+}
+
+function updateHeaderUI(theme) {
+    // Оновлюємо активний градієнт
+    document.querySelectorAll('.gradient-option').forEach(option => {
+        option.classList.remove('active');
+        if (option.dataset.gradient === theme.gradient) {
+            option.classList.add('active');
+        }
+    });
+    
+    // Оновлюємо перемикач темного режиму
+    const darkModeSwitch = document.getElementById('darkModeSwitch');
+    if (darkModeSwitch) {
+        darkModeSwitch.checked = theme.dark_mode;
+    }
+}
+
+function showHeaderNotification(message, type) {
+    console.log(`Header Theme notification [${type}]: ${message}`);
+    
+    // Можна додати Toast якщо потрібно
+    if (typeof showToast === 'function') {
+        showToast(message, type);
+    }
+}
+
+// Ініціалізуємо після завантаження Bootstrap
+document.addEventListener('DOMContentLoaded', function() {
+    // Невелика затримка щоб Bootstrap встиг завантажитись
+    setTimeout(initHeaderThemeManager, 100);
+});
+</script>

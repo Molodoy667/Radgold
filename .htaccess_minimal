@@ -1,0 +1,27 @@
+# Минимальная версия .htaccess без проблемных директив
+# Используйте этот файл если основной .htaccess вызывает ошибку 500
+
+# Включення mod_rewrite
+RewriteEngine On
+
+# Красиві URL для оголошень
+RewriteRule ^ad/([0-9]+)/?$ pages/ad_detail.php?id=$1 [L,QSA]
+RewriteRule ^category/([0-9]+)/?$ pages/category.php?id=$1 [L,QSA]
+RewriteRule ^user/([a-zA-Z0-9_]+)/?$ pages/user_profile.php?username=$1 [L,QSA]
+
+# Заборона прямого доступу до PHP файлів в певних папках
+RewriteCond %{REQUEST_URI} ^/(config|includes)/.*\.php$
+RewriteRule ^.*$ - [F,L]
+
+# Заборона виконання PHP в папці uploads
+RewriteCond %{REQUEST_URI} ^/assets/uploads/.*\.php$ [NC]
+RewriteRule ^.*$ - [F,L]
+
+# Заборона відображення індексу папок
+Options -Indexes
+
+# Встановлення кодування за замовчуванням
+AddDefaultCharset UTF-8
+
+# Помилка 404 для неіснуючих файлів
+ErrorDocument 404 /pages/404.php

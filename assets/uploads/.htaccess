@@ -1,0 +1,33 @@
+# Заборона виконання PHP в папці uploads
+# Цей файл блокує виконання будь-яких скриптів у папці завантажень
+
+# Заборона доступу до PHP файлів
+<FilesMatch "\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Заборона виконання скриптів
+Options -ExecCGI
+Options -Indexes
+
+# Дозволити тільки зображення та безпечні файли
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|pdf|txt|doc|docx)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Заборона доступу до небезпечних типів файлів
+<FilesMatch "\.(php|phtml|php3|php4|php5|pl|py|jsp|asp|sh|cgi)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Встановлення правильних MIME типів для зображень
+<IfModule mod_mime.c>
+    AddType image/jpeg jpg jpeg
+    AddType image/png png
+    AddType image/gif gif
+    AddType image/webp webp
+    AddType application/pdf pdf
+</IfModule>

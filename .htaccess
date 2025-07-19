@@ -5,9 +5,8 @@ RewriteEngine On
 
 # Безпека
 # Заборона доступу до конфігураційних файлів
-<FilesMatch "\.(ini|log|sh|sql|conf)$">
-    Order allow,deny
-    Deny from all
+<FilesMatch "\.(ini|log|sh|sql|conf|bak|backup)$">
+    Require all denied
 </FilesMatch>
 
 # Заборона доступу до папки config
@@ -16,9 +15,11 @@ RewriteEngine On
 </IfModule>
 
 # Захист від XSS
-Header always set X-XSS-Protection "1; mode=block"
-Header always set X-Content-Type-Options "nosniff"
-Header always set X-Frame-Options "SAMEORIGIN"
+<IfModule mod_headers.c>
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
 
 # Кешування статичних файлів
 <IfModule mod_expires.c>
@@ -60,18 +61,21 @@ RewriteCond %{REQUEST_URI} ^/(config|includes)/.*\.php$
 RewriteRule ^.*$ - [F,L]
 
 # Обмеження розміру завантажуваних файлів (5MB)
-php_value upload_max_filesize 5M
-php_value post_max_size 5M
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 5M
+    php_value post_max_size 5M
+    php_value date.timezone "Europe/Kiev"
+</IfModule>
 
-# Встановлення часової зони
-php_value date.timezone "Europe/Kiev"
+<IfModule mod_php8.c>
+    php_value upload_max_filesize 5M
+    php_value post_max_size 5M
+    php_value date.timezone "Europe/Kiev"
+</IfModule>
 
-# Заборона виконання PHP в папці uploads
-<Directory "assets/uploads">
-    php_flag engine off
-    Options -ExecCGI
-    AddHandler cgi-script .php .pl .py .jsp .asp .sh .cgi
-</Directory>
+# Заборона виконання PHP в папці uploads через RewriteRule
+RewriteCond %{REQUEST_URI} ^/assets/uploads/.*\.(php|phtml|php3|php4|php5|pl|py|jsp|asp|sh|cgi)$ [NC]
+RewriteRule ^.*$ - [F,L]
 
 # Помилка 404 для неіснуючих файлів
 ErrorDocument 404 /pages/404.php

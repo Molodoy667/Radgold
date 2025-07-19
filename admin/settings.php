@@ -258,6 +258,14 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
         /* Стилі технічного обслуговування */
         .maintenance-icon {
             background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+            width: 60px !important;
+            height: 60px !important;
+            border-radius: 15px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 1.8rem !important;
+            color: white !important;
         }
         
         .maintenance-toggle:checked {
@@ -280,6 +288,81 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
         
         .maintenance-toggle:checked ~ .maintenance-label {
             color: #dc3545;
+        }
+        
+        /* Большие градиентные переключатели */
+        .form-check-input {
+            width: 2.5rem !important;
+            height: 1.25rem !important;
+            border-radius: 1rem !important;
+            border: 2px solid var(--border-color) !important;
+            background: var(--surface-color) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .form-check-input:checked {
+            background: var(--theme-gradient) !important;
+            border-color: transparent !important;
+            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25) !important;
+        }
+        
+        .form-check-input:focus {
+            border-color: var(--theme-primary) !important;
+            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25) !important;
+        }
+        
+        .form-check-label {
+            font-weight: 500 !important;
+            color: var(--text-color) !important;
+            margin-left: 0.5rem !important;
+            cursor: pointer !important;
+        }
+        
+        .form-check {
+            margin-bottom: 1rem !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        
+        /* Переключатель технического обслуживания */
+        .maintenance-toggle {
+            width: 3rem !important;
+            height: 1.5rem !important;
+        }
+        
+        .maintenance-toggle:checked {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+        }
+        
+        /* Уникальные градиенты для каждого блока настроек */
+        .general-icon {
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+        }
+        
+        .seo-icon {
+            background: linear-gradient(135deg, #4facfe, #00f2fe) !important;
+        }
+        
+        .branding-icon {
+            background: linear-gradient(135deg, #43e97b, #38f9d7) !important;
+        }
+        
+        .theme-icon {
+            background: linear-gradient(135deg, #fa709a, #fee140) !important;
+        }
+        
+        .maintenance-icon {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+        }
+        
+        .functionality-icon {
+            background: linear-gradient(135deg, #a8edea, #fed6e3) !important;
+        }
+        
+        /* Hover эффекты для иконок */
+        .settings-block:hover .block-icon {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
         
         /* Анімація завантаження */
@@ -454,7 +537,7 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
                     <!-- Основні налаштування -->
                     <div class="settings-block" onclick="toggleBlock(this)">
                         <div class="block-header">
-                            <div class="block-icon">
+                            <div class="block-icon general-icon">
                                 <i class="fas fa-globe"></i>
                             </div>
                             <div class="block-info">
@@ -514,7 +597,7 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
                     <!-- SEO налаштування -->
                     <div class="settings-block" onclick="toggleBlock(this)">
                         <div class="block-header">
-                            <div class="block-icon">
+                            <div class="block-icon seo-icon">
                                 <i class="fas fa-search"></i>
                             </div>
                             <div class="block-info">
@@ -554,7 +637,7 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
                     <!-- Брендинг -->
                     <div class="settings-block" onclick="toggleBlock(this)">
                         <div class="block-header">
-                            <div class="block-icon">
+                            <div class="block-icon branding-icon">
                                 <i class="fas fa-palette"></i>
                             </div>
                             <div class="block-info">
@@ -597,7 +680,7 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
                     <!-- Оформлення та теми -->
                     <div class="settings-block" onclick="toggleBlock(this)">
                         <div class="block-header">
-                            <div class="block-icon">
+                            <div class="block-icon theme-icon">
                                 <i class="fas fa-paint-brush"></i>
                             </div>
                             <div class="block-info">
@@ -759,7 +842,7 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
                     <!-- Функціональність -->
                     <div class="settings-block" onclick="toggleBlock(this)">
                         <div class="block-header">
-                            <div class="block-icon">
+                            <div class="block-icon functionality-icon">
                                 <i class="fas fa-cogs"></i>
                             </div>
                             <div class="block-info">

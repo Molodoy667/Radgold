@@ -191,6 +191,142 @@ try {
             background: var(--surface-color);
         }
         
+        .greeting-block {
+            display: flex;
+            align-items: center;
+        }
+        
+        .greeting-card {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .greeting-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .greeting-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .greeting-text {
+            flex: 1;
+        }
+        
+        .greeting-message {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.2rem;
+        }
+        
+        .greeting-time {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        /* Profile Modal Styles */
+        .profile-modal {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 20px !important;
+        }
+        
+        .profile-modal-header {
+            background: var(--theme-gradient) !important;
+            color: white !important;
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: none !important;
+        }
+        
+        .profile-modal-header .modal-title {
+            color: white !important;
+        }
+        
+        .profile-modal-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .profile-modal .modal-body {
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .profile-modal .form-control {
+            background: var(--surface-color) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-color) !important;
+            border-radius: 10px !important;
+        }
+        
+        .profile-modal .form-control:focus {
+            background: var(--surface-color) !important;
+            border-color: var(--theme-primary) !important;
+            color: var(--text-color) !important;
+            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25) !important;
+        }
+        
+        .profile-modal .form-label {
+            color: var(--text-color) !important;
+            font-weight: 600;
+        }
+        
+        .profile-modal .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .profile-modal-footer {
+            background: var(--surface-color) !important;
+            border-top: 1px solid var(--border-color) !important;
+            border-radius: 0 0 20px 20px !important;
+        }
+        
+        .profile-btn-primary {
+            background: var(--theme-gradient) !important;
+            border: none !important;
+            border-radius: 10px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .profile-btn-primary:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(var(--theme-primary-rgb), 0.4) !important;
+        }
+        
+        .profile-btn-secondary {
+            background: var(--surface-color) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-color) !important;
+            border-radius: 10px !important;
+        }
+        
+        .profile-btn-secondary:hover {
+            background: var(--theme-primary) !important;
+            border-color: var(--theme-primary) !important;
+            color: white !important;
+        }
+
         .stat-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -377,9 +513,42 @@ try {
                 <h2 class="text-gradient">
                     <i class="fas fa-tachometer-alt me-2"></i>Панель управління
                 </h2>
-                <div class="text-muted">
-                    <i class="fas fa-calendar me-1"></i>
-                    <?php echo date('d.m.Y H:i'); ?>
+                <div class="greeting-block">
+                    <?php 
+                    $hour = (int)date('H');
+                    $username = htmlspecialchars($admin['username']);
+                    
+                    if ($hour >= 6 && $hour < 12) {
+                        $greeting = "Доброго ранку";
+                        $icon = "fas fa-sun";
+                        $gradient = "linear-gradient(135deg, #f6d365 0%, #fda085 100%)";
+                    } elseif ($hour >= 12 && $hour < 18) {
+                        $greeting = "Доброго дня";
+                        $icon = "fas fa-sun";
+                        $gradient = "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)";
+                    } elseif ($hour >= 18 && $hour < 22) {
+                        $greeting = "Доброго вечора";
+                        $icon = "fas fa-moon";
+                        $gradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                    } else {
+                        $greeting = "Доброї ночі";
+                        $icon = "fas fa-moon";
+                        $gradient = "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)";
+                    }
+                    ?>
+                    <div class="greeting-card">
+                        <div class="greeting-icon" style="background: <?php echo $gradient; ?>;">
+                            <i class="<?php echo $icon; ?>"></i>
+                        </div>
+                        <div class="greeting-text">
+                            <div class="greeting-message">
+                                <?php echo $greeting; ?>, <strong><?php echo $username; ?></strong>!
+                            </div>
+                            <div class="greeting-time">
+                                зараз <?php echo date('d.m.Y H:i'); ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -483,12 +652,12 @@ try {
     <!-- Profile Modal -->
     <div class="modal fade" id="profileModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
+            <div class="modal-content profile-modal">
+                <div class="modal-header profile-modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-user-edit me-2"></i>Редагування профілю
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close profile-modal-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="profileForm" enctype="multipart/form-data">
@@ -542,9 +711,9 @@ try {
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
-                    <button type="button" class="btn btn-primary" onclick="saveProfile()">
+                <div class="modal-footer profile-modal-footer">
+                    <button type="button" class="btn btn-secondary profile-btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="button" class="btn btn-primary profile-btn-primary" onclick="saveProfile()">
                         <i class="fas fa-save me-1"></i>Зберегти
                     </button>
                 </div>

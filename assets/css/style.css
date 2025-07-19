@@ -160,13 +160,14 @@ body {
 
 /* Категорії */
 .category-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--theme-gradient);
     color: white;
     text-decoration: none;
     border-radius: var(--border-radius);
     transition: var(--transition);
     overflow: hidden;
     position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .category-card::before {
@@ -189,6 +190,7 @@ body {
     transform: translateY(-5px) scale(1.02);
     color: white;
     text-decoration: none;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
 }
 
 .category-icon {
@@ -325,13 +327,37 @@ body {
 
 /* Breadcrumb */
 .breadcrumb {
-    background: transparent;
-    padding: 0;
+    background: var(--theme-gradient);
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.breadcrumb-item {
+    color: rgba(255,255,255,0.8);
+}
+
+.breadcrumb-item.active {
+    color: white;
+    font-weight: 600;
+}
+
+.breadcrumb-item a {
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: rgba(255,255,255,0.8);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .breadcrumb-item + .breadcrumb-item::before {
-    content: ">";
-    color: var(--secondary-color);
+    content: "❯";
+    color: rgba(255,255,255,0.6);
+    font-weight: bold;
 }
 
 /* Alert */

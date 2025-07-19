@@ -209,8 +209,10 @@ if (isset($_COOKIE['admin_remember']) && !isset($_SESSION['admin_logged_in'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        <?php echo Theme::generateCSS(); ?>
+        
         body {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: var(--theme-gradient);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -225,11 +227,12 @@ if (isset($_COOKIE['admin_remember']) && !isset($_SESSION['admin_logged_in'])) {
         }
         
         .login-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
             animation: slideUp 0.6s ease-out;
+            border: 1px solid var(--border-color);
         }
         
         @keyframes slideUp {
@@ -244,7 +247,7 @@ if (isset($_COOKIE['admin_remember']) && !isset($_SESSION['admin_logged_in'])) {
         }
         
         .login-header {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: var(--theme-gradient);
             color: white;
             padding: 2rem;
             text-align: center;
@@ -282,19 +285,26 @@ if (isset($_COOKIE['admin_remember']) && !isset($_SESSION['admin_logged_in'])) {
         }
         
         .form-floating .form-control {
-            border: 2px solid #e9ecef;
+            border: 2px solid var(--border-color);
             border-radius: 10px;
             height: 58px;
             transition: all 0.3s ease;
+            background: var(--surface-color);
+            color: var(--text-color);
         }
         
         .form-floating .form-control:focus {
-            border-color: #f093fb;
-            box-shadow: 0 0 0 0.2rem rgba(240, 147, 251, 0.25);
+            border-color: var(--theme-primary);
+            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25);
+            background: var(--surface-color);
+        }
+        
+        .form-floating label {
+            color: var(--text-muted);
         }
         
         .btn-login {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: var(--theme-gradient);
             border: none;
             padding: 12px 30px;
             border-radius: 10px;
@@ -306,7 +316,7 @@ if (isset($_COOKIE['admin_remember']) && !isset($_SESSION['admin_logged_in'])) {
         
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(240, 147, 251, 0.3);
+            box-shadow: 0 10px 20px rgba(var(--theme-primary-rgb), 0.3);
             color: white;
         }
         

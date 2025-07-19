@@ -150,6 +150,50 @@ $theme_color = Settings::get('theme_color', '#007bff');
                 color: var(--theme-primary);
             }
         }
+        
+        .btn-gradient {
+            background: var(--theme-gradient);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            color: white;
+        }
+        
+        .btn-gradient:focus {
+            box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.3);
+            color: white;
+        }
+        
+        .navbar-nav .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: var(--theme-primary) !important;
+        }
+        
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--theme-gradient);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .navbar-nav .nav-link:hover::after {
+            width: 100%;
+        }
     </style>
     
     <?php echo $meta_data['analytics']; ?>
@@ -241,7 +285,7 @@ $theme_color = Settings::get('theme_color', '#007bff');
                     <?php endif; ?>
                 <?php endif; ?>
                 <li class="nav-item">
-                    <a class="btn btn-warning ms-2 text-dark fw-bold" href="<?php echo getBaseUrl(); ?>/pages/add_ad.php" data-spa data-page="add_ad">
+                    <a class="btn btn-gradient ms-2 fw-bold" href="<?php echo getBaseUrl(); ?>/pages/add_ad.php" data-spa data-page="add_ad">
                         <i class="fas fa-plus me-1"></i>Подати оголошення
                     </a>
                 </li>

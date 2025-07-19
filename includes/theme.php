@@ -263,12 +263,16 @@ body {
 .btn-primary {
     background: var(--theme-gradient) !important;
     border: none !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
 }
 
-.btn-primary:hover {
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     background: var(--theme-gradient) !important;
-    opacity: 0.9;
-    transform: translateY(-1px);
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
 }
 
 .text-gradient {

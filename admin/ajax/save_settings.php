@@ -170,6 +170,9 @@ try {
                 'default_theme_gradient', 'custom_css'
             ];
             
+            // Логування отриманих даних
+            error_log("Theme save data: " . print_r($_POST, true));
+            
             foreach ($theme_fields as $field) {
                 if (isset($_POST[$field])) {
                     $value = clean_input($_POST[$field]);
@@ -178,13 +181,17 @@ try {
                     if ($field === 'default_theme_gradient') {
                         $gradients = Theme::getGradients();
                         if (!array_key_exists($value, $gradients)) {
-                            throw new Exception('Невірний градієнт');
+                            throw new Exception('Невірний градієнт: ' . $value);
                         }
                     }
                     
                     $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
                                          ON DUPLICATE KEY UPDATE setting_value = ?");
-                    $stmt->execute([$field, $value, $value]);
+                    $result = $stmt->execute([$field, $value, $value]);
+                    
+                    error_log("Saved setting: {$field} = {$value}, result: " . ($result ? 'success' : 'failed'));
+                } else {
+                    error_log("Field {$field} not found in POST data");
                 }
             }
             
@@ -261,8 +268,11 @@ try {
     $db->commit();
     
     // Очищуємо кеш налаштувань
-    if (class_exists('Settings')) {
+    if (class_exists('Settings') && method_exists('Settings', 'clearCache')) {
         Settings::clearCache();
+        error_log("Settings cache cleared");
+    } else {
+        error_log("Settings::clearCache method not found");
     }
     
     $response['success'] = true;

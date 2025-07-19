@@ -910,6 +910,60 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
             });
         }
         
+        // Функція збереження налаштувань для нових форм
+        function saveSettingsCustom(form, action, successMessage) {
+            const formData = new FormData(form);
+            formData.append('action', action);
+            
+            // Відладка - виводимо дані форми
+            console.log('Form action:', action);
+            console.log('Form data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            
+            // Показати індикатор завантаження
+            const submitBtn = form.querySelector('.btn-save');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Збереження...';
+            submitBtn.disabled = true;
+            
+            fetch('ajax/save_settings.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('success', data.message || successMessage);
+                    
+                    // Для теми - перезавантажити сторінку щоб побачити зміни
+                    if (action === 'save_theme') {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }
+                    // Для технічного обслуговування - перенаправити на дашборд
+                    else if (action === 'save_maintenance') {
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.php';
+                        }, 2000);
+                    }
+                } else {
+                    showToast('error', data.message || 'Помилка збереження!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'Помилка з\'єднання з сервером!');
+            })
+            .finally(() => {
+                // Повернути кнопку в початковий стан
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        }
+        
         // Функція показу повідомлень
         function showToast(type, message) {
             const toastId = type === 'success' ? 'successToast' : 'errorToast';
@@ -941,11 +995,7 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
         if (themeForm) {
             themeForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
-                const formData = new FormData(this);
-                formData.append('action', 'save_theme');
-                
-                submitForm(formData, 'Налаштування теми збережено!');
+                saveSettingsCustom(this, 'save_theme', 'Налаштування теми збережено!');
             });
         }
         
@@ -955,16 +1005,13 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
             maintenanceForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const formData = new FormData(this);
-                formData.append('action', 'save_maintenance');
-                
                 // Спеціальне повідомлення якщо включений режим обслуговування
                 const isMaintenanceEnabled = document.getElementById('maintenanceMode').checked;
                 const message = isMaintenanceEnabled ? 
                     'Режим технічного обслуговування увімкнено! Сайт тепер недоступний для користувачів.' :
                     'Налаштування технічного обслуговування збережено!';
                 
-                submitForm(formData, message);
+                saveSettingsCustom(this, 'save_maintenance', message);
             });
         }
         

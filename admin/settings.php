@@ -562,19 +562,19 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
         .sidebar {
             position: fixed;
             top: 0;
-            right: -350px;
+            left: -350px;
             width: 350px;
             height: 100vh;
             background: var(--card-bg);
-            border-left: 1px solid var(--border-color);
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             z-index: 1050;
             overflow-y: auto;
         }
         
         .sidebar.active {
-            right: 0;
+            left: 0;
         }
         
         .sidebar-header {
@@ -625,6 +625,55 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
             background: var(--theme-primary);
             color: white;
         }
+        
+        /* Индикатор свайпа */
+        .swipe-indicator {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 60px;
+            background: var(--theme-gradient);
+            border-radius: 0 15px 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            z-index: 1030;
+            opacity: 0.7;
+            animation: swipePulse 2s ease-in-out infinite;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .swipe-indicator:hover {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .swipe-indicator.hidden {
+            opacity: 0;
+            transform: translateY(-50%) translateX(-30px);
+        }
+        
+        @keyframes swipePulse {
+            0%, 100% { 
+                opacity: 0.7; 
+                transform: translateY(-50%) scale(1);
+            }
+            50% { 
+                opacity: 1; 
+                transform: translateY(-50%) scale(1.05);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .swipe-indicator {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -664,6 +713,11 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
         </div>
     </nav>
 
+    <!-- Swipe Indicator -->
+    <div class="swipe-indicator" onclick="toggleSidebar()" title="Свайпните или кликните для открытия меню">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+    
     <!-- Sidebar Menu -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -679,13 +733,34 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
         </div>
         <div class="sidebar-menu">
             <a href="dashboard.php" class="menu-item">
-                <i class="fas fa-tachometer-alt me-2"></i>Дашборд
+                <i class="fas fa-tachometer-alt me-3"></i>Головна панель
             </a>
             <a href="settings.php" class="menu-item active">
-                <i class="fas fa-cog me-2"></i>Генеральні налаштування
+                <i class="fas fa-cog me-3"></i>Генеральні налаштування
             </a>
             <a href="categories.php" class="menu-item">
-                <i class="fas fa-list me-2"></i>Категорії
+                <i class="fas fa-list me-3"></i>Категорії
+            </a>
+            <a href="users.php" class="menu-item">
+                <i class="fas fa-users me-3"></i>Користувачі
+            </a>
+            <a href="ads.php" class="menu-item">
+                <i class="fas fa-bullhorn me-3"></i>Оголошення
+            </a>
+            <a href="logs.php" class="menu-item">
+                <i class="fas fa-history me-3"></i>Логи системи
+            </a>
+            <a href="analytics.php" class="menu-item">
+                <i class="fas fa-chart-bar me-3"></i>Аналітика
+            </a>
+            <a href="themes.php" class="menu-item">
+                <i class="fas fa-paint-brush me-3"></i>Теми та дизайн
+            </a>
+            <a href="backup.php" class="menu-item">
+                <i class="fas fa-download me-3"></i>Резервні копії
+            </a>
+            <a href="../index.php" class="menu-item" target="_blank">
+                <i class="fas fa-external-link-alt me-3"></i>Переглянути сайт
             </a>
         </div>
     </div>
@@ -1100,8 +1175,103 @@ while ($row = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
         // Функція для перемикання бокової панелі
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
+            const indicator = document.querySelector('.swipe-indicator');
+            
             sidebar.classList.toggle('active');
+            
+            // Hide/show swipe indicator
+            if (sidebar.classList.contains('active')) {
+                indicator.classList.add('hidden');
+            } else {
+                indicator.classList.remove('hidden');
+            }
         }
+        
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const indicator = document.querySelector('.swipe-indicator');
+            
+            sidebar.classList.remove('active');
+            indicator.classList.remove('hidden');
+        }
+
+        // Touch support for mobile devices
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchCurrentX = 0;
+        let touchCurrentY = 0;
+        let isSwiping = false;
+        let isSwipeToOpen = false;
+        let isSwipeToClose = false;
+
+        // Touch event handlers
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isSwiping = true;
+            
+            const sidebar = document.getElementById('sidebar');
+            isSwipeToOpen = touchStartX < 50 && !sidebar.classList.contains('active');
+            isSwipeToClose = sidebar.classList.contains('active') && touchStartX < 350;
+        }
+
+        function handleTouchMove(e) {
+            if (!isSwiping) return;
+            
+            e.preventDefault();
+            
+            touchCurrentX = e.touches[0].clientX;
+            touchCurrentY = e.touches[0].clientY;
+            
+            const deltaX = touchCurrentX - touchStartX;
+            const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+            
+            if (deltaY > 50) {
+                isSwiping = false;
+                return;
+            }
+            
+            const sidebar = document.getElementById('sidebar');
+            
+            if (isSwipeToOpen && deltaX > 0) {
+                const progress = Math.min(deltaX / 350, 1);
+                sidebar.style.transform = `translateX(${Math.max(-350 + deltaX, -350)}px)`;
+                sidebar.style.transition = 'none';
+                
+            } else if (isSwipeToClose && deltaX < 0) {
+                const progress = Math.max(1 + deltaX / 350, 0);
+                sidebar.style.transform = `translateX(${Math.min(deltaX, 0)}px)`;
+                sidebar.style.transition = 'none';
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (!isSwiping) return;
+            
+            const deltaX = touchCurrentX - touchStartX;
+            const sidebar = document.getElementById('sidebar');
+            
+            sidebar.style.transition = 'all 0.3s ease';
+            sidebar.style.transform = '';
+            
+            if (isSwipeToOpen && deltaX > 100) {
+                sidebar.classList.add('active');
+                document.querySelector('.swipe-indicator').classList.add('hidden');
+            } else if (isSwipeToClose && deltaX < -100) {
+                closeSidebar();
+            }
+            
+            isSwiping = false;
+            isSwipeToOpen = false;
+            isSwipeToClose = false;
+            touchStartX = 0;
+            touchCurrentX = 0;
+        }
+
+        // Add touch event listeners
+        document.addEventListener('touchstart', handleTouchStart, { passive: false });
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd, { passive: true });
         
         // Функція для перемикання блоків налаштувань
         function toggleBlock(block) {

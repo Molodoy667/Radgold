@@ -185,6 +185,56 @@ try {
             visibility: visible;
         }
         
+        /* Индикатор свайпа */
+        .swipe-indicator {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 60px;
+            background: var(--theme-gradient);
+            border-radius: 0 15px 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            z-index: 1030;
+            opacity: 0.7;
+            animation: swipePulse 2s ease-in-out infinite;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .swipe-indicator:hover {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .swipe-indicator.hidden {
+            opacity: 0;
+            transform: translateY(-50%) translateX(-30px);
+        }
+        
+        @keyframes swipePulse {
+            0%, 100% { 
+                opacity: 0.7; 
+                transform: translateY(-50%) scale(1);
+            }
+            50% { 
+                opacity: 1; 
+                transform: translateY(-50%) scale(1.05);
+            }
+        }
+        
+        /* Скрыть индикатор на маленьких экранах где есть кнопка меню */
+        @media (max-width: 768px) {
+            .swipe-indicator {
+                display: none;
+            }
+        }
+        
         .dashboard-container {
             padding-top: 80px;
             min-height: 100vh;
@@ -501,6 +551,11 @@ try {
         </div>
     </nav>
     
+    <!-- Swipe Indicator -->
+    <div class="swipe-indicator" onclick="toggleSidebar()" title="Свайпните или кликните для открытия меню">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+    
     <!-- Sidebar -->
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
     <div class="sidebar" id="adminSidebar">
@@ -773,18 +828,136 @@ try {
         function toggleSidebar() {
             const sidebar = document.getElementById('adminSidebar');
             const overlay = document.querySelector('.sidebar-overlay');
+            const indicator = document.querySelector('.swipe-indicator');
             
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
+            
+            // Hide/show swipe indicator
+            if (sidebar.classList.contains('active')) {
+                indicator.classList.add('hidden');
+            } else {
+                indicator.classList.remove('hidden');
+            }
         }
         
         function closeSidebar() {
             const sidebar = document.getElementById('adminSidebar');
             const overlay = document.querySelector('.sidebar-overlay');
+            const indicator = document.querySelector('.swipe-indicator');
             
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
+            indicator.classList.remove('hidden');
         }
+
+        // Touch support for mobile devices
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchCurrentX = 0;
+        let touchCurrentY = 0;
+        let isSwiping = false;
+        let isSwipeToOpen = false;
+        let isSwipeToClose = false;
+
+        // Touch event handlers
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isSwiping = true;
+            
+            const sidebar = document.getElementById('adminSidebar');
+            isSwipeToOpen = touchStartX < 50 && !sidebar.classList.contains('active'); // Swipe from left edge
+            isSwipeToClose = sidebar.classList.contains('active') && touchStartX < 350; // Swipe on open sidebar
+        }
+
+        function handleTouchMove(e) {
+            if (!isSwiping) return;
+            
+            e.preventDefault(); // Prevent scrolling during swipe
+            
+            touchCurrentX = e.touches[0].clientX;
+            touchCurrentY = e.touches[0].clientY;
+            
+            const deltaX = touchCurrentX - touchStartX;
+            const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+            
+            // Only process horizontal swipes
+            if (deltaY > 50) {
+                isSwiping = false;
+                return;
+            }
+            
+            const sidebar = document.getElementById('adminSidebar');
+            
+            if (isSwipeToOpen && deltaX > 0) {
+                // Opening sidebar
+                const progress = Math.min(deltaX / 350, 1);
+                sidebar.style.transform = `translateX(${Math.max(-350 + deltaX, -350)}px)`;
+                sidebar.style.transition = 'none';
+                
+                // Show overlay gradually
+                const overlay = document.querySelector('.sidebar-overlay');
+                overlay.style.opacity = progress * 0.5;
+                overlay.style.visibility = 'visible';
+                overlay.style.transition = 'none';
+                
+            } else if (isSwipeToClose && deltaX < 0) {
+                // Closing sidebar
+                const progress = Math.max(1 + deltaX / 350, 0);
+                sidebar.style.transform = `translateX(${Math.min(deltaX, 0)}px)`;
+                sidebar.style.transition = 'none';
+                
+                // Hide overlay gradually
+                const overlay = document.querySelector('.sidebar-overlay');
+                overlay.style.opacity = progress * 0.5;
+                overlay.style.transition = 'none';
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (!isSwiping) return;
+            
+            const deltaX = touchCurrentX - touchStartX;
+            const sidebar = document.getElementById('adminSidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            // Reset transitions
+            sidebar.style.transition = 'all 0.3s ease';
+            sidebar.style.transform = '';
+            overlay.style.transition = 'all 0.3s ease';
+            
+            if (isSwipeToOpen && deltaX > 100) {
+                // Open sidebar if swiped enough
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+                document.querySelector('.swipe-indicator').classList.add('hidden');
+            } else if (isSwipeToClose && deltaX < -100) {
+                // Close sidebar if swiped enough
+                closeSidebar();
+            } else {
+                // Reset to original state
+                if (sidebar.classList.contains('active')) {
+                    overlay.style.opacity = '';
+                    overlay.style.visibility = '';
+                } else {
+                    overlay.style.opacity = '0';
+                    overlay.style.visibility = 'hidden';
+                }
+            }
+            
+            // Reset touch state
+            isSwiping = false;
+            isSwipeToOpen = false;
+            isSwipeToClose = false;
+            touchStartX = 0;
+            touchCurrentX = 0;
+        }
+
+        // Add touch event listeners
+        document.addEventListener('touchstart', handleTouchStart, { passive: false });
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd, { passive: true });
         
         // Profile Management
         function openProfileModal() {

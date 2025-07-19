@@ -209,6 +209,9 @@ class Settings {
      */
     public static function getSiteUrl($path = '') {
         $base_url = rtrim(self::get('site_url', 'http://localhost'), '/');
+        if (empty($path)) {
+            return $base_url;
+        }
         return $base_url . '/' . ltrim($path, '/');
     }
     

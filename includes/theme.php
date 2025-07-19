@@ -172,9 +172,15 @@ class Theme {
             $navbar_bg = '#ffffff';
         }
         
+        // Конвертируем hex в RGB для CSS переменных
+        $primary_rgb = self::hexToRgb($primary_color);
+        $secondary_rgb = self::hexToRgb($secondary_color);
+        
         return [
             '--theme-primary' => $primary_color,
             '--theme-secondary' => $secondary_color,
+            '--theme-primary-rgb' => $primary_rgb,
+            '--theme-secondary-rgb' => $secondary_rgb,
             '--theme-gradient' => "linear-gradient(135deg, {$primary_color} 0%, {$secondary_color} 100%)",
             '--bg-color' => $bg_color,
             '--surface-color' => $surface_color,
@@ -186,6 +192,23 @@ class Theme {
             '--shadow' => $dark_mode ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 4px 6px rgba(0, 0, 0, 0.1)',
             '--theme-mode' => $dark_mode ? 'dark' : 'light'
         ];
+    }
+    
+    /**
+     * Конвертація hex в RGB
+     */
+    private static function hexToRgb($hex) {
+        $hex = ltrim($hex, '#');
+        
+        if (strlen($hex) == 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+        
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        
+        return "$r, $g, $b";
     }
     
     /**

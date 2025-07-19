@@ -2,289 +2,170 @@
 session_start();
 header('Content-Type: application/json');
 
-// Перевірка авторизації адміна
+// Проверка авторизации админа
 if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
-    echo json_encode(['success' => false, 'message' => 'Доступ заборонено']);
+    echo json_encode(['success' => false, 'message' => 'Необхідна авторизація']);
     exit();
 }
 
-require_once '../../config/config.php';
 require_once '../../config/database.php';
-
-// Підключення до бази даних
-$database = new Database();
-$db = $database->getConnection();
+require_once '../../includes/settings.php';
 
 try {
-    $db->beginTransaction();
+    $database = new Database();
+    $db = $database->getConnection();
     
-    $action = $_POST['action'] ?? $_POST['form_type'] ?? '';
-    $response = ['success' => false, 'message' => ''];
+    $section = $_POST['section'] ?? '';
     
-    switch ($action) {
-        case 'generalForm':
-            // Основні налаштування
-            $fields = ['site_name', 'site_language', 'site_description', 'site_email', 'site_phone'];
-            
-            foreach ($fields as $field) {
-                if (isset($_POST[$field])) {
-                    $value = clean_input($_POST[$field]);
-                    
-                    // Валідація
-                    if ($field === 'site_name' && empty($value)) {
-                        throw new Exception('Назва сайту обов\'язкова');
-                    }
-                    if ($field === 'site_email' && !empty($value) && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                        throw new Exception('Невірний формат email');
-                    }
-                    
-                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
-                                         ON DUPLICATE KEY UPDATE setting_value = ?");
-                    $stmt->execute([$field, $value, $value]);
-                }
-            }
-            
-            $response['message'] = 'Основні налаштування успішно збережені!';
-            break;
-            
-        case 'seoForm':
-            // SEO налаштування
-            $fields = ['meta_title', 'meta_description', 'meta_keywords', 'analytics_code'];
-            
-            foreach ($fields as $field) {
-                if (isset($_POST[$field])) {
-                    $value = clean_input($_POST[$field]);
-                    
-                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
-                                         ON DUPLICATE KEY UPDATE setting_value = ?");
-                    $stmt->execute([$field, $value, $value]);
-                }
-            }
-            
-            $response['message'] = 'SEO налаштування успішно збережені!';
-            break;
-            
-        case 'brandingForm':
-            // Брендинг - обробка файлів
-            $upload_dir = '../../assets/uploads/';
-            if (!is_dir($upload_dir)) {
-                mkdir($upload_dir, 0755, true);
-            }
-            
-            // Обробка логотипа
-            if (isset($_FILES['site_logo']) && $_FILES['site_logo']['error'] === UPLOAD_ERR_OK) {
-                $file_info = pathinfo($_FILES['site_logo']['name']);
-                $extension = strtolower($file_info['extension']);
-                $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
-                
-                if (!in_array($extension, $allowed_extensions)) {
-                    throw new Exception('Неприпустимий формат логотипу. Дозволені: ' . implode(', ', $allowed_extensions));
-                }
-                
-                if ($_FILES['site_logo']['size'] > 2097152) {
-                    throw new Exception('Розмір логотипу не повинен перевищувати 2MB');
-                }
-                
-                $filename = 'logo_' . time() . '.' . $extension;
-                $target_path = $upload_dir . $filename;
-                
-                if (move_uploaded_file($_FILES['site_logo']['tmp_name'], $target_path)) {
-                    // Видаляємо старий логотип
-                    $old_logo_stmt = $db->prepare("SELECT setting_value FROM settings WHERE setting_key = 'site_logo'");
-                    $old_logo_stmt->execute();
-                    $old_logo = $old_logo_stmt->fetchColumn();
-                    
-                    if ($old_logo && file_exists('../../' . $old_logo)) {
-                        unlink('../../' . $old_logo);
-                    }
-                    
-                    $logo_path = 'assets/uploads/' . $filename;
-                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('site_logo', ?) 
-                                         ON DUPLICATE KEY UPDATE setting_value = ?");
-                    $stmt->execute([$logo_path, $logo_path]);
-                } else {
-                    throw new Exception('Помилка завантаження логотипу');
-                }
-            }
-            
-            // Обробка фавікону
-            if (isset($_FILES['site_favicon']) && $_FILES['site_favicon']['error'] === UPLOAD_ERR_OK) {
-                $file_info = pathinfo($_FILES['site_favicon']['name']);
-                $extension = strtolower($file_info['extension']);
-                $allowed_extensions = ['ico', 'png', 'jpg', 'jpeg'];
-                
-                if (!in_array($extension, $allowed_extensions)) {
-                    throw new Exception('Неприпустимий формат фавікону. Дозволені: ' . implode(', ', $allowed_extensions));
-                }
-                
-                if ($_FILES['site_favicon']['size'] > 1048576) {
-                    throw new Exception('Розмір фавікону не повинен перевищувати 1MB');
-                }
-                
-                $filename = 'favicon_' . time() . '.' . $extension;
-                $target_path = $upload_dir . $filename;
-                
-                if (move_uploaded_file($_FILES['site_favicon']['tmp_name'], $target_path)) {
-                    // Видаляємо старий фавікон
-                    $old_favicon_stmt = $db->prepare("SELECT setting_value FROM settings WHERE setting_key = 'site_favicon'");
-                    $old_favicon_stmt->execute();
-                    $old_favicon = $old_favicon_stmt->fetchColumn();
-                    
-                    if ($old_favicon && file_exists('../../' . $old_favicon)) {
-                        unlink('../../' . $old_favicon);
-                    }
-                    
-                    $favicon_path = 'assets/uploads/' . $filename;
-                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('site_favicon', ?) 
-                                         ON DUPLICATE KEY UPDATE setting_value = ?");
-                    $stmt->execute([$favicon_path, $favicon_path]);
-                } else {
-                    throw new Exception('Помилка завантаження фавікону');
-                }
-            }
-            
-            $response['message'] = 'Брендинг успішно оновлено!';
-            break;
-            
-        case 'functionalityForm':
-            // Функціональні налаштування
-            $checkboxes = [
-                'enable_registration', 'enable_comments', 'enable_search', 
-                'enable_favorites', 'moderation_required', 'maintenance_mode'
+    // Функция для сохранения настройки
+    function saveSetting($db, $key, $value) {
+        $query = "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
+                  ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)";
+        $stmt = $db->prepare($query);
+        return $stmt->execute([$key, $value]);
+    }
+    
+    switch ($section) {
+        case 'general':
+            // Основные настройки
+            $settings = [
+                'site_name' => $_POST['site_name'] ?? '',
+                'site_description' => $_POST['site_description'] ?? '',
+                'site_language' => $_POST['site_language'] ?? 'uk'
             ];
             
-            foreach ($checkboxes as $checkbox) {
-                $value = isset($_POST[$checkbox]) ? '1' : '0';
-                
-                $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
-                                     ON DUPLICATE KEY UPDATE setting_value = ?");
-                $stmt->execute([$checkbox, $value, $value]);
-            }
-            
-            $response['message'] = 'Функціональні налаштування успішно збережені!';
-            break;
-            
-        case 'save_theme':
-            // Налаштування теми та оформлення
-            $theme_fields = [
-                'default_theme_gradient', 'custom_css'
-            ];
-            
-            // Логування отриманих даних
-            error_log("Theme save data: " . print_r($_POST, true));
-            
-            foreach ($theme_fields as $field) {
-                if (isset($_POST[$field])) {
-                    $value = clean_input($_POST[$field]);
-                    
-                    // Валідація градієнта
-                    if ($field === 'default_theme_gradient') {
-                        $gradients = Theme::getGradients();
-                        if (!array_key_exists($value, $gradients)) {
-                            throw new Exception('Невірний градієнт: ' . $value);
-                        }
-                    }
-                    
-                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
-                                         ON DUPLICATE KEY UPDATE setting_value = ?");
-                    $result = $stmt->execute([$field, $value, $value]);
-                    
-                    error_log("Saved setting: {$field} = {$value}, result: " . ($result ? 'success' : 'failed'));
-                } else {
-                    error_log("Field {$field} not found in POST data");
+            foreach ($settings as $key => $value) {
+                if (!saveSetting($db, $key, $value)) {
+                    throw new Exception("Помилка збереження налаштування: $key");
                 }
             }
             
-            // Булеві налаштування теми
-            $theme_checkboxes = ['enable_theme_switcher', 'default_dark_mode'];
-            foreach ($theme_checkboxes as $checkbox) {
-                $value = isset($_POST[$checkbox]) ? '1' : '0';
-                
-                $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
-                                     ON DUPLICATE KEY UPDATE setting_value = ?");
-                $stmt->execute([$checkbox, $value, $value]);
-            }
-            
-            $response['message'] = 'Налаштування теми успішно збережені!';
+            echo json_encode([
+                'success' => true,
+                'message' => 'Основні налаштування збережено'
+            ]);
             break;
             
-        case 'save_maintenance':
-            // Налаштування технічного обслуговування
-            $maintenance_fields = [
-                'maintenance_title', 'maintenance_message', 'maintenance_end_time',
-                'maintenance_contact_email', 'maintenance_custom_html'
+        case 'theme':
+            // Настройки тем
+            $settings = [
+                'default_dark_mode' => isset($_POST['default_dark_mode']) ? 1 : 0,
+                'enable_theme_switcher' => isset($_POST['enable_theme_switcher']) ? 1 : 0,
+                'default_theme_gradient' => $_POST['default_theme_gradient'] ?? 'gradient-2'
             ];
             
-            foreach ($maintenance_fields as $field) {
-                if (isset($_POST[$field])) {
-                    $value = clean_input($_POST[$field]);
-                    
-                    // Валідація email
-                    if ($field === 'maintenance_contact_email' && !empty($value) && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                        throw new Exception('Невірний формат контактного email');
-                    }
-                    
-                    // Валідація дати
-                    if ($field === 'maintenance_end_time' && !empty($value)) {
-                        $datetime = DateTime::createFromFormat('Y-m-d\TH:i', $value);
-                        if (!$datetime) {
-                            throw new Exception('Невірний формат дати завершення');
-                        }
-                    }
-                    
-                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
-                                         ON DUPLICATE KEY UPDATE setting_value = ?");
-                    $stmt->execute([$field, $value, $value]);
+            foreach ($settings as $key => $value) {
+                if (!saveSetting($db, $key, $value)) {
+                    throw new Exception("Помилка збереження налаштування: $key");
                 }
             }
             
-            // Булеві налаштування обслуговування
-            $maintenance_checkboxes = ['maintenance_mode', 'maintenance_show_progress'];
-            foreach ($maintenance_checkboxes as $checkbox) {
-                $value = isset($_POST[$checkbox]) ? '1' : '0';
-                
-                $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) 
-                                     ON DUPLICATE KEY UPDATE setting_value = ?");
-                $stmt->execute([$checkbox, $value, $value]);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Налаштування тем збережено'
+            ]);
+            break;
+            
+        case 'security':
+            // Настройки безопасности
+            $settings = [
+                'registration_enabled' => isset($_POST['registration_enabled']) ? 1 : 0,
+                'ads_moderation' => isset($_POST['ads_moderation']) ? 1 : 0
+            ];
+            
+            foreach ($settings as $key => $value) {
+                if (!saveSetting($db, $key, $value)) {
+                    throw new Exception("Помилка збереження налаштування: $key");
+                }
             }
             
-            $response['message'] = 'Налаштування технічного обслуговування успішно збережені!';
+            echo json_encode([
+                'success' => true,
+                'message' => 'Налаштування безпеки збережено'
+            ]);
+            break;
+            
+        case 'email':
+            // Настройки email
+            $settings = [
+                'smtp_enabled' => isset($_POST['smtp_enabled']) ? 1 : 0,
+                'smtp_host' => $_POST['smtp_host'] ?? '',
+                'smtp_port' => $_POST['smtp_port'] ?? '587',
+                'smtp_username' => $_POST['smtp_username'] ?? '',
+                'smtp_password' => $_POST['smtp_password'] ?? '',
+                'smtp_secure' => $_POST['smtp_secure'] ?? 'tls',
+                'email_from_address' => $_POST['email_from_address'] ?? '',
+                'email_from_name' => $_POST['email_from_name'] ?? ''
+            ];
+            
+            foreach ($settings as $key => $value) {
+                if (!saveSetting($db, $key, $value)) {
+                    throw new Exception("Помилка збереження налаштування: $key");
+                }
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Налаштування email збережено'
+            ]);
+            break;
+            
+        case 'seo':
+            // SEO настройки
+            $settings = [
+                'site_keywords' => $_POST['site_keywords'] ?? '',
+                'google_analytics' => $_POST['google_analytics'] ?? '',
+                'google_search_console' => $_POST['google_search_console'] ?? '',
+                'robots_txt' => $_POST['robots_txt'] ?? '',
+                'sitemap_enabled' => isset($_POST['sitemap_enabled']) ? 1 : 0
+            ];
+            
+            foreach ($settings as $key => $value) {
+                if (!saveSetting($db, $key, $value)) {
+                    throw new Exception("Помилка збереження налаштування: $key");
+                }
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'SEO налаштування збережено'
+            ]);
+            break;
+            
+        case 'social':
+            // Социальные сети
+            $settings = [
+                'social_facebook' => $_POST['social_facebook'] ?? '',
+                'social_instagram' => $_POST['social_instagram'] ?? '',
+                'social_telegram' => $_POST['social_telegram'] ?? '',
+                'social_twitter' => $_POST['social_twitter'] ?? '',
+                'social_youtube' => $_POST['social_youtube'] ?? ''
+            ];
+            
+            foreach ($settings as $key => $value) {
+                if (!saveSetting($db, $key, $value)) {
+                    throw new Exception("Помилка збереження налаштування: $key");
+                }
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Налаштування соціальних мереж збережено'
+            ]);
             break;
             
         default:
-            throw new Exception('Невідомий тип дії');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Невірна секція налаштувань'
+            ]);
+            break;
     }
-    
-    // Логування
-    $log_stmt = $db->prepare("INSERT INTO admin_logs (admin_id, action, description, ip_address, user_agent) 
-                             VALUES (?, 'settings_update', ?, ?, ?)");
-    $log_stmt->execute([
-        $_SESSION['admin_id'],
-        'Оновлення налаштувань: ' . $action,
-        $_SERVER['REMOTE_ADDR'] ?? '',
-        $_SERVER['HTTP_USER_AGENT'] ?? ''
-    ]);
-    
-    $db->commit();
-    
-    // Очищуємо кеш налаштувань
-    if (class_exists('Settings') && method_exists('Settings', 'clearCache')) {
-        Settings::clearCache();
-        error_log("Settings cache cleared");
-    } else {
-        error_log("Settings::clearCache method not found");
-    }
-    
-    $response['success'] = true;
     
 } catch (Exception $e) {
-    $db->rollback();
-    $response = [
+    error_log("Settings save error: " . $e->getMessage());
+    echo json_encode([
         'success' => false,
         'message' => $e->getMessage()
-    ];
-    error_log("Settings save error: " . $e->getMessage());
+    ]);
 }
-
-echo json_encode($response, JSON_UNESCAPED_UNICODE);
-?>

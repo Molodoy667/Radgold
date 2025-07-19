@@ -1,0 +1,1078 @@
+<?php
+// Устанавливаем заголовок страницы
+$page_title = 'Головна панель';
+
+// Подключаем header
+require_once 'includes/header.php';
+
+// Статистика для дашборда
+try {
+    // Загальна кількість користувачів
+    $users_count = $db->query("SELECT COUNT(*) FROM users WHERE is_active = 1")->fetchColumn();
+    
+    // Загальна кількість оголошень
+    $ads_count = $db->query("SELECT COUNT(*) FROM ads")->fetchColumn();
+    
+    // Активні оголошення
+    $active_ads = $db->query("SELECT COUNT(*) FROM ads WHERE status = 'active'")->fetchColumn();
+    
+    // Кількість категорій
+    $categories_count = $db->query("SELECT COUNT(*) FROM categories WHERE is_active = 1")->fetchColumn();
+    
+    // Нові користувачі за останній тиждень
+    $new_users = $db->query("SELECT COUNT(*) FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)")->fetchColumn();
+    
+    // Нові оголошення за сьогодні
+    $today_ads = $db->query("SELECT COUNT(*) FROM ads WHERE DATE(created_at) = CURDATE()")->fetchColumn();
+    
+    // Останні оголошення
+    $recent_ads = $db->query("
+        SELECT a.*, u.username, c.name as category_name 
+        FROM ads a 
+        LEFT JOIN users u ON a.user_id = u.id 
+        LEFT JOIN categories c ON a.category_id = c.id 
+        ORDER BY a.created_at DESC 
+        LIMIT 5
+    ")->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Топ категорії за кількістю оголошень
+    $top_categories = $db->query("
+        SELECT c.name, COUNT(a.id) as ads_count 
+        FROM categories c 
+        LEFT JOIN ads a ON c.id = a.category_id 
+        WHERE c.is_active = 1 
+        GROUP BY c.id, c.name 
+        ORDER BY ads_count DESC 
+        LIMIT 5
+    ")->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Онлайн користувачі (за останні 15 хвилин)
+    $online_users = $db->query("SELECT COUNT(*) FROM users WHERE last_login >= DATE_SUB(NOW(), INTERVAL 15 MINUTE)")->fetchColumn();
+    
+} catch (Exception $e) {
+    error_log("Dashboard stats error: " . $e->getMessage());
+}
+?>
+
+<!-- Page-specific styles -->
+<style>
+    /* Chart.js для графиков */
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin: 1rem 0;
+    }
+    
+    /* Dashboard-specific styles */
+    .dashboard-container {
+        padding: 1rem;
+        }
+        
+        .admin-navbar .nav-link {
+            color: var(--text-color) !important;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-navbar .nav-link:hover {
+            color: var(--theme-primary) !important;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -350px;
+            width: 350px;
+            height: 100vh;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 1050;
+            overflow-y: auto;
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--theme-gradient);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .close-sidebar:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+        
+        .sidebar-menu .menu-item {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-menu .menu-item:hover {
+            background: var(--surface-color);
+            color: var(--theme-primary);
+            padding-left: 2rem;
+        }
+        
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Индикатор свайпа */
+        .swipe-indicator {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 60px;
+            background: var(--theme-gradient);
+            border-radius: 0 15px 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            z-index: 1030;
+            opacity: 0.7;
+            animation: swipePulse 2s ease-in-out infinite;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .swipe-indicator:hover {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .swipe-indicator.hidden {
+            opacity: 0;
+            transform: translateY(-50%) translateX(-30px);
+        }
+        
+        @keyframes swipePulse {
+            0%, 100% { 
+                opacity: 0.7; 
+                transform: translateY(-50%) scale(1);
+            }
+            50% { 
+                opacity: 1; 
+                transform: translateY(-50%) scale(1.05);
+            }
+        }
+        
+        /* Скрыть индикатор на маленьких экранах где есть кнопка меню */
+        @media (max-width: 768px) {
+            .swipe-indicator {
+                display: none;
+            }
+        }
+        
+        .dashboard-container {
+            padding-top: 80px;
+            min-height: 100vh;
+            background: var(--surface-color);
+        }
+        
+        .greeting-block {
+            display: flex;
+            align-items: center;
+        }
+        
+        .greeting-card {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .greeting-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .greeting-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .greeting-text {
+            flex: 1;
+        }
+        
+        .greeting-message {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.2rem;
+        }
+        
+        .greeting-time {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        /* Profile Modal Styles */
+        .profile-modal {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 20px !important;
+        }
+        
+        .profile-modal-header {
+            background: var(--theme-gradient) !important;
+            color: white !important;
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: none !important;
+        }
+        
+        .profile-modal-header .modal-title {
+            color: white !important;
+        }
+        
+        .profile-modal-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .profile-modal .modal-body {
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .profile-modal .form-control {
+            background: var(--surface-color) !important;
+            border: 2px solid var(--border-color) !important;
+            color: var(--text-color) !important;
+            border-radius: 12px !important;
+            padding: 0.75rem 1rem !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+        }
+        
+        .profile-modal .form-control:hover {
+            border-color: transparent !important;
+            background: var(--card-bg) !important;
+            background-image: var(--theme-gradient) !important;
+            background-size: 100% 2px !important;
+            background-position: 0 100% !important;
+            background-repeat: no-repeat !important;
+            box-shadow: 0 4px 15px rgba(var(--theme-primary-rgb), 0.1) !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        .profile-modal .form-control:focus {
+            background: var(--card-bg) !important;
+            border-color: transparent !important;
+            color: var(--text-color) !important;
+            box-shadow: 
+                0 0 0 3px rgba(var(--theme-primary-rgb), 0.15) !important,
+                0 8px 25px rgba(var(--theme-primary-rgb), 0.2) !important;
+            transform: translateY(-2px) !important;
+            background-image: var(--theme-gradient) !important;
+            background-size: 100% 2px !important;
+            background-position: 0 100% !important;
+            background-repeat: no-repeat !important;
+        }
+        
+        .profile-modal .form-control::placeholder {
+            color: var(--text-muted) !important;
+            opacity: 0.7 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .profile-modal .form-control:focus::placeholder {
+            opacity: 0.5 !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        .profile-modal .form-label {
+            color: var(--text-color) !important;
+            font-weight: 600;
+        }
+        
+        .profile-modal .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .profile-modal-footer {
+            background: var(--surface-color) !important;
+            border-top: 1px solid var(--border-color) !important;
+            border-radius: 0 0 20px 20px !important;
+        }
+        
+        .profile-btn-primary {
+            background: var(--theme-gradient) !important;
+            border: none !important;
+            border-radius: 10px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .profile-btn-primary:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(var(--theme-primary-rgb), 0.4) !important;
+        }
+        
+        .profile-btn-secondary {
+            background: var(--surface-color) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-color) !important;
+            border-radius: 10px !important;
+        }
+        
+        .profile-btn-secondary:hover {
+            background: var(--theme-primary) !important;
+            border-color: var(--theme-primary) !important;
+            color: white !important;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 0;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--theme-primary);
+        }
+        
+        .profile-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--theme-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .recent-activity {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        
+        .activity-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Navbar -->
+    <nav class="navbar navbar-expand-lg admin-navbar fixed-top">
+        <div class="container-fluid">
+            <!-- Profile Section -->
+            <div class="navbar-brand d-flex align-items-center">
+                <button class="btn btn-outline-primary me-3" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <?php if ($admin['avatar'] && file_exists('../' . $admin['avatar'])): ?>
+                    <img src="../<?php echo htmlspecialchars($admin['avatar']); ?>" 
+                         alt="Профіль" class="profile-avatar me-2" 
+                         onclick="openProfileModal()">
+                <?php else: ?>
+                    <div class="profile-placeholder me-2" onclick="openProfileModal()">
+                        <?php echo strtoupper(substr($admin['username'], 0, 1)); ?>
+                    </div>
+                <?php endif; ?>
+                
+                <span class="d-none d-md-inline">
+                    Привіт, <?php echo htmlspecialchars($admin['username']); ?>!
+                </span>
+            </div>
+            
+            <!-- Logo -->
+            <div class="navbar-brand mx-auto">
+                <?php 
+                $logo_path = Settings::get('site_logo', '');
+                if (!empty($logo_path) && file_exists('../' . $logo_path)): 
+                ?>
+                    <img src="../<?php echo Settings::getLogoUrl(); ?>" alt="<?php echo htmlspecialchars(Settings::get('site_name')); ?>" style="max-height: 40px;">
+                <?php else: ?>
+                    <i class="fas fa-cog me-2"></i><?php echo htmlspecialchars(Settings::get('site_name', 'Дошка Оголошень')); ?>
+                <?php endif; ?>
+            </div>
+            
+            <!-- Navigation Toggle -->
+            <div class="navbar-nav">
+                <a href="../index.php" class="nav-link" target="_blank" title="Відвідати сайт">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span class="d-none d-md-inline ms-1">Сайт</span>
+                </a>
+                <a href="logout.php" class="nav-link text-danger" title="Вихід">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="d-none d-md-inline ms-1">Вихід</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Swipe Indicator -->
+    <div class="swipe-indicator" onclick="toggleSidebar()" title="Свайпните или кликните для открытия меню">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div class="sidebar" id="adminSidebar">
+        <div class="sidebar-header">
+            <div>
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>Панель управління
+                </h5>
+                <small>Адміністрування сайту</small>
+            </div>
+            <button class="close-sidebar" onclick="closeSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <a href="dashboard.php" class="menu-item active">
+                <i class="fas fa-tachometer-alt me-3"></i>Головна панель
+            </a>
+            <a href="settings.php" class="menu-item">
+                <i class="fas fa-cog me-3"></i>Генеральні налаштування
+            </a>
+            <a href="categories.php" class="menu-item">
+                <i class="fas fa-list me-3"></i>Категорії
+            </a>
+            <a href="users.php" class="menu-item">
+                <i class="fas fa-users me-3"></i>Користувачі
+            </a>
+            <a href="ads.php" class="menu-item">
+                <i class="fas fa-bullhorn me-3"></i>Оголошення
+            </a>
+            <a href="logs.php" class="menu-item">
+                <i class="fas fa-history me-3"></i>Логи системи
+            </a>
+            <a href="analytics.php" class="menu-item">
+                <i class="fas fa-chart-bar me-3"></i>Аналітика
+            </a>
+            <a href="themes.php" class="menu-item">
+                <i class="fas fa-paint-brush me-3"></i>Теми та дизайн
+            </a>
+            <a href="backup.php" class="menu-item">
+                <i class="fas fa-download me-3"></i>Резервні копії
+            </a>
+            <a href="../index.php" class="menu-item" target="_blank">
+                <i class="fas fa-external-link-alt me-3"></i>Переглянути сайт
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <div class="container-fluid" id="main-content">
+            <!-- Page Title -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-gradient">
+                    <i class="fas fa-tachometer-alt me-2"></i>Панель управління
+                </h2>
+                <div class="greeting-block">
+                    <?php 
+                    $hour = (int)date('H');
+                    $username = htmlspecialchars($admin['username']);
+                    
+                    if ($hour >= 6 && $hour < 12) {
+                        $greeting = "Доброго ранку";
+                        $icon = "fas fa-sun";
+                        $gradient = "linear-gradient(135deg, #f6d365 0%, #fda085 100%)";
+                    } elseif ($hour >= 12 && $hour < 18) {
+                        $greeting = "Доброго дня";
+                        $icon = "fas fa-sun";
+                        $gradient = "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)";
+                    } elseif ($hour >= 18 && $hour < 22) {
+                        $greeting = "Доброго вечора";
+                        $icon = "fas fa-moon";
+                        $gradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                    } else {
+                        $greeting = "Доброї ночі";
+                        $icon = "fas fa-moon";
+                        $gradient = "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)";
+                    }
+                    ?>
+                    <div class="greeting-card">
+                        <div class="greeting-icon" style="background: <?php echo $gradient; ?>;">
+                            <i class="<?php echo $icon; ?>"></i>
+                        </div>
+                        <div class="greeting-text">
+                            <div class="greeting-message">
+                                <?php echo $greeting; ?>, <strong><?php echo $username; ?></strong>!
+                            </div>
+                            <div class="greeting-time">
+                                зараз <?php echo date('d.m.Y H:i'); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="stat-number"><?php echo number_format($users_count ?? 0); ?></h3>
+                        <p class="stat-label">Користувачів</p>
+                        <small class="text-success">
+                            <i class="fas fa-arrow-up me-1"></i>+<?php echo $new_users ?? 0; ?> за тиждень
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h3 class="stat-number"><?php echo number_format($ads_count ?? 0); ?></h3>
+                        <p class="stat-label">Оголошень</p>
+                        <small class="text-info">
+                            <i class="fas fa-plus me-1"></i>+<?php echo $today_ads ?? 0; ?> сьогодні
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3 class="stat-number"><?php echo number_format($active_ads ?? 0); ?></h3>
+                        <p class="stat-label">Активних</p>
+                        <small class="text-warning">
+                            <i class="fas fa-check me-1"></i>Опубліковано
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <h3 class="stat-number"><?php echo number_format($online_users ?? 0); ?></h3>
+                        <p class="stat-label">Онлайн</p>
+                        <small class="text-success">
+                            <i class="fas fa-circle me-1" style="font-size: 8px;"></i>Зараз активні
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts and Recent Activity -->
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="chart-container">
+                        <h5 class="mb-3">
+                            <i class="fas fa-chart-bar me-2"></i>Топ категорії
+                        </h5>
+                        <canvas id="categoriesChart" height="100"></canvas>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="recent-activity">
+                        <h5 class="mb-3">
+                            <i class="fas fa-clock me-2"></i>Останні оголошення
+                        </h5>
+                        <?php if (!empty($recent_ads)): ?>
+                            <?php foreach ($recent_ads as $ad): ?>
+                                <div class="activity-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1"><?php echo htmlspecialchars($ad['title']); ?></h6>
+                                            <small class="text-muted">
+                                                <?php echo htmlspecialchars($ad['username']); ?> • 
+                                                <?php echo htmlspecialchars($ad['category_name']); ?>
+                                            </small>
+                                        </div>
+                                        <small class="text-muted">
+                                            <?php echo date('d.m H:i', strtotime($ad['created_at'])); ?>
+                                        </small>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="text-muted">Немає оголошень</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content profile-modal">
+                <div class="modal-header profile-modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-edit me-2"></i>Редагування профілю
+                    </h5>
+                    <button type="button" class="btn-close profile-modal-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="profileForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <div class="mb-3">
+                                    <?php if ($admin['avatar'] && file_exists('../' . $admin['avatar'])): ?>
+                                        <img src="../<?php echo htmlspecialchars($admin['avatar']); ?>" 
+                                             alt="Аватар" class="img-thumbnail mb-2" 
+                                             style="width: 150px; height: 150px; object-fit: cover;" id="avatarPreview">
+                                    <?php else: ?>
+                                        <div class="bg-gradient text-white d-flex align-items-center justify-content-center mb-2" 
+                                             style="width: 150px; height: 150px; border-radius: 8px; margin: 0 auto; font-size: 3rem;" id="avatarPreview">
+                                            <?php echo strtoupper(substr($admin['username'], 0, 1)); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*" onchange="previewAvatar(this)">
+                                    <small class="text-muted">JPG, PNG до 2MB</small>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Ім'я користувача</label>
+                                    <input type="text" class="form-control" id="username" name="username" 
+                                           value="<?php echo htmlspecialchars($admin['username']); ?>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="<?php echo htmlspecialchars($admin['email']); ?>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="new_password" class="form-label">Новий пароль (якщо змінюєте)</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="new_password" name="new_password" minlength="6">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('new_password')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirm_password" class="form-label">Підтвердження пароля</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" minlength="6">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('confirm_password')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer profile-modal-footer">
+                    <button type="button" class="btn btn-secondary profile-btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="button" class="btn btn-primary profile-btn-primary" onclick="saveProfile()">
+                        <i class="fas fa-save me-1"></i>Зберегти
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Sidebar Management
+        function toggleSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const indicator = document.querySelector('.swipe-indicator');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            // Hide/show swipe indicator
+            if (sidebar.classList.contains('active')) {
+                indicator.classList.add('hidden');
+            } else {
+                indicator.classList.remove('hidden');
+            }
+        }
+        
+        function closeSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const indicator = document.querySelector('.swipe-indicator');
+            
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            indicator.classList.remove('hidden');
+        }
+
+        // Touch support for mobile devices
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchCurrentX = 0;
+        let touchCurrentY = 0;
+        let isSwiping = false;
+        let isSwipeToOpen = false;
+        let isSwipeToClose = false;
+
+        // Touch event handlers
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isSwiping = true;
+            
+            const sidebar = document.getElementById('adminSidebar');
+            isSwipeToOpen = touchStartX < 50 && !sidebar.classList.contains('active'); // Swipe from left edge
+            isSwipeToClose = sidebar.classList.contains('active') && touchStartX < 350; // Swipe on open sidebar
+        }
+
+        function handleTouchMove(e) {
+            if (!isSwiping) return;
+            
+            e.preventDefault(); // Prevent scrolling during swipe
+            
+            touchCurrentX = e.touches[0].clientX;
+            touchCurrentY = e.touches[0].clientY;
+            
+            const deltaX = touchCurrentX - touchStartX;
+            const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+            
+            // Only process horizontal swipes
+            if (deltaY > 50) {
+                isSwiping = false;
+                return;
+            }
+            
+            const sidebar = document.getElementById('adminSidebar');
+            
+            if (isSwipeToOpen && deltaX > 0) {
+                // Opening sidebar
+                const progress = Math.min(deltaX / 350, 1);
+                sidebar.style.transform = `translateX(${Math.max(-350 + deltaX, -350)}px)`;
+                sidebar.style.transition = 'none';
+                
+                // Show overlay gradually
+                const overlay = document.querySelector('.sidebar-overlay');
+                overlay.style.opacity = progress * 0.5;
+                overlay.style.visibility = 'visible';
+                overlay.style.transition = 'none';
+                
+            } else if (isSwipeToClose && deltaX < 0) {
+                // Closing sidebar
+                const progress = Math.max(1 + deltaX / 350, 0);
+                sidebar.style.transform = `translateX(${Math.min(deltaX, 0)}px)`;
+                sidebar.style.transition = 'none';
+                
+                // Hide overlay gradually
+                const overlay = document.querySelector('.sidebar-overlay');
+                overlay.style.opacity = progress * 0.5;
+                overlay.style.transition = 'none';
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (!isSwiping) return;
+            
+            const deltaX = touchCurrentX - touchStartX;
+            const sidebar = document.getElementById('adminSidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            // Reset transitions
+            sidebar.style.transition = 'all 0.3s ease';
+            sidebar.style.transform = '';
+            overlay.style.transition = 'all 0.3s ease';
+            
+            if (isSwipeToOpen && deltaX > 100) {
+                // Open sidebar if swiped enough
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+                document.querySelector('.swipe-indicator').classList.add('hidden');
+            } else if (isSwipeToClose && deltaX < -100) {
+                // Close sidebar if swiped enough
+                closeSidebar();
+            } else {
+                // Reset to original state
+                if (sidebar.classList.contains('active')) {
+                    overlay.style.opacity = '';
+                    overlay.style.visibility = '';
+                } else {
+                    overlay.style.opacity = '0';
+                    overlay.style.visibility = 'hidden';
+                }
+            }
+            
+            // Reset touch state
+            isSwiping = false;
+            isSwipeToOpen = false;
+            isSwipeToClose = false;
+            touchStartX = 0;
+            touchCurrentX = 0;
+        }
+
+        // Add touch event listeners
+        document.addEventListener('touchstart', handleTouchStart, { passive: false });
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd, { passive: true });
+        
+        // Profile Management
+        function openProfileModal() {
+            const modal = new bootstrap.Modal(document.getElementById('profileModal'));
+            modal.show();
+        }
+        
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('avatarPreview');
+                    if (preview.tagName === 'IMG') {
+                        preview.src = e.target.result;
+                    } else {
+                        preview.outerHTML = `<img src="${e.target.result}" alt="Аватар" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;" id="avatarPreview">`;
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.parentNode.querySelector('button i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.classList.remove('fa-eye');
+                button.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                button.classList.remove('fa-eye-slash');
+                button.classList.add('fa-eye');
+            }
+        }
+        
+        function saveProfile() {
+            const form = document.getElementById('profileForm');
+            const formData = new FormData(form);
+            
+            // Перевірка паролів
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (newPassword && newPassword !== confirmPassword) {
+                alert('Паролі не співпадають!');
+                return;
+            }
+            
+            fetch('ajax/profile.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message || 'Помилка збереження профілю');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Помилка збереження профілю');
+            });
+        }
+        
+        // Page Loading
+        function loadPage(page) {
+            closeSidebar();
+            
+            if (page === 'dashboard') {
+                window.location.href = 'dashboard.php';
+            } else if (page === 'settings') {
+                window.location.href = 'settings.php';
+            } else if (page === 'categories') {
+                window.location.href = 'categories.php';
+            } else if (page === 'users') {
+                // TODO: window.location.href = 'users.php';
+                console.log('Users page - coming soon');
+            } else if (page === 'ads') {
+                // TODO: window.location.href = 'ads.php';
+                console.log('Ads page - coming soon');
+            } else if (page === 'logs') {
+                // TODO: window.location.href = 'logs.php';
+                console.log('Logs page - coming soon');
+            }
+        }
+        
+        // Categories Chart
+        const ctx = document.getElementById('categoriesChart').getContext('2d');
+        const categoriesData = <?php echo json_encode($top_categories ?? []); ?>;
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: categoriesData.map(cat => cat.name),
+                datasets: [{
+                    label: 'Кількість оголошень',
+                    data: categoriesData.map(cat => cat.ads_count),
+                    backgroundColor: [
+                        'rgba(240, 147, 251, 0.8)',
+                        'rgba(245, 87, 108, 0.8)',
+                        'rgba(79, 172, 254, 0.8)',
+                        'rgba(67, 233, 123, 0.8)',
+                        'rgba(250, 112, 154, 0.8)'
+                    ],
+                    borderColor: [
+                        '#f093fb',
+                        '#f5576c',
+                        '#4facfe',
+                        '#43e97b',
+                        '#fa709a'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Auto close sidebar on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeSidebar();
+            }
+        });
+    </script>
+</body>
+</html>

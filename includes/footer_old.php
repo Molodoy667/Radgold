@@ -162,5 +162,15 @@
             });
         }
     </script>
+
+    <?php if (Settings::get('debug_mode', false)): ?>
+    <!-- Debug Info (only visible in debug mode) -->
+    <div class="position-fixed bottom-0 start-0 bg-dark text-light p-2 small" style="z-index: 1000; opacity: 0.7;">
+        Debug: PHP <?php echo phpversion(); ?> | 
+        Memory: <?php echo round(memory_get_usage() / 1024 / 1024, 2); ?>MB |
+        Time: <?php echo round((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2); ?>ms
+    </div>
+    <?php endif; ?>
+
 </body>
 </html>

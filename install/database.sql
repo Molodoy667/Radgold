@@ -626,11 +626,88 @@ CREATE TABLE IF NOT EXISTS user_ratings (
     FOREIGN KEY (rater_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Додаємо поля для блокування користувачів
+-- Додаємо поля для блокування користувачів та балансу
 ALTER TABLE users 
 ADD COLUMN IF NOT EXISTS ban_reason TEXT,
 ADD COLUMN IF NOT EXISTS ban_until DATETIME NULL,
+ADD COLUMN IF NOT EXISTS balance DECIMAL(10,2) DEFAULT 0.00,
 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- Таблиця транзакцій
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    type ENUM('income', 'expense') NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    description TEXT,
+    payment_method VARCHAR(50),
+    transaction_id VARCHAR(255),
+    status ENUM('pending', 'completed', 'failed', 'cancelled') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_type (type),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Таблиця чатів
+CREATE TABLE IF NOT EXISTS chats (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ad_id INT NOT NULL,
+    buyer_id INT NOT NULL,
+    seller_id INT NOT NULL,
+    status ENUM('active', 'archived', 'blocked') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_ad_id (ad_id),
+    INDEX idx_buyer_id (buyer_id),
+    INDEX idx_seller_id (seller_id),
+    INDEX idx_updated_at (updated_at),
+    UNIQUE KEY unique_chat (ad_id, buyer_id, seller_id),
+    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
+    FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (seller_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Таблиця повідомлень чату
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    chat_id INT NOT NULL,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    ad_id INT NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    message_type ENUM('text', 'image', 'file') DEFAULT 'text',
+    attachment_url VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_chat_id (chat_id),
+    INDEX idx_sender_id (sender_id),
+    INDEX idx_receiver_id (receiver_id),
+    INDEX idx_ad_id (ad_id),
+    INDEX idx_is_read (is_read),
+    INDEX idx_created_at (created_at),
+    FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE
+);
+
+-- Таблиця блокування користувачів
+CREATE TABLE IF NOT EXISTS user_blocks (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    blocked_user_id INT NOT NULL,
+    reason TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_blocked_user_id (blocked_user_id),
+    UNIQUE KEY unique_block (user_id, blocked_user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (blocked_user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
 -- Оптимізуємо індекси для існуючих таблиць
 ALTER TABLE users ADD INDEX IF NOT EXISTS idx_status (status);

@@ -18,6 +18,14 @@ switch ($route) {
         $page = 'pages/ads.php';
         break;
         
+    case 'ad-detail':
+        $page = 'pages/ad-detail.php';
+        break;
+        
+    case 'create-ad':
+        $page = 'pages/create-ad.php';
+        break;
+        
     case 'services':
         $page = 'pages/services.php';
         break;

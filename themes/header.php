@@ -145,7 +145,7 @@ function getSiteName() {
                         <a class="nav-link" href="<?php echo getSiteUrl(); ?>"><i class="fas fa-home me-1"></i>Головна</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo getSiteUrl('ads'); ?>"><i class="fas fa-bullhorn me-1"></i>Оголошення</a>
+                        <a class="nav-link" href="<?php echo getSiteUrl('pages/ads.php'); ?>"><i class="fas fa-bullhorn me-1"></i>Оголошення</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?php echo getSiteUrl('services'); ?>"><i class="fas fa-cogs me-1"></i>Послуги</a>

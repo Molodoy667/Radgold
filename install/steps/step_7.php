@@ -1,5 +1,171 @@
 <?php
 // Крок 7: Процес встановлення
+
+// Обробка POST запиту для фактичної установки
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'install') {
+    header('Content-Type: application/json');
+    
+    try {
+        // Отримуємо дані з сесії
+        $dbConfig = $_SESSION['install_data']['db_config'] ?? [];
+        $adminConfig = $_SESSION['install_data']['admin_config'] ?? [];
+        $siteConfig = $_SESSION['install_data']['site_config'] ?? [];
+        
+        if (empty($dbConfig) || empty($adminConfig)) {
+            throw new Exception('Відсутні дані конфігурації');
+        }
+        
+        // 1. Створення директорій
+        $directories = [
+            '../uploads',
+            '../uploads/ads',
+            '../uploads/users',
+            '../uploads/temp',
+            '../cache',
+            '../logs'
+        ];
+        
+        foreach ($directories as $dir) {
+            if (!file_exists($dir)) {
+                mkdir($dir, 0755, true);
+            }
+        }
+        
+        // 2. Створення конфігураційного файлу
+        $configContent = "<?php
+// AdBoard Pro Configuration
+// Generated on " . date('Y-m-d H:i:s') . "
+
+// Database Configuration
+define('DB_HOST', '{$dbConfig['host']}');
+define('DB_USER', '{$dbConfig['user']}');
+define('DB_PASS', '{$dbConfig['pass']}');
+define('DB_NAME', '{$dbConfig['name']}');
+
+// Site Configuration
+define('SITE_URL', '{$siteConfig['site_url']}');
+define('SITE_NAME', '{$siteConfig['site_name']}');
+define('SITE_EMAIL', '{$siteConfig['site_email']}');
+
+// Security
+define('SECRET_KEY', '" . bin2hex(random_bytes(32)) . "');
+define('JWT_SECRET', '" . bin2hex(random_bytes(32)) . "');
+
+// Environment
+define('DEBUG_MODE', false);
+define('MAINTENANCE_MODE', false);
+
+// Upload settings
+define('MAX_FILE_SIZE', 10485760); // 10MB
+define('ALLOWED_EXTENSIONS', 'jpg,jpeg,png,gif,webp');
+
+// Email settings (can be configured later)
+define('SMTP_HOST', '');
+define('SMTP_PORT', 587);
+define('SMTP_USER', '');
+define('SMTP_PASS', '');
+define('SMTP_SECURE', 'tls');
+
+// Session settings
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
+?>";
+        
+        if (!file_put_contents('../core/config.php', $configContent)) {
+            throw new Exception('Не вдалося створити файл конфігурації');
+        }
+        
+        // 3. Підключення до БД та створення структури
+        $mysqli = new mysqli($dbConfig['host'], $dbConfig['user'], $dbConfig['pass']);
+        
+        if ($mysqli->connect_error) {
+            throw new Exception('Помилка підключення до БД: ' . $mysqli->connect_error);
+        }
+        
+        // Створюємо базу даних якщо не існує
+        if (!$mysqli->query("CREATE DATABASE IF NOT EXISTS `{$dbConfig['name']}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
+            throw new Exception('Не вдалося створити базу даних: ' . $mysqli->error);
+        }
+        
+        $mysqli->select_db($dbConfig['name']);
+        
+        // 4. Імпорт структури БД
+        $sqlFiles = [
+            '../install/database.sql',
+            '../install/ads_database.sql',
+            '../install/admin_tables.sql'
+        ];
+        
+        foreach ($sqlFiles as $sqlFile) {
+            if (file_exists($sqlFile)) {
+                $sql = file_get_contents($sqlFile);
+                if ($sql) {
+                    $mysqli->multi_query($sql);
+                    while ($mysqli->next_result()) {
+                        // Очищаємо результати
+                    }
+                }
+            }
+        }
+        
+        // 5. Створення адміністратора
+        $adminPassword = password_hash($adminConfig['admin_password'], PASSWORD_DEFAULT);
+        $stmt = $mysqli->prepare("
+            INSERT INTO users (username, email, password, role, status, created_at, email_verified_at) 
+            VALUES (?, ?, ?, 'admin', 'active', NOW(), NOW())
+            ON DUPLICATE KEY UPDATE 
+            username = VALUES(username), 
+            email = VALUES(email), 
+            password = VALUES(password)
+        ");
+        
+        $stmt->bind_param("sss", $adminConfig['admin_login'], $adminConfig['admin_email'], $adminPassword);
+        if (!$stmt->execute()) {
+            throw new Exception('Помилка створення адміністратора: ' . $stmt->error);
+        }
+        
+        // 6. Додаємо початкові налаштування сайту
+        $settings = [
+            ['site_name', $siteConfig['site_name']],
+            ['site_url', $siteConfig['site_url']],
+            ['site_email', $siteConfig['site_email']],
+            ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень'],
+            ['max_ad_duration_days', '30'],
+            ['ads_per_page', '12'],
+            ['auto_approve_ads', '0'],
+            ['maintenance_mode', '0']
+        ];
+        
+        $settingsStmt = $mysqli->prepare("
+            INSERT INTO site_settings (setting_key, value) 
+            VALUES (?, ?) 
+            ON DUPLICATE KEY UPDATE value = VALUES(value)
+        ");
+        
+        foreach ($settings as $setting) {
+            $settingsStmt->bind_param("ss", $setting[0], $setting[1]);
+            $settingsStmt->execute();
+        }
+        
+        // 7. Створення файлу .installed
+        if (!file_put_contents('../.installed', date('Y-m-d H:i:s'))) {
+            throw new Exception('Не вдалося створити файл .installed');
+        }
+        
+        $mysqli->close();
+        
+        // Очищаємо дані сесії установки
+        unset($_SESSION['install_data']);
+        
+        echo json_encode(['success' => true, 'message' => 'Установка завершена успішно']);
+        exit();
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit();
+    }
+}
 ?>
 
 <div class="step-content animate__animated animate__fadeIn">
@@ -100,11 +266,11 @@
 
             <div class="step-item" id="step-5">
                 <div class="step-icon">
-                    <i class="fas fa-palette"></i>
+                    <i class="fas fa-user-shield"></i>
                 </div>
                 <div class="step-content">
-                    <h6>Налаштування теми</h6>
-                    <p>Застосування обраної теми та градієнтів</p>
+                    <h6>Створення адміністратора</h6>
+                    <p>Налаштування облікового запису адміна</p>
                     <div class="step-progress">
                         <div class="progress">
                             <div class="progress-bar" role="progressbar" style="width: 0%"></div>
@@ -118,47 +284,11 @@
 
             <div class="step-item" id="step-6">
                 <div class="step-icon">
-                    <i class="fas fa-user-shield"></i>
-                </div>
-                <div class="step-content">
-                    <h6>Створення адміністратора</h6>
-                    <p>Реєстрація облікового запису адміна</p>
-                    <div class="step-progress">
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="step-status">
-                    <i class="fas fa-clock text-muted"></i>
-                </div>
-            </div>
-
-            <div class="step-item" id="step-7">
-                <div class="step-icon">
-                    <i class="fas fa-file-code"></i>
-                </div>
-                <div class="step-content">
-                    <h6>Генерація конфігурації</h6>
-                    <p>Створення файлів конфігурації</p>
-                    <div class="step-progress">
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="step-status">
-                    <i class="fas fa-clock text-muted"></i>
-                </div>
-            </div>
-
-            <div class="step-item" id="step-8">
-                <div class="step-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="step-content">
                     <h6>Завершення установки</h6>
-                    <p>Фіналізація та перевірка</p>
+                    <p>Фіналізуємо та перевіряємо установку</p>
                     <div class="step-progress">
                         <div class="progress">
                             <div class="progress-bar" role="progressbar" style="width: 0%"></div>
@@ -168,39 +298,29 @@
                 <div class="step-status">
                     <i class="fas fa-clock text-muted"></i>
                 </div>
+            </div>
+        </div>
+
+        <!-- Повідомлення про помилку -->
+        <div class="alert alert-danger d-none animate__animated animate__shakeX" id="errorAlert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span id="errorMessage"></span>
+            <hr>
+            <div class="mt-2">
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="location.reload()">
+                    <i class="fas fa-redo me-1"></i>Спробувати знову
+                </button>
             </div>
         </div>
 
         <!-- Лог установки -->
         <div class="installation-log mt-4">
-            <div class="log-header">
-                <h6><i class="fas fa-terminal me-2"></i>Лог установки</h6>
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="toggleLog">
-                    <i class="fas fa-eye"></i> Показати деталі
-                </button>
-            </div>
-            <div class="log-content" id="logContent" style="display: none;">
-                <div class="log-messages" id="logMessages">
-                    <div class="log-entry">
-                        <span class="log-time"><?php echo date('H:i:s'); ?></span>
-                        <span class="log-level info">INFO</span>
-                        <span class="log-message">Ініціалізація процесу установки...</span>
-                    </div>
+            <h6><i class="fas fa-list-alt me-2"></i>Лог установки</h6>
+            <div class="log-container" id="installLog">
+                <div class="log-entry info">
+                    <span class="log-time"><?php echo date('H:i:s'); ?></span>
+                    <span class="log-text">Готовність до встановлення</span>
                 </div>
-            </div>
-        </div>
-
-        <!-- Повідомлення про помилки -->
-        <div class="alert alert-danger d-none" id="errorAlert">
-            <h6><i class="fas fa-exclamation-triangle me-2"></i>Помилка установки</h6>
-            <p class="mb-0" id="errorMessage"></p>
-            <div class="mt-3">
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="location.reload()">
-                    <i class="fas fa-redo me-2"></i>Спробувати знову
-                </button>
-                <a href="?step=6" class="btn btn-outline-secondary btn-sm ms-2">
-                    <i class="fas fa-chevron-left me-2"></i>Назад до налаштувань
-                </a>
             </div>
         </div>
     </div>
@@ -479,131 +599,116 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const toggleLogBtn = document.getElementById('toggleLog');
-    const logContent = document.getElementById('logContent');
-    const logMessages = document.getElementById('logMessages');
     const errorAlert = document.getElementById('errorAlert');
-    const mainProgress = document.getElementById('mainProgress');
-    const currentAction = document.getElementById('currentAction');
-    const currentDescription = document.getElementById('currentDescription');
-    const progressCircle = document.getElementById('progressCircle');
-    
-    let currentStep = 0;
-    let totalSteps = 8;
     let isInstalling = false;
+    let currentStep = 0;
     
-    // Переключення лога
-    toggleLogBtn.addEventListener('click', function() {
-        const isHidden = logContent.style.display === 'none';
-        logContent.style.display = isHidden ? 'block' : 'none';
-        const icon = this.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-        this.innerHTML = isHidden 
-            ? '<i class="fas fa-eye-slash"></i> Сховати деталі'
-            : '<i class="fas fa-eye"></i> Показати деталі';
-    });
-    
-    // Функція додавання логу
-    function addLogEntry(message, level = 'info') {
-        const time = new Date().toLocaleTimeString();
-        const entry = document.createElement('div');
-        entry.className = 'log-entry animate-in';
-        entry.innerHTML = `
-            <span class="log-time">${time}</span>
-            <span class="log-level ${level}">${level.toUpperCase()}</span>
-            <span class="log-message">${message}</span>
-        `;
-        logMessages.appendChild(entry);
-        logMessages.scrollTop = logMessages.scrollHeight;
-    }
-    
-    // Функція оновлення прогресу
+    // Функції управління прогресом
     function updateProgress(step, percentage) {
         const stepElement = document.getElementById(`step-${step}`);
-        const progressBar = stepElement.querySelector('.progress-bar');
-        progressBar.style.width = percentage + '%';
-        
-        if (percentage === 100) {
-            stepElement.classList.add('completed');
-            stepElement.classList.remove('active');
-            stepElement.querySelector('.step-status i').className = 'fas fa-check-circle text-success';
+        if (stepElement) {
+            const progressBar = stepElement.querySelector('.progress-bar');
+            const statusIcon = stepElement.querySelector('.step-status i');
+            
+            progressBar.style.width = percentage + '%';
+            
+            if (percentage === 100) {
+                statusIcon.className = 'fas fa-check-circle text-success';
+                stepElement.classList.add('completed');
+            } else if (percentage > 0) {
+                statusIcon.className = 'fas fa-spinner fa-spin text-primary';
+                stepElement.classList.add('active');
+            }
         }
     }
     
-    // Функція оновлення загального прогресу
     function updateMainProgress(percentage, action, description) {
-        mainProgress.textContent = percentage + '%';
-        currentAction.textContent = action;
-        currentDescription.textContent = description;
+        document.getElementById('mainProgress').textContent = percentage + '%';
+        document.getElementById('currentAction').textContent = action;
+        document.getElementById('currentDescription').textContent = description;
         
         const circumference = 2 * Math.PI * 90;
         const offset = circumference - (percentage / 100) * circumference;
-        progressCircle.style.strokeDashoffset = offset;
+        document.getElementById('progressCircle').style.strokeDasharray = circumference;
+        document.getElementById('progressCircle').style.strokeDashoffset = offset;
     }
     
-    // Функція активації кроку
+    function addLogEntry(message, type = 'info') {
+        const logContainer = document.getElementById('installLog');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.innerHTML = `
+            <span class="log-time">${new Date().toLocaleTimeString()}</span>
+            <span class="log-text">${message}</span>
+        `;
+        logContainer.appendChild(entry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+    
     function activateStep(step) {
-        // Деактивуємо всі кроки
-        for (let i = 1; i <= totalSteps; i++) {
-            document.getElementById(`step-${i}`).classList.remove('active');
-        }
-        
-        // Активуємо поточний крок
         const stepElement = document.getElementById(`step-${step}`);
-        stepElement.classList.add('active');
-        stepElement.querySelector('.step-status i').className = 'fas fa-spinner';
+        if (stepElement) {
+            stepElement.classList.add('active');
+        }
     }
     
-    // Процес установки
+    // Основна функція установки
     async function startInstallation() {
         if (isInstalling) return;
-        isInstalling = true;
         
-        const steps = [
-            {
-                action: 'Створення директорій',
-                description: 'Створюємо необхідні папки для файлів системи',
-                duration: 2000
-            },
-            {
-                action: 'Створення бази даних',
-                description: 'Налаштовуємо структуру бази даних',
-                duration: 3000
-            },
-            {
-                action: 'Імпорт даних',
-                description: 'Завантажуємо початкові дані в базу',
-                duration: 4000
-            },
-            {
-                action: 'Налаштування сайту',
-                description: 'Застосовуємо параметри сайту',
-                duration: 2500
-            },
-            {
-                action: 'Налаштування теми',
-                description: 'Застосовуємо обрану тему та градієнти',
-                duration: 2000
-            },
-            {
-                action: 'Створення адміністратора',
-                description: 'Реєструємо обліковий запис адміна',
-                duration: 1500
-            },
-            {
-                action: 'Генерація конфігурації',
-                description: 'Створюємо файли конфігурації',
-                duration: 2000
-            },
-            {
-                action: 'Завершення установки',
-                description: 'Фіналізуємо та перевіряємо установку',
-                duration: 1500
-            }
-        ];
+        isInstalling = true;
+        addLogEntry('Початок установки AdBoard Pro', 'info');
         
         try {
+            // Відправляємо POST запит для фактичної установки
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'action=install'
+            });
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+                throw new Error(result.error || 'Невідома помилка установки');
+            }
+            
+            // Симулюємо прогрес установки
+            const steps = [
+                {
+                    action: 'Створення директорій',
+                    description: 'Створюємо необхідні папки для файлів',
+                    duration: 1000
+                },
+                {
+                    action: 'Створення бази даних',
+                    description: 'Налаштовуємо структуру бази даних',
+                    duration: 2000
+                },
+                {
+                    action: 'Імпорт даних',
+                    description: 'Завантажуємо початкові дані',
+                    duration: 2500
+                },
+                {
+                    action: 'Налаштування сайту',
+                    description: 'Застосовуємо параметри сайту',
+                    duration: 1500
+                },
+                {
+                    action: 'Створення адміністратора',
+                    description: 'Налаштовуємо обліковий запис адміна',
+                    duration: 1000
+                },
+                {
+                    action: 'Завершення установки',
+                    description: 'Фіналізуємо та перевіряємо установку',
+                    duration: 1500
+                }
+            ];
+            
             for (let i = 0; i < steps.length; i++) {
                 currentStep = i + 1;
                 const step = steps[i];
@@ -666,9 +771,3 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(startInstallation, 1000);
 });
 </script>
-
-<!-- Форма для POST запиту (приховано, але потрібно для переходу) -->
-<form method="POST" id="installForm" style="display: none;">
-    <input type="hidden" name="step" value="7">
-    <input type="hidden" name="action" value="install">
-</form>

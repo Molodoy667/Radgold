@@ -1,5 +1,12 @@
 <?php
 // Головний файл сайту
+
+// Перевірка чи сайт встановлений
+if (!file_exists('.installed')) {
+    header('Location: install/');
+    exit();
+}
+
 require_once 'core/config.php';
 require_once 'core/database.php';
 require_once 'core/functions.php';

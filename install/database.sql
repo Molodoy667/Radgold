@@ -576,5 +576,66 @@ INSERT IGNORE INTO paid_services (name, description, price, duration_days, servi
 -- Створення директорій для завантажень
 -- Це буде зроблено через PHP код
 
+-- Додаткові таблиці для адмін функціоналу
+
+-- Таблиця логування активності
+CREATE TABLE IF NOT EXISTS activity_logs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    action VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    data JSON,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_action (action),
+    INDEX idx_created_at (created_at),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Таблиця повідомлень від адміністраторів користувачам
+CREATE TABLE IF NOT EXISTS admin_messages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    admin_id INT NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    read_at TIMESTAMP NULL,
+    INDEX idx_user_id (user_id),
+    INDEX idx_admin_id (admin_id),
+    INDEX idx_created_at (created_at),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Таблиця для користувацьких рейтингів
+CREATE TABLE IF NOT EXISTS user_ratings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    rater_id INT NOT NULL,
+    rating TINYINT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_rater_id (rater_id),
+    UNIQUE KEY unique_rating (user_id, rater_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (rater_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Додаємо поля для блокування користувачів
+ALTER TABLE users 
+ADD COLUMN IF NOT EXISTS ban_reason TEXT,
+ADD COLUMN IF NOT EXISTS ban_until DATETIME NULL,
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- Оптимізуємо індекси для існуючих таблиць
+ALTER TABLE users ADD INDEX IF NOT EXISTS idx_status (status);
+ALTER TABLE users ADD INDEX IF NOT EXISTS idx_role (role);
+ALTER TABLE users ADD INDEX IF NOT EXISTS idx_last_login (last_login);
+
 -- Завершення
-SELECT 'База даних AdBoard Pro успішно створена!' as message;
+SELECT 'База даних AdBoard Pro успішно створена з усіма таблицями!' as message;

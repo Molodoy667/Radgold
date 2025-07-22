@@ -150,15 +150,45 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
+                    let detailsHtml = '';
+                    if (response.details) {
+                        detailsHtml = `
+                            <div class="mt-2 small">
+                                <strong>Деталі:</strong>
+                                <ul class="mb-0">
+                                    <li>Версія MySQL: ${response.details.mysql_version}</li>
+                                    <li>Кодування: ${response.details.charset}</li>
+                                    <li>БД існує: ${response.details.database_exists ? 'Так' : 'Ні'}</li>
+                                </ul>
+                            </div>
+                        `;
+                    }
+                    
                     $result.removeClass('alert-danger').addClass('alert-success alert')
-                           .html('<i class="fas fa-check me-2"></i>' + response.message)
+                           .html('<i class="fas fa-check me-2"></i>' + response.message + detailsHtml)
                            .show();
                     // Активуємо кнопку "Далі"
                     $('#nextBtn').prop('disabled', false);
                 } else {
+                    let suggestionHtml = '';
+                    if (response.suggestion) {
+                        suggestionHtml = `<div class="mt-2"><strong>Рекомендація:</strong> ${response.suggestion}</div>`;
+                    }
+                    
                     $result.removeClass('alert-success').addClass('alert-danger alert')
-                           .html('<i class="fas fa-times me-2"></i>' + response.message)
+                           .html('<i class="fas fa-times me-2"></i>' + response.message + suggestionHtml)
                            .show();
+                    
+                    // Додаємо кнопку для копіювання помилки
+                    setTimeout(() => {
+                        $result.append(`
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyError('${response.message}')">
+                                    <i class="fas fa-copy me-1"></i>Копіювати помилку
+                                </button>
+                            </div>
+                        `);
+                    }, 100);
                 }
             },
             error: function(xhr, status, error) {
@@ -239,4 +269,22 @@ $(document).ready(function() {
         $(this).removeClass('is-invalid');
     });
 });
+
+// Функція копіювання помилки
+function copyError(errorText) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(errorText).then(() => {
+            alert('Помилка скопійована в буфер обміну');
+        });
+    } else {
+        // Fallback для старих браузерів
+        const textArea = document.createElement('textarea');
+        textArea.value = errorText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Помилка скопійована в буфер обміну');
+    }
+}
 </script>

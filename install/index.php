@@ -71,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Тест підключення до БД
             if (isset($_POST['test_connection'])) {
                 testDatabaseConnection();
+                return; // Зупиняємо виконання після AJAX відповіді
             } else {
                 // Збереження конфігурації БД
                 $db_host = trim($_POST['db_host'] ?? 'localhost');
@@ -196,47 +197,132 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 function testDatabaseConnection() {
     header('Content-Type: application/json');
     
-    $host = $_POST['db_host'] ?? '';
-    $user = $_POST['db_user'] ?? '';
+    $host = trim($_POST['db_host'] ?? '');
+    $user = trim($_POST['db_user'] ?? '');
     $pass = $_POST['db_pass'] ?? '';
-    $name = $_POST['db_name'] ?? '';
+    $name = trim($_POST['db_name'] ?? '');
+    
+    // Валідація вхідних даних
+    if (empty($host)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Хост бази даних не може бути порожнім',
+            'suggestion' => 'Зазвичай використовується "localhost" або IP адреса сервера'
+        ]);
+        exit();
+    }
+    
+    if (empty($user)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Користувач бази даних не може бути порожнім',
+            'suggestion' => 'Вкажіть користувача MySQL (наприклад, "root")'
+        ]);
+        exit();
+    }
+    
+    if (empty($name)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Назва бази даних не може бути порожньою',
+            'suggestion' => 'Введіть назву для нової бази даних (наприклад, "adboard_pro")'
+        ]);
+        exit();
+    }
     
     try {
-        // Тест підключення до сервера
+        // Тест підключення до сервера MySQL
         $connection = new mysqli($host, $user, $pass);
+        
         if ($connection->connect_error) {
-            throw new Exception('Помилка підключення до сервера: ' . $connection->connect_error);
+            $errorCode = $connection->connect_errno;
+            $suggestion = getConnectionErrorSuggestion($errorCode);
+            
+            throw new Exception("Помилка підключення до MySQL сервера: {$connection->connect_error}. {$suggestion}");
         }
         
-        // Тест створення БД
+        // Перевірка версії MySQL
+        $version = $connection->server_info;
+        $versionNumber = (float)$version;
+        
+        if ($versionNumber < 5.7) {
+            throw new Exception("Версія MySQL {$version} застаріла. Мінімальна підтримувана версія: 5.7+");
+        }
+        
+        // Тест створення бази даних
         if (!empty($name)) {
             $dbName = $connection->real_escape_string($name);
+            
+            // Перевірка існування БД
+            $result = $connection->query("SHOW DATABASES LIKE '$dbName'");
+            $dbExists = $result && $result->num_rows > 0;
+            
             if (!$connection->query("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
-                throw new Exception('Помилка створення БД: ' . $connection->error);
+                throw new Exception("Помилка створення БД '$dbName': {$connection->error}. Перевірте права користувача на створення баз даних.");
             }
             
             // Перевірка доступу до БД
-            $connection->select_db($dbName);
-            if ($connection->error) {
-                throw new Exception('Помилка доступу до БД: ' . $connection->error);
+            if (!$connection->select_db($dbName)) {
+                throw new Exception("Неможливо обрати БД '$dbName': {$connection->error}");
             }
+            
+            // Тест створення таблиці (перевірка прав)
+            $testTable = "test_permissions_" . time();
+            if (!$connection->query("CREATE TABLE `$testTable` (id INT PRIMARY KEY)")) {
+                throw new Exception("Недостатньо прав для створення таблиць в БД '$dbName': {$connection->error}");
+            }
+            
+            // Видаляємо тестову таблицю
+            $connection->query("DROP TABLE `$testTable`");
         }
         
         $connection->close();
         
+        $message = "✅ Підключення успішне! MySQL {$version}";
+        if ($dbExists) {
+            $message .= " (БД '$dbName' вже існує і буде оновлена)";
+        } else {
+            $message .= " (БД '$dbName' буде створена)";
+        }
+        
         echo json_encode([
             'success' => true,
-            'message' => 'Підключення до бази даних успішне!'
+            'message' => $message,
+            'details' => [
+                'mysql_version' => $version,
+                'database_exists' => $dbExists,
+                'charset' => 'utf8mb4'
+            ]
         ]);
-        logInstallStep('db_test', 'Тест підключення до БД пройшов успішно', 'success');
+        
+        logInstallStep('db_test', "Тест підключення до БД '$dbName' пройшов успішно. MySQL: $version", 'success');
+        
     } catch (Exception $e) {
         echo json_encode([
             'success' => false,
-            'message' => $e->getMessage()
+            'message' => $e->getMessage(),
+            'timestamp' => date('Y-m-d H:i:s')
         ]);
+        
         logInstallStep('db_test', 'Помилка тесту БД: ' . $e->getMessage(), 'error');
     }
+    
     exit();
+}
+
+function getConnectionErrorSuggestion($errorCode) {
+    switch ($errorCode) {
+        case 1045: // Access denied
+            return "Перевірте логін та пароль користувача MySQL.";
+        case 2002: // Can't connect to server
+            return "Перевірте чи запущений MySQL сервер та правильність хоста.";
+        case 1044: // Access denied for database
+            return "У користувача немає прав на створення баз даних.";
+        case 2005: // Unknown host
+            return "Невірний хост. Спробуйте 'localhost' або '127.0.0.1'.";
+        default:
+            return "Зверніться до адміністратора сервера для вирішення проблеми.";
+    }
 }
 
 function installSite() {

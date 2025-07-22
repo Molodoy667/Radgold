@@ -1,7 +1,9 @@
 <?php
-if (!isAdmin()) {
-    redirect(SITE_URL . '/admin/login.php');
-}
+require_once '../core/config.php';
+require_once '../core/database.php';
+require_once '../core/functions.php';
+
+require_once 'header.php';
 
 // Отримуємо статистику
 $db = Database::getInstance();
@@ -288,3 +290,5 @@ $recentUsers = $db->query("
     background-color: rgba(0, 0, 0, 0.1);
 }
 </style>
+
+<?php require_once 'footer.php'; ?>

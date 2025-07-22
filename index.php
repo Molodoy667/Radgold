@@ -44,10 +44,15 @@ switch ($route) {
         break;
         
     case 'admin':
+        if (!isLoggedIn()) {
+            redirect(SITE_URL . '/admin/login.php');
+        }
         if (!isAdmin()) {
             redirect(SITE_URL . '/login');
         }
-        $page = 'admin/dashboard.php';
+        // Підключаємо адмін header замість звичайного
+        require_once 'admin/dashboard.php';
+        exit;
         break;
         
     default:

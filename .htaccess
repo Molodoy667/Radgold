@@ -1,0 +1,21 @@
+# Увімкнення mod_rewrite
+RewriteEngine On
+
+# Головна сторінка
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^ index.php [L]
+
+# Адмінка
+RewriteCond %{REQUEST_URI} ^/admin
+RewriteRule ^admin(/.*)?$ admin/admin.php [L]
+
+# AJAX
+RewriteCond %{REQUEST_URI} ^/ajax.php$
+RewriteRule ^ajax.php$ ajax.php [L]
+
+# Віддавати статичні файли напряму
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Все інше на index.php
+RewriteRule ^ index.php [L]

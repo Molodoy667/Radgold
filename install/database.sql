@@ -9,11 +9,13 @@ CREATE TABLE site_settings (
     site_description TEXT,
     site_keywords TEXT,
     site_author VARCHAR(255) DEFAULT 'AdBoard Pro Team',
-    logo VARCHAR(255) DEFAULT 'images/logo.png',
-    favicon VARCHAR(255) DEFAULT 'images/favicon.ico',
+    logo_url VARCHAR(255) DEFAULT 'images/default_logo.svg',
+    favicon_url VARCHAR(255) DEFAULT 'images/favicon.svg',
     contact_email VARCHAR(255),
     contact_phone VARCHAR(50),
     contact_address TEXT,
+    timezone VARCHAR(50) DEFAULT 'Europe/Kiev',
+    language VARCHAR(10) DEFAULT 'uk',
     social_facebook VARCHAR(255),
     social_twitter VARCHAR(255),
     social_instagram VARCHAR(255),
@@ -30,6 +32,10 @@ CREATE TABLE theme_settings (
     id INT PRIMARY KEY AUTO_INCREMENT,
     current_theme ENUM('light', 'dark') DEFAULT 'light',
     current_gradient VARCHAR(50) DEFAULT 'gradient-1',
+    enable_animations BOOLEAN DEFAULT TRUE,
+    enable_particles BOOLEAN DEFAULT FALSE,
+    smooth_scroll BOOLEAN DEFAULT TRUE,
+    enable_tooltips BOOLEAN DEFAULT TRUE,
     custom_css TEXT,
     custom_js TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -39,26 +45,55 @@ CREATE TABLE theme_settings (
 -- Таблиця користувачів
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(50) UNIQUE NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20) NULL,
     password VARCHAR(255) NOT NULL,
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    phone VARCHAR(20),
     avatar VARCHAR(255),
-    role ENUM('user', 'admin', 'moderator') DEFAULT 'user',
-    status ENUM('active', 'inactive', 'banned') DEFAULT 'active',
+    user_type ENUM('user', 'partner', 'admin') DEFAULT 'user',
+    role ENUM('user', 'admin', 'moderator', 'partner') DEFAULT 'user',
+    status ENUM('active', 'inactive', 'banned', 'pending') DEFAULT 'active',
     email_verified BOOLEAN DEFAULT FALSE,
+    newsletter BOOLEAN DEFAULT FALSE,
+    google_id VARCHAR(100) NULL,
     email_verification_token VARCHAR(255),
-    reset_password_token VARCHAR(255),
-    reset_password_expires DATETIME,
     last_login TIMESTAMP NULL,
+    login_count INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
     INDEX idx_username (username),
+    INDEX idx_user_type (user_type),
     INDEX idx_role (role),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    INDEX idx_google_id (google_id)
+);
+
+-- Таблиця для токенів запам'ятовування
+CREATE TABLE remember_tokens (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_user_id (user_id),
+    INDEX idx_expires (expires_at)
+);
+
+-- Таблиця для відновлення паролю
+CREATE TABLE password_resets (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_email (email),
+    INDEX idx_token (token),
+    INDEX idx_expires (expires_at)
 );
 
 -- Таблиця категорій
@@ -312,6 +347,48 @@ INSERT INTO pages (title, slug, content, meta_title, meta_description, status) V
 'Політика конфіденційності - AdBoard Pro',
 'Політика конфіденційності та захисту персональних даних',
 'published');
+
+-- Початкові дані для налаштувань сайту
+INSERT INTO site_settings (
+    site_title, 
+    site_description, 
+    site_keywords, 
+    site_author,
+    logo_url,
+    favicon_url,
+    contact_email,
+    timezone,
+    language,
+    meta_robots
+) VALUES (
+    'AdBoard Pro',
+    'Рекламна компанія та дошка оголошень',
+    'реклама, оголошення, дошка оголошень, маркетинг',
+    'AdBoard Pro Team',
+    'images/default_logo.svg',
+    'images/favicon.svg',
+    'info@adboardpro.com',
+    'Europe/Kiev',
+    'uk',
+    'index, follow'
+);
+
+-- Початкові дані для налаштувань теми
+INSERT INTO theme_settings (
+    current_theme,
+    current_gradient,
+    enable_animations,
+    enable_particles,
+    smooth_scroll,
+    enable_tooltips
+) VALUES (
+    'light',
+    'gradient-1',
+    TRUE,
+    FALSE,
+    TRUE,
+    TRUE
+);
 
 -- Створення директорій для завантажень
 -- Це буде зроблено через PHP код

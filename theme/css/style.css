@@ -63,3 +63,90 @@ h2 {
     color: #f8f9fa;
     font-size: 1.05rem;
 }
+
+.navbar {
+    border-radius: 1.2rem;
+    box-shadow: 0 2px 16px #a1c4fd22;
+    background: rgba(255,255,255,0.95) !important;
+    margin-top: 1.2rem;
+    margin-bottom: 2rem;
+    padding: 0.7rem 1.2rem;
+}
+.navbar .navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    color: #3498db !important;
+    text-shadow: 0 2px 8px #a1c4fd33;
+}
+.navbar .nav-link {
+    font-weight: 500;
+    color: #3498db !important;
+    border-radius: 1rem;
+    transition: background .2s, color .2s;
+}
+.navbar .nav-link.active, .navbar .nav-link:hover {
+    background: #e3f0fc;
+    color: #2176ae !important;
+}
+.theme-toggle {
+    border-radius: 50%;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    background: #e3f0fc;
+    color: #3498db;
+    border: none;
+    transition: background .2s, color .2s;
+}
+.theme-toggle:hover {
+    background: #a1c4fd;
+    color: #fff;
+}
+
+/* Sidebar */
+.sidebar {
+    background: rgba(255,255,255,0.93);
+    border-radius: 1.2rem;
+    box-shadow: 0 2px 16px #a1c4fd22;
+    padding: 2rem 1.2rem 1.2rem 1.2rem;
+    margin-bottom: 2rem;
+    min-width: 220px;
+}
+.sidebar h5 {
+    color: #3498db;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+}
+.sidebar .nav-link {
+    color: #2176ae;
+    font-weight: 500;
+    border-radius: 0.8rem;
+    margin-bottom: 0.3rem;
+    transition: background .2s, color .2s;
+}
+.sidebar .nav-link.active, .sidebar .nav-link:hover {
+    background: #e3f0fc;
+    color: #3498db;
+}
+
+/* Modal design */
+.modal-content {
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 32px #a1c4fd33;
+}
+.modal-header {
+    border-bottom: none;
+}
+.modal-title {
+    color: #3498db;
+    font-weight: 700;
+}
+.gradient-select {
+    border: 2px solid #fff !important;
+    transition: border .2s, box-shadow .2s;
+}
+.gradient-select:focus, .gradient-select:active {
+    border: 2.5px solid #3498db !important;
+    box-shadow: 0 0 0 2px #a1c4fd55;
+}

@@ -21,7 +21,9 @@ $gradient = get_gradient();
 </head>
 <body data-theme="<?= htmlspecialchars($theme) ?>" class="<?= htmlspecialchars($gradient) ?>">
 <?php include __DIR__ . '/navbar.php'; ?>
-<?php include __DIR__ . '/sidebar.php'; ?>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-12">
+    <div class="col-lg-2 d-none d-lg-block">
+      <?php include __DIR__ . '/sidebar.php'; ?>
+    </div>
+    <div class="col-12 col-lg-10 pt-2 pt-lg-4">

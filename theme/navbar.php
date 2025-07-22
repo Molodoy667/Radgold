@@ -1,6 +1,9 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
+<nav class="navbar navbar-expand-lg shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><?= SITE_NAME ?></a>
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <span style="font-size:1.7rem;color:#3498db;"><i class="bi bi-bullseye"></i></span>
+      <span><?= htmlspecialchars(get_site_name()) ?></span>
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -9,8 +12,8 @@
         <li class="nav-item"><a class="nav-link" href="/">Головна</a></li>
         <li class="nav-item"><a class="nav-link" href="/admin/">Адмінка</a></li>
       </ul>
-      <button class="btn btn-outline-secondary me-2 theme-toggle" title="Перемкнути тему"><i class="bi bi-moon"></i></button>
-      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#designModal">Оформлення</button>
+      <button class="theme-toggle me-2" title="Перемкнути тему"><i class="bi bi-moon"></i></button>
+      <button class="btn btn-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#designModal"><i class="bi bi-palette"></i> Оформлення</button>
     </div>
   </div>
 </nav>

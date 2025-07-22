@@ -1,7 +1,13 @@
 <?php
 // Якщо користувач вже авторизований, перенаправляємо
-if (isLoggedIn()) {
-    redirect(SITE_URL);
+if (function_exists('isLoggedIn') && isLoggedIn()) {
+    $redirectUrl = defined('SITE_URL') ? SITE_URL : '/';
+    if (function_exists('redirect')) {
+        redirect($redirectUrl);
+    } else {
+        header('Location: ' . $redirectUrl);
+        exit;
+    }
 }
 
 $error = '';
@@ -36,7 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         [$user['id']]
                     );
                     
-                    redirect(SITE_URL);
+                    $redirectUrl = defined('SITE_URL') ? SITE_URL : '/';
+                    if (function_exists('redirect')) {
+                        redirect($redirectUrl);
+                    } else {
+                        header('Location: ' . $redirectUrl);
+                        exit;
+                    }
                 } else {
                     $error = 'Невірний email або пароль';
                 }
@@ -100,13 +112,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     <div class="text-center">
                         <p class="mb-3">Ще не маєте акаунт?</p>
-                        <a href="<?php echo SITE_URL; ?>/register" class="btn btn-outline-primary">
+                        <a href="<?php echo function_exists('getSiteUrl') ? getSiteUrl('register') : '/register'; ?>" class="btn btn-outline-primary">
                             <i class="fas fa-user-plus me-2"></i>Створити акаунт
                         </a>
                     </div>
                     
                     <div class="text-center mt-3">
-                        <a href="<?php echo SITE_URL; ?>/forgot-password" class="text-decoration-none">
+                        <a href="<?php echo function_exists('getSiteUrl') ? getSiteUrl('forgot-password') : '/forgot-password'; ?>" class="text-decoration-none">
                             <i class="fas fa-key me-2"></i>Забули пароль?
                         </a>
                     </div>

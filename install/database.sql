@@ -432,6 +432,147 @@ CREATE TABLE partner_info (
     INDEX idx_verified (verified)
 );
 
+-- Додаткові таблиці для дошки оголошень
+
+-- Таблиця категорій оголошень (розширена)
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS meta_title VARCHAR(255);
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS meta_description TEXT;
+
+-- Таблиця міст/локацій для оголошень
+CREATE TABLE IF NOT EXISTS locations (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    region VARCHAR(100),
+    country VARCHAR(100) DEFAULT 'Ukraine',
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
+    is_active BOOLEAN DEFAULT TRUE,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_slug (slug),
+    INDEX idx_region (region),
+    INDEX idx_active (is_active)
+);
+
+-- Таблиця оголошень
+CREATE TABLE IF NOT EXISTS ads (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    category_id INT NOT NULL,
+    location_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT NOT NULL,
+    price DECIMAL(12, 2),
+    currency VARCHAR(3) DEFAULT 'UAH',
+    contact_name VARCHAR(100),
+    contact_phone VARCHAR(20),
+    contact_email VARCHAR(100),
+    address TEXT,
+    condition_type ENUM('new', 'used', 'refurbished') DEFAULT 'used',
+    status ENUM('draft', 'pending', 'active', 'sold', 'expired', 'rejected', 'archived') DEFAULT 'pending',
+    moderation_comment TEXT,
+    views_count INT DEFAULT 0,
+    favorites_count INT DEFAULT 0,
+    is_featured BOOLEAN DEFAULT FALSE,
+    featured_until DATETIME NULL,
+    is_urgent BOOLEAN DEFAULT FALSE,
+    urgent_until DATETIME NULL,
+    auto_republish BOOLEAN DEFAULT FALSE,
+    expires_at DATETIME,
+    published_at DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
+    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE RESTRICT,
+    INDEX idx_user (user_id),
+    INDEX idx_category (category_id),
+    INDEX idx_location (location_id),
+    INDEX idx_status (status),
+    INDEX idx_featured (is_featured),
+    INDEX idx_urgent (is_urgent),
+    INDEX idx_published (published_at),
+    INDEX idx_expires (expires_at),
+    FULLTEXT idx_search (title, description)
+);
+
+-- Таблиця зображень оголошень
+CREATE TABLE IF NOT EXISTS ad_images (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ad_id INT NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    original_name VARCHAR(255),
+    file_size INT,
+    mime_type VARCHAR(100),
+    is_main BOOLEAN DEFAULT FALSE,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
+    INDEX idx_ad (ad_id),
+    INDEX idx_main (is_main)
+);
+
+-- Таблиця улюблених оголошень
+CREATE TABLE IF NOT EXISTS favorites (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    ad_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_favorite (user_id, ad_id),
+    INDEX idx_user (user_id),
+    INDEX idx_ad (ad_id)
+);
+
+-- Таблиця переглядів оголошень
+CREATE TABLE IF NOT EXISTS ad_views (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ad_id INT NOT NULL,
+    user_id INT NULL,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_ad (ad_id),
+    INDEX idx_user (user_id),
+    INDEX idx_ip (ip_address),
+    INDEX idx_date (created_at)
+);
+
+-- Таблиця платних послуг
+CREATE TABLE IF NOT EXISTS paid_services (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    duration_days INT NOT NULL,
+    service_type ENUM('featured', 'urgent', 'top', 'highlight', 'republish') NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_type (service_type),
+    INDEX idx_active (is_active)
+);
+
+-- Вставка міст України
+INSERT IGNORE INTO locations (name, slug, region, latitude, longitude, sort_order) VALUES
+('Київ', 'kyiv', 'Київська область', 50.4501, 30.5234, 1),
+('Харків', 'kharkiv', 'Харківська область', 49.9935, 36.2304, 2),
+('Одеса', 'odesa', 'Одеська область', 46.4825, 30.7233, 3),
+('Дніпро', 'dnipro', 'Дніпропетровська область', 48.4647, 35.0462, 4),
+('Львів', 'lviv', 'Львівська область', 49.8397, 24.0297, 5),
+('Запоріжжя', 'zaporizhzhia', 'Запорізька область', 47.8388, 35.1396, 6);
+
+-- Вставка платних послуг
+INSERT IGNORE INTO paid_services (name, description, price, duration_days, service_type) VALUES
+('Виділити оголошення', 'Ваше оголошення буде виділено кольором', 50.00, 7, 'highlight'),
+('Закріпити зверху', 'Оголошення з\'явиться в топі списку', 100.00, 3, 'top'),
+('Термінове оголошення', 'Позначка "Термінове" привертає увагу', 30.00, 3, 'urgent'),
+('Рекомендоване', 'Показ в блоці рекомендованих', 150.00, 7, 'featured');
+
 -- Створення директорій для завантажень
 -- Це буде зроблено через PHP код
 

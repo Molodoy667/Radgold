@@ -138,23 +138,46 @@ $(document).ready(function() {
             test_connection: 1,
             db_host: host,
             db_user: user,
-            db_pass: $('#db_pass').val()
+            db_pass: $('#db_pass').val(),
+            db_name: $('#db_name').val()
         };
         
         // AJAX запит
-        $.post(window.location.href, formData)
-            .done(function(response) {
-                // Перезавантажуємо сторінку для показу результату
-                location.reload();
-            })
-            .fail(function(xhr) {
+        $.ajax({
+            url: window.location.href,
+            method: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $result.removeClass('alert-danger').addClass('alert-success alert')
+                           .html('<i class="fas fa-check me-2"></i>' + response.message)
+                           .show();
+                    // Активуємо кнопку "Далі"
+                    $('#nextBtn').prop('disabled', false);
+                } else {
+                    $result.removeClass('alert-success').addClass('alert-danger alert')
+                           .html('<i class="fas fa-times me-2"></i>' + response.message)
+                           .show();
+                }
+            },
+            error: function(xhr, status, error) {
+                let errorMessage = 'Помилка тестування підключення';
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    errorMessage = response.message || errorMessage;
+                } catch (e) {
+                    errorMessage = 'Помилка сервера: ' + error;
+                }
+                
                 $result.removeClass('alert-success').addClass('alert-danger alert')
-                       .html('<i class="fas fa-times me-2"></i>Помилка тестування підключення')
+                       .html('<i class="fas fa-times me-2"></i>' + errorMessage)
                        .show();
-            })
-            .always(function() {
+            },
+            complete: function() {
                 $btn.prop('disabled', false).html(originalText);
-            });
+            }
+        });
     });
     
     // Валідація назви бази даних

@@ -709,6 +709,24 @@ CREATE TABLE IF NOT EXISTS user_blocks (
     FOREIGN KEY (blocked_user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Таблиця заявок на консультації
+CREATE TABLE IF NOT EXISTS consultation_requests (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    service_type ENUM('smm', 'seo', 'web', 'design', 'complex') NOT NULL,
+    message TEXT,
+    status ENUM('new', 'processing', 'completed', 'cancelled') DEFAULT 'new',
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_status (status),
+    INDEX idx_service_type (service_type),
+    INDEX idx_created_at (created_at)
+);
+
 -- Оптимізуємо індекси для існуючих таблиць
 ALTER TABLE users ADD INDEX IF NOT EXISTS idx_status (status);
 ALTER TABLE users ADD INDEX IF NOT EXISTS idx_role (role);

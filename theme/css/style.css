@@ -1,5 +1,65 @@
 /* Основні стилі сайту */
 body {
-    font-family: Arial, sans-serif;
-    background: #f8f9fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    min-height: 100vh;
+}
+
+h2 {
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #3498db;
+    text-shadow: 0 2px 8px #a1c4fd33;
+}
+
+.card.category-card {
+    border: none;
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 24px #a1c4fd33;
+    transition: transform .2s, box-shadow .2s;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(2px);
+}
+.card.category-card:hover {
+    transform: scale(1.07) rotate(-1deg);
+    box-shadow: 0 8px 32px #3498db33;
+    z-index: 2;
+}
+.card.category-card .card-body {
+    padding: 1.2rem 0.5rem;
+}
+.card.category-card i {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+    text-shadow: 0 2px 8px #0002;
+}
+
+.card.ad-card {
+    border: none;
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 24px #a1c4fd33;
+    transition: box-shadow .2s, transform .2s;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(2px);
+    overflow: hidden;
+}
+.card.ad-card:hover {
+    box-shadow: 0 12px 36px #3498db33;
+    transform: translateY(-4px) scale(1.03);
+    z-index: 2;
+}
+.card.ad-card .card-img-top {
+    border-radius: 1.2rem 1.2rem 0 0;
+    object-fit: cover;
+    height: 180px;
+}
+.card.ad-card .card-title {
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 2px 8px #0002;
+}
+.card.ad-card .card-text {
+    color: #f8f9fa;
+    font-size: 1.05rem;
 }

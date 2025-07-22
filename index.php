@@ -26,10 +26,10 @@ $ads = [
   <div class="row g-4 mb-5 justify-content-center">
     <?php foreach($categories as $cat): ?>
       <div class="col-6 col-md-4 col-lg-2">
-        <div class="card text-white text-center shadow-lg animate__animated animate__zoomIn <?= $cat['gradient'] ?>" style="cursor:pointer;transition:transform .2s;" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'">
-          <div class="card-body">
-            <i class="bi <?= $cat['icon'] ?>" style="font-size:2rem;"></i>
-            <h5 class="card-title mt-2"><?= htmlspecialchars($cat['name']) ?></h5>
+        <div class="card category-card text-white text-center <?= $cat['gradient'] ?> animate__animated animate__zoomIn">
+          <div class="card-body d-flex flex-column align-items-center justify-content-center">
+            <i class="bi <?= $cat['icon'] ?>"></i>
+            <h5 class="card-title mt-2 mb-0"><?= htmlspecialchars($cat['name']) ?></h5>
           </div>
         </div>
       </div>
@@ -39,11 +39,11 @@ $ads = [
   <div class="row g-4">
     <?php foreach($ads as $ad): $cat = $categories[$ad['cat']-1]; ?>
       <div class="col-md-4">
-        <div class="card h-100 shadow animate__animated animate__fadeInUp <?= $cat['gradient'] ?>" style="transition:box-shadow .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 0 30px #0002'" onmouseout="this.style.boxShadow='0 4px 16px #0001'">
+        <div class="card ad-card <?= $cat['gradient'] ?> animate__animated animate__fadeInUp h-100">
           <img src="<?= $ad['img'] ?>" class="card-img-top" alt="<?= htmlspecialchars($ad['title']) ?>">
           <div class="card-body">
             <h5 class="card-title"><i class="bi <?= $cat['icon'] ?>"></i> <?= htmlspecialchars($ad['title']) ?></h5>
-            <p class="card-text text-white-50"><?= htmlspecialchars($ad['desc']) ?></p>
+            <p class="card-text"><?= htmlspecialchars($ad['desc']) ?></p>
           </div>
         </div>
       </div>

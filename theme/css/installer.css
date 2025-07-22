@@ -1,0 +1,84 @@
+body.installer-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.installer-card {
+  max-width: 480px;
+  margin: 2rem auto;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px #0002, 0 1.5px 6px #a1c4fd44;
+  background: #fff;
+  overflow: hidden;
+  animation: fadeInUp 0.7s cubic-bezier(.39,.575,.565,1) both;
+}
+@keyframes fadeInUp {
+  0% { opacity:0; transform:translateY(40px); }
+  100% { opacity:1; transform:translateY(0); }
+}
+.installer-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.installer-step {
+  flex: 1 1 0;
+  text-align: center;
+  position: relative;
+}
+.installer-step .circle {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: #e3f0fc;
+  color: #3498db;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.5rem auto;
+  font-size: 1.3rem;
+  border: 2px solid #a1c4fd;
+  transition: background .3s, color .3s, border .3s;
+}
+.installer-step.active .circle {
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  color: #fff;
+  border: 2px solid #3498db;
+}
+.installer-step .label {
+  font-size: 0.95rem;
+  color: #3498db;
+  font-weight: 500;
+}
+.installer-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 19px; left: 100%;
+  width: 100%; height: 4px;
+  background: #e3f0fc;
+  z-index: 0;
+}
+.installer-step.active:not(:last-child)::after {
+  background: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+.btn-installer {
+  border-radius: 2rem;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px #a1c4fd33;
+  transition: background .2s, color .2s;
+}
+.btn-installer i { margin-right: 0.5em; }
+.btn-installer:active { transform: scale(0.97); }
+.form-control:focus, .form-select:focus {
+  border-color: #a1c4fd;
+  box-shadow: 0 0 0 0.2rem #a1c4fd33;
+}
+.gradient-radio label {
+  margin-right: 0.5rem;
+}
+.gradient-radio input:checked + span {
+  border: 2.5px solid #3498db !important;
+  box-shadow: 0 0 0 2px #a1c4fd55;
+}

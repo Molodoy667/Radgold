@@ -36,7 +36,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
   }
 }
 ?>
-<form method="post">
+<form method="post" class="animate__animated animate__fadeIn">
+  <h5 class="mb-3">Налаштування сайту та створення адміністратора</h5>
   <div class="mb-3"><label class="form-label">Назва сайту</label><input type="text" name="site_name" class="form-control" required></div>
   <div class="mb-3"><label class="form-label">Тема сайту</label>
     <select name="theme" class="form-select">
@@ -45,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     </select>
   </div>
   <div class="mb-3"><label class="form-label">Градієнт оформлення</label>
-    <div class="d-flex flex-wrap gap-2">
+    <div class="d-flex flex-wrap gap-2 gradient-radio">
       <?php for($i=1;$i<=30;$i++): ?>
         <label style="cursor:pointer;">
           <input type="radio" name="gradient" value="gradient-<?= $i ?>" <?= $gradient==="gradient-$i"?'checked':'' ?> hidden>
@@ -58,5 +59,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
   <div class="mb-3"><label class="form-label">Пароль адміністратора</label><input type="password" name="admin_pass" class="form-control" required></div>
   <div class="mb-3"><label class="form-label">Email адміністратора</label><input type="email" name="admin_email" class="form-control" required></div>
   <?php if($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
-  <button class="btn btn-success" type="submit">Завершити встановлення</button>
+  <div class="d-flex justify-content-between mt-3">
+    <a href="?step=3" class="btn btn-installer btn-outline-secondary"><i class="bi bi-arrow-left"></i>Назад</a>
+    <button class="btn btn-installer btn-success" type="submit"><i class="bi bi-check-circle"></i>Завершити встановлення</button>
+  </div>
 </form>

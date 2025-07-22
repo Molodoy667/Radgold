@@ -21,33 +21,37 @@ $ads = [
   ['id'=>6,'title'=>'Сумка Gucci','cat'=>6,'desc'=>'Оригінал, нова.','img'=>'https://picsum.photos/seed/bag/300/200'],
 ];
 ?>
-<div class="container py-4">
-  <h2 class="mb-4 text-center animate__animated animate__fadeInDown">Категорії</h2>
-  <div class="row g-4 mb-5 justify-content-center">
-    <?php foreach($categories as $cat): ?>
-      <div class="col-6 col-md-4 col-lg-2">
-        <div class="card category-card text-white text-center <?= $cat['gradient'] ?> animate__animated animate__zoomIn">
-          <div class="card-body d-flex flex-column align-items-center justify-content-center">
-            <i class="bi <?= $cat['icon'] ?>"></i>
-            <h5 class="card-title mt-2 mb-0"><?= htmlspecialchars($cat['name']) ?></h5>
+<div class="container py-5">
+  <div class="mb-5">
+    <h2 class="gradient-title animate__animated animate__fadeInDown">Категорії</h2>
+    <div class="row g-5 justify-content-center">
+      <?php foreach($categories as $cat): ?>
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+          <div class="card category-card glass text-white text-center <?= $cat['gradient'] ?> animate__animated animate__zoomIn">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <i class="bi <?= $cat['icon'] ?>"></i>
+              <h5 class="card-title mt-2 mb-0 fs-4"><?= htmlspecialchars($cat['name']) ?></h5>
+            </div>
           </div>
         </div>
-      </div>
-    <?php endforeach; ?>
+      <?php endforeach; ?>
+    </div>
   </div>
-  <h2 class="mb-4 text-center animate__animated animate__fadeInDown">Оголошення</h2>
-  <div class="row g-4">
-    <?php foreach($ads as $ad): $cat = $categories[$ad['cat']-1]; ?>
-      <div class="col-md-4">
-        <div class="card ad-card <?= $cat['gradient'] ?> animate__animated animate__fadeInUp h-100">
-          <img src="<?= $ad['img'] ?>" class="card-img-top" alt="<?= htmlspecialchars($ad['title']) ?>">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi <?= $cat['icon'] ?>"></i> <?= htmlspecialchars($ad['title']) ?></h5>
-            <p class="card-text"><?= htmlspecialchars($ad['desc']) ?></p>
+  <div>
+    <h2 class="gradient-title animate__animated animate__fadeInDown">Оголошення</h2>
+    <div class="row g-5">
+      <?php foreach($ads as $ad): $cat = $categories[$ad['cat']-1]; ?>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card ad-card glass <?= $cat['gradient'] ?> animate__animated animate__fadeInUp h-100">
+            <img src="<?= $ad['img'] ?>" class="card-img-top" alt="<?= htmlspecialchars($ad['title']) ?>">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi <?= $cat['icon'] ?>"></i> <?= htmlspecialchars($ad['title']) ?></h5>
+              <p class="card-text"><?= htmlspecialchars($ad['desc']) ?></p>
+            </div>
           </div>
         </div>
-      </div>
-    <?php endforeach; ?>
+      <?php endforeach; ?>
+    </div>
   </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>

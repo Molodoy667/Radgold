@@ -17,9 +17,7 @@ require_once __DIR__ . '/../core/config.php';
 </head>
 <body data-theme="light">
 <?php include __DIR__ . '/navbar.php'; ?>
+<?php include __DIR__ . '/sidebar.php'; ?>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-2 d-none d-md-block">
-      <?php include __DIR__ . '/sidebar.php'; ?>
-    </div>
-    <div class="col-md-10">
+    <div class="col-12">

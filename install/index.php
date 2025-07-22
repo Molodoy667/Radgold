@@ -97,69 +97,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 4:
-            $site_name = trim($_POST['site_name'] ?? 'AdBoard Pro');
-            $site_description = trim($_POST['site_description'] ?? '');
-            $site_keywords = trim($_POST['site_keywords'] ?? '');
-            $site_url = trim($_POST['site_url'] ?? 'http://' . $_SERVER['HTTP_HOST']);
-            
-            $_SESSION['install_data']['site_config'] = [
-                'name' => $site_name,
-                'description' => $site_description,
-                'keywords' => $site_keywords,
-                'url' => rtrim($site_url, '/')
+            // Налаштування сайту
+            $siteData = [
+                'site_name' => trim($_POST['site_name'] ?? ''),
+                'site_url' => trim($_POST['site_url'] ?? ''),
+                'site_description' => trim($_POST['site_description'] ?? ''),
+                'site_keywords' => trim($_POST['site_keywords'] ?? ''),
+                'contact_email' => trim($_POST['contact_email'] ?? ''),
+                'timezone' => $_POST['timezone'] ?? 'Europe/Kiev',
+                'language' => $_POST['language'] ?? 'uk'
             ];
             
+            if (empty($siteData['site_name']) || empty($siteData['site_url']) || 
+                empty($siteData['site_description']) || empty($siteData['contact_email'])) {
+                $error = 'Заповніть всі обов\'язкові поля налаштувань сайту.';
+                break;
+            }
+            
+            $_SESSION['install_data']['site'] = $siteData;
             logInstallStep('site_config', 'Налаштування сайту збережено', 'success');
             header('Location: ?step=5');
             exit();
             break;
 
         case 5:
-            $theme = $_POST['theme'] ?? 'light';
-            $gradient = $_POST['gradient'] ?? 'gradient-1';
-            
-            $_SESSION['install_data']['theme_config'] = [
-                'theme' => $theme,
-                'gradient' => $gradient
+            // Налаштування теми
+            $themeData = [
+                'default_theme' => $_POST['default_theme'] ?? 'light',
+                'default_gradient' => $_POST['default_gradient'] ?? 'gradient-1',
+                'enable_animations' => isset($_POST['enable_animations']),
+                'enable_particles' => isset($_POST['enable_particles']),
+                'smooth_scroll' => isset($_POST['smooth_scroll']),
+                'enable_tooltips' => isset($_POST['enable_tooltips'])
             ];
             
+            $_SESSION['install_data']['theme'] = $themeData;
             logInstallStep('theme', 'Налаштування теми збережено', 'success');
             header('Location: ?step=6');
             exit();
             break;
 
         case 6:
-            $admin_username = trim($_POST['admin_username'] ?? '');
-            $admin_email = trim($_POST['admin_email'] ?? '');
-            $admin_password = $_POST['admin_password'] ?? '';
-            $admin_password_confirm = $_POST['admin_password_confirm'] ?? '';
-            
-            if (empty($admin_username) || empty($admin_email) || empty($admin_password)) {
-                $error = 'Заповніть всі поля';
-                break;
-            }
-            
-            if (!filter_var($admin_email, FILTER_VALIDATE_EMAIL)) {
-                $error = 'Невірний формат email';
-                break;
-            }
-            
-            if (strlen($admin_password) < 6) {
-                $error = 'Пароль повинен містити мінімум 6 символів';
-                break;
-            }
-            
-            if ($admin_password !== $admin_password_confirm) {
-                $error = 'Паролі не співпадають';
-                break;
-            }
-            
-            $_SESSION['install_data']['admin_config'] = [
-                'username' => $admin_username,
-                'email' => $admin_email,
-                'password' => $admin_password
+            // Реєстрація адміністратора
+            $adminData = [
+                'admin_login' => trim($_POST['admin_login'] ?? ''),
+                'admin_email' => trim($_POST['admin_email'] ?? ''),
+                'admin_password' => $_POST['admin_password'] ?? '',
+                'admin_password_confirm' => $_POST['admin_password_confirm'] ?? '',
+                'admin_first_name' => trim($_POST['admin_first_name'] ?? ''),
+                'admin_last_name' => trim($_POST['admin_last_name'] ?? '')
             ];
             
+            if (empty($adminData['admin_login']) || empty($adminData['admin_email']) || 
+                empty($adminData['admin_password'])) {
+                $error = 'Заповніть всі обов\'язкові поля для створення адміністратора.';
+                break;
+            }
+            
+            if ($adminData['admin_password'] !== $adminData['admin_password_confirm']) {
+                $error = 'Паролі не співпадають.';
+                break;
+            }
+            
+            if (strlen($adminData['admin_password']) < 6) {
+                $error = 'Пароль має містити мінімум 6 символів.';
+                break;
+            }
+            
+            if (!filter_var($adminData['admin_email'], FILTER_VALIDATE_EMAIL)) {
+                $error = 'Введіть коректний email адрес.';
+                break;
+            }
+            
+            if (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $adminData['admin_login'])) {
+                $error = 'Логін має містити 3-20 символів (тільки букви, цифри, підкреслення).';
+                break;
+            }
+            
+            $_SESSION['install_data']['admin'] = $adminData;
             logInstallStep('admin', 'Дані адміністратора збережено', 'success');
             header('Location: ?step=7');
             exit();
@@ -260,33 +275,56 @@ function installSite() {
     logInstallStep('install', "Виконано $executed SQL запитів", 'success');
     
     // Налаштування сайту
-    $siteConfig = $installData['site_config'];
-    $themeConfig = $installData['theme_config'];
+    logInstallStep('install', 'Налаштовуємо сайт...', 'info');
+    $siteConfig = $installData['site'];
+    $themeConfig = $installData['theme'];
     
     $stmt = $connection->prepare(
-        "UPDATE site_settings SET site_title = ?, site_description = ?, site_keywords = ? WHERE id = 1"
+        "UPDATE site_settings SET site_title = ?, site_description = ?, site_keywords = ?, contact_email = ?, timezone = ?, language = ? WHERE id = 1"
     );
-    $stmt->bind_param('sss', $siteConfig['name'], $siteConfig['description'], $siteConfig['keywords']);
+    $stmt->bind_param('ssssss', 
+        $siteConfig['site_name'], 
+        $siteConfig['site_description'], 
+        $siteConfig['site_keywords'],
+        $siteConfig['contact_email'],
+        $siteConfig['timezone'],
+        $siteConfig['language']
+    );
     $stmt->execute();
     
     $stmt = $connection->prepare(
-        "UPDATE theme_settings SET current_theme = ?, current_gradient = ? WHERE id = 1"
+        "UPDATE theme_settings SET current_theme = ?, current_gradient = ?, enable_animations = ?, enable_particles = ?, smooth_scroll = ?, enable_tooltips = ? WHERE id = 1"
     );
-    $stmt->bind_param('ss', $themeConfig['theme'], $themeConfig['gradient']);
+    $stmt->bind_param('ssssss', 
+        $themeConfig['default_theme'], 
+        $themeConfig['default_gradient'],
+        $themeConfig['enable_animations'] ? 1 : 0,
+        $themeConfig['enable_particles'] ? 1 : 0,
+        $themeConfig['smooth_scroll'] ? 1 : 0,
+        $themeConfig['enable_tooltips'] ? 1 : 0
+    );
     $stmt->execute();
+    
+    logInstallStep('install', 'Налаштування сайту збережено', 'success');
     
     // Створення адміністратора
     logInstallStep('install', 'Створюємо адміністратора...', 'info');
     
-    $adminConfig = $installData['admin_config'];
-    $hashedPassword = password_hash($adminConfig['password'], PASSWORD_DEFAULT);
+    $adminConfig = $installData['admin'];
+    $hashedPassword = password_hash($adminConfig['admin_password'], PASSWORD_DEFAULT);
     
     $connection->query("DELETE FROM users WHERE email = 'admin@adboardpro.com'");
     
     $stmt = $connection->prepare(
-        "INSERT INTO users (username, email, password, role, status, email_verified) VALUES (?, ?, ?, 'admin', 'active', 1)"
+        "INSERT INTO users (username, email, password, first_name, last_name, role, status, email_verified, created_at) VALUES (?, ?, ?, ?, ?, 'admin', 'active', 1, NOW())"
     );
-    $stmt->bind_param('sss', $adminConfig['username'], $adminConfig['email'], $hashedPassword);
+    $stmt->bind_param('sssss', 
+        $adminConfig['admin_login'], 
+        $adminConfig['admin_email'], 
+        $hashedPassword,
+        $adminConfig['admin_first_name'],
+        $adminConfig['admin_last_name']
+    );
     
     if (!$stmt->execute()) {
         throw new Exception('Помилка створення адміністратора');
@@ -303,10 +341,13 @@ define('DB_USER', '{$dbConfig['user']}');
 define('DB_PASS', '{$dbConfig['pass']}');
 define('DB_NAME', '{$dbConfig['name']}');
 
-define('SITE_URL', '{$siteConfig['url']}');
-define('SITE_NAME', '{$siteConfig['name']}');
-define('SITE_DESCRIPTION', '{$siteConfig['description']}');
-define('SITE_KEYWORDS', '{$siteConfig['keywords']}');
+define('SITE_URL', '{$siteConfig['site_url']}');
+define('SITE_NAME', '{$siteConfig['site_name']}');
+define('SITE_DESCRIPTION', '{$siteConfig['site_description']}');
+define('SITE_KEYWORDS', '{$siteConfig['site_keywords']}');
+define('CONTACT_EMAIL', '{$siteConfig['contact_email']}');
+define('SITE_TIMEZONE', '{$siteConfig['timezone']}');
+define('SITE_LANGUAGE', '{$siteConfig['language']}');
 
 define('SECRET_KEY', '" . bin2hex(random_bytes(32)) . "');
 define('SESSION_NAME', 'adboard_session');

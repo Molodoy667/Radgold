@@ -89,12 +89,25 @@ function testDatabaseConnection() {
     const $result = $('#connectionResult');
     const originalText = $btn.html();
     
+    // Валідація полів
+    const dbHost = $('#db_host').val().trim();
+    const dbUser = $('#db_user').val().trim();
+    const dbName = $('#db_name').val().trim();
+    
+    if (!dbHost || !dbUser || !dbName) {
+        $result.removeClass('alert-success').addClass('alert-danger')
+               .html('<i class="fas fa-exclamation-triangle me-2"></i>Заповніть всі обов\'язкові поля')
+               .show();
+        return;
+    }
+    
     // Отримуємо дані форми
     const formData = {
         test_connection: 1,
-        db_host: $('#db_host').val(),
-        db_user: $('#db_user').val(),
-        db_pass: $('#db_pass').val()
+        db_host: dbHost,
+        db_user: dbUser,
+        db_pass: $('#db_pass').val(),
+        db_name: dbName
     };
     
     // Показуємо завантаження
@@ -102,19 +115,41 @@ function testDatabaseConnection() {
     $result.hide();
     
     // AJAX запит
-    $.post(window.location.href, formData)
-        .done(function(response) {
-            // Перезавантажуємо сторінку для показу результату
-            location.reload();
-        })
-        .fail(function() {
+    $.ajax({
+        url: window.location.href,
+        method: 'POST',
+        data: formData,
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                $result.removeClass('alert-danger').addClass('alert-success')
+                       .html('<i class="fas fa-check me-2"></i>' + response.message)
+                       .show();
+                // Активуємо кнопку "Далі"
+                $('#nextBtn').prop('disabled', false);
+            } else {
+                $result.removeClass('alert-success').addClass('alert-danger')
+                       .html('<i class="fas fa-times me-2"></i>' + response.message)
+                       .show();
+            }
+        },
+        error: function(xhr, status, error) {
+            let errorMessage = 'Помилка тестування підключення';
+            try {
+                const response = JSON.parse(xhr.responseText);
+                errorMessage = response.message || errorMessage;
+            } catch (e) {
+                errorMessage = 'Помилка сервера: ' + error;
+            }
+            
             $result.removeClass('alert-success').addClass('alert-danger')
-                   .html('<i class="fas fa-times me-2"></i>Помилка тестування підключення')
+                   .html('<i class="fas fa-times me-2"></i>' + errorMessage)
                    .show();
-        })
-        .always(function() {
+        },
+        complete: function() {
             $btn.prop('disabled', false).html(originalText);
-        });
+        }
+    });
 }
 
 function selectGradient($element) {

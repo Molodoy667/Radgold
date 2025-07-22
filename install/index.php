@@ -194,25 +194,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 function testDatabaseConnection() {
-    global $success, $error;
+    header('Content-Type: application/json');
     
     $host = $_POST['db_host'] ?? '';
     $user = $_POST['db_user'] ?? '';
     $pass = $_POST['db_pass'] ?? '';
+    $name = $_POST['db_name'] ?? '';
     
     try {
+        // Тест підключення до сервера
         $connection = new mysqli($host, $user, $pass);
         if ($connection->connect_error) {
-            throw new Exception('Помилка підключення: ' . $connection->connect_error);
+            throw new Exception('Помилка підключення до сервера: ' . $connection->connect_error);
         }
         
-        $success = 'Підключення до бази даних успішне!';
+        // Тест створення БД
+        if (!empty($name)) {
+            $dbName = $connection->real_escape_string($name);
+            if (!$connection->query("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
+                throw new Exception('Помилка створення БД: ' . $connection->error);
+            }
+            
+            // Перевірка доступу до БД
+            $connection->select_db($dbName);
+            if ($connection->error) {
+                throw new Exception('Помилка доступу до БД: ' . $connection->error);
+            }
+        }
+        
         $connection->close();
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Підключення до бази даних успішне!'
+        ]);
         logInstallStep('db_test', 'Тест підключення до БД пройшов успішно', 'success');
     } catch (Exception $e) {
-        $error = $e->getMessage();
-        logInstallStep('db_test', 'Помилка тесту БД: ' . $error, 'error');
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+        logInstallStep('db_test', 'Помилка тесту БД: ' . $e->getMessage(), 'error');
     }
+    exit();
 }
 
 function installSite() {

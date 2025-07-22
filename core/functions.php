@@ -382,4 +382,27 @@ function checkRememberToken() {
 if (session_status() == PHP_SESSION_ACTIVE) {
     checkRememberToken();
 }
+
+// Допоміжні функції
+function formatBytes($size, $precision = 2) {
+    if ($size == 0) return '0 B';
+    $base = log($size, 1024);
+    $suffixes = array('B', 'KB', 'MB', 'GB', 'TB');
+    return round(pow(1024, $base - floor($base)), $precision) . ' ' . $suffixes[floor($base)];
+}
+
+function getRoute() {
+    return isset($_GET['route']) ? sanitize($_GET['route']) : '';
+}
+
+function generateToken() {
+    return bin2hex(random_bytes(32));
+}
+
+function truncateText($text, $length = 100) {
+    if (strlen($text) <= $length) {
+        return $text;
+    }
+    return substr($text, 0, $length) . '...';
+}
 ?>

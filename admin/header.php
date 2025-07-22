@@ -194,7 +194,7 @@ $gradients = generateGradients();
         
         <div class="sidebar-nav">
             <div class="nav-item">
-                <a href="<?php echo SITE_URL; ?>/admin" class="nav-link <?php echo getRoute() === 'admin' ? 'active' : ''; ?>">
+                <a href="<?php echo SITE_URL; ?>/admin" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'dashboard.php' || basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : ''; ?>">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
@@ -282,9 +282,23 @@ $gradients = generateGradients();
             </div>
             
             <div class="nav-item">
+                <a href="<?php echo SITE_URL; ?>/admin/updates" class="nav-link">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Встановлення оновлень</span>
+                </a>
+            </div>
+            
+            <div class="nav-item">
+                <a href="<?php echo SITE_URL; ?>/admin/error-logs" class="nav-link">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Лог помилок</span>
+                </a>
+            </div>
+            
+            <div class="nav-item">
                 <a href="<?php echo SITE_URL; ?>/admin/logs" class="nav-link">
                     <i class="fas fa-list-alt"></i>
-                    <span>Логи</span>
+                    <span>Системні логи</span>
                 </a>
             </div>
             
@@ -326,12 +340,10 @@ $gradients = generateGradients();
                         </a>
                     </li>
                     <?php
-                    $route = getRoute();
-                    if ($route !== 'admin') {
-                        $parts = explode('/', $route);
-                        if (isset($parts[1])) {
-                            echo '<li class="breadcrumb-item active">' . ucfirst($parts[1]) . '</li>';
-                        }
+                    $currentPage = basename($_SERVER['PHP_SELF'], '.php');
+                    if ($currentPage !== 'dashboard' && $currentPage !== 'index') {
+                        $pageTitle = ucfirst(str_replace(['-', '_'], ' ', $currentPage));
+                        echo '<li class="breadcrumb-item active">' . $pageTitle . '</li>';
                     }
                     ?>
                 </ol>
@@ -341,7 +353,7 @@ $gradients = generateGradients();
                 <div class="dropdown">
                     <button class="btn btn-link dropdown-toggle text-decoration-none" type="button" 
                             id="userDropdown" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-2"></i><?php echo sanitize($_SESSION['username']); ?>
+                        <i class="fas fa-user-circle me-2"></i><?php echo sanitize($_SESSION['user_name'] ?? 'Адмін'); ?>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>

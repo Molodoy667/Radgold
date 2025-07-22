@@ -104,7 +104,7 @@
         <a href="?step=2" class="btn btn-back">
             <i class="fas fa-arrow-left me-2"></i>Назад
         </a>
-        <button type="submit" class="btn btn-next">
+        <button type="submit" id="nextBtn" class="btn btn-next" disabled>
             Продовжити <i class="fas fa-arrow-right ms-2"></i>
         </button>
     </div>

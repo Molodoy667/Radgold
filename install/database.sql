@@ -390,6 +390,48 @@ INSERT INTO theme_settings (
     TRUE
 );
 
+-- Таблиця системних оновлень
+CREATE TABLE system_updates (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    version VARCHAR(50) NOT NULL,
+    description TEXT,
+    file_path VARCHAR(500),
+    file_size BIGINT DEFAULT 0,
+    status ENUM('success', 'failed', 'pending') DEFAULT 'pending',
+    install_log LONGTEXT,
+    installed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    installed_by INT,
+    INDEX idx_status (status),
+    INDEX idx_installed_at (installed_at),
+    FOREIGN KEY (installed_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Розширення таблиці site_settings для додаткових налаштувань
+ALTER TABLE site_settings 
+ADD COLUMN setting_key VARCHAR(100) UNIQUE,
+ADD COLUMN value TEXT,
+ADD INDEX idx_setting_key (setting_key);
+
+-- Таблиця додаткової інформації про партнерів
+CREATE TABLE partner_info (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    company_name VARCHAR(255) NOT NULL,
+    website VARCHAR(500),
+    business_type VARCHAR(100),
+    annual_revenue DECIMAL(15,2),
+    employees_count INT,
+    description TEXT,
+    verified BOOLEAN DEFAULT FALSE,
+    verification_documents JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_verified (verified)
+);
+
 -- Створення директорій для завантажень
 -- Це буде зроблено через PHP код
 

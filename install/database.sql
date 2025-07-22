@@ -727,6 +727,51 @@ CREATE TABLE IF NOT EXISTS consultation_requests (
     INDEX idx_created_at (created_at)
 );
 
+-- Таблиця push сповіщень
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    action_url VARCHAR(500),
+    priority ENUM('low', 'normal', 'high') DEFAULT 'normal',
+    icon VARCHAR(50),
+    data JSON,
+    is_read BOOLEAN DEFAULT FALSE,
+    read_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_type (type),
+    INDEX idx_is_read (is_read),
+    INDEX idx_created_at (created_at),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Таблиця підписок на push сповіщення
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    endpoint TEXT NOT NULL,
+    p256dh VARCHAR(255) NOT NULL,
+    auth VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Таблиця денної статистики
+CREATE TABLE IF NOT EXISTS daily_stats (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    date DATE NOT NULL UNIQUE,
+    total_views INT DEFAULT 0,
+    unique_visitors INT DEFAULT 0,
+    ads_created INT DEFAULT 0,
+    ads_activated INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_date (date)
+);
+
 -- Оптимізуємо індекси для існуючих таблиць
 ALTER TABLE users ADD INDEX IF NOT EXISTS idx_status (status);
 ALTER TABLE users ADD INDEX IF NOT EXISTS idx_role (role);

@@ -186,7 +186,8 @@ if (session_status() == PHP_SESSION_NONE) {
             'database.sql',
             'ads_database.sql',
             'admin_tables.sql',
-            'translations.sql'
+            'translations.sql',
+            'user_groups.sql'
         ];
         
         foreach ($sqlFiles as $sqlFile) {
@@ -242,8 +243,8 @@ if (session_status() == PHP_SESSION_NONE) {
         $mysqli->query("DELETE FROM users WHERE role = 'admin' OR user_type = 'admin'");
         
         $stmt = $mysqli->prepare("
-            INSERT INTO users (username, first_name, last_name, email, password, role, user_type, status, email_verified, created_at) 
-            VALUES (?, ?, ?, ?, ?, 'admin', 'admin', 'active', 1, NOW())
+            INSERT INTO users (username, first_name, last_name, email, password, role, user_type, group_id, status, email_verified, created_at) 
+            VALUES (?, ?, ?, ?, ?, 'admin', 'admin', 1, 'active', 1, NOW())
         ");
         
         if (!$stmt) {
@@ -269,9 +270,11 @@ if (session_status() == PHP_SESSION_NONE) {
         
         // 6. Додаємо початкові налаштування сайту
         $settings = [
+            ['site_title', $siteConfig['site_name']],
             ['site_name', $siteConfig['site_name']],
             ['site_url', rtrim($siteConfig['site_url'], '/')],
             ['site_email', $siteConfig['site_email'] ?? ''],
+            ['admin_email', $adminConfig['admin_email']],
             ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень'],
             ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev'],
             ['language', $additionalConfig['default_language'] ?? 'uk'],

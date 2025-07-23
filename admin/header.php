@@ -316,6 +316,13 @@ $gradients = generateGradients();
                 </a>
             </div>
             
+            <div class="nav-item">
+                <a href="<?php echo SITE_URL; ?>/admin/groups" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'groups.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Групи користувачів</span>
+                </a>
+            </div>
+            
             <!-- Розділювач -->
             <hr class="my-3">
             
@@ -349,7 +356,16 @@ $gradients = generateGradients();
                     <?php
                     $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                     if ($currentPage !== 'dashboard' && $currentPage !== 'index') {
-                        $pageTitle = $currentPage === 'translator' ? 'Перекладач' : ucfirst(str_replace(['-', '_'], ' ', $currentPage));
+                        switch($currentPage) {
+                            case 'translator':
+                                $pageTitle = 'Перекладач';
+                                break;
+                            case 'groups':
+                                $pageTitle = 'Групи користувачів';
+                                break;
+                            default:
+                                $pageTitle = ucfirst(str_replace(['-', '_'], ' ', $currentPage));
+                        }
                         echo '<li class="breadcrumb-item active">' . $pageTitle . '</li>';
                     }
                     ?>

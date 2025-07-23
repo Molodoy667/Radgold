@@ -648,4 +648,219 @@ function getGradientCSS($gradientKey) {
     $gradients = getAllGradients();
     return $gradients[$gradientKey] ?? $gradients['gradient-1'];
 }
+
+// Функції для роботи з групами користувачів та дозволами
+
+function getUserGroup($userId) {
+    global $db;
+    
+    if (!$userId) return null;
+    
+    try {
+        $stmt = $db->prepare("
+            SELECT ug.* 
+            FROM user_groups ug 
+            JOIN users u ON u.group_id = ug.id 
+            WHERE u.id = ?
+        ");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            // Декодуємо JSON permissions
+            if ($row['permissions']) {
+                $row['permissions'] = json_decode($row['permissions'], true);
+            }
+            return $row;
+        }
+        
+        // Якщо група не знайдена, повертаємо дефолтну
+        return getDefaultUserGroup();
+        
+    } catch (Exception $e) {
+        error_log("Error getting user group: " . $e->getMessage());
+        return getDefaultUserGroup();
+    }
+}
+
+function getDefaultUserGroup() {
+    global $db;
+    
+    try {
+        $stmt = $db->prepare("SELECT * FROM user_groups WHERE is_default = 1 LIMIT 1");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            if ($row['permissions']) {
+                $row['permissions'] = json_decode($row['permissions'], true);
+            }
+            return $row;
+        }
+        
+        // Fallback якщо дефолтна група не знайдена
+        return [
+            'id' => 5,
+            'name' => 'Звичайний користувач',
+            'slug' => 'user',
+            'permissions' => [
+                'ads' => ['create' => true, 'edit' => true, 'delete' => true, 'view' => true],
+                'profile' => ['edit' => true]
+            ]
+        ];
+        
+    } catch (Exception $e) {
+        error_log("Error getting default user group: " . $e->getMessage());
+        return null;
+    }
+}
+
+function hasPermission($permission, $userId = null) {
+    if (!$userId) {
+        $userId = $_SESSION['user_id'] ?? null;
+    }
+    
+    if (!$userId) {
+        // Для незареєстрованих користувачів - тільки базові дозволи
+        $guestPermissions = ['ads.view', 'search'];
+        return in_array($permission, $guestPermissions);
+    }
+    
+    $userGroup = getUserGroup($userId);
+    if (!$userGroup || !$userGroup['permissions']) {
+        return false;
+    }
+    
+    // Розбираємо дозвіл по крапках (наприклад: admin.users)
+    $parts = explode('.', $permission);
+    $permissions = $userGroup['permissions'];
+    
+    foreach ($parts as $part) {
+        if (!isset($permissions[$part])) {
+            return false;
+        }
+        $permissions = $permissions[$part];
+    }
+    
+    return $permissions === true;
+}
+
+function isAdmin($userId = null) {
+    if (!$userId) {
+        $userId = $_SESSION['user_id'] ?? null;
+    }
+    
+    if (!$userId) return false;
+    
+    // Перевіряємо стару логіку для сумісності
+    if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
+        return true;
+    }
+    
+    // Нова логіка через групи
+    return hasPermission('admin.dashboard', $userId);
+}
+
+function isSuperAdmin($userId = null) {
+    if (!$userId) {
+        $userId = $_SESSION['user_id'] ?? null;
+    }
+    
+    if (!$userId) return false;
+    
+    $userGroup = getUserGroup($userId);
+    return $userGroup && $userGroup['slug'] === 'super-admin';
+}
+
+function getAllUserGroups() {
+    global $db;
+    
+    try {
+        $result = $db->query("SELECT * FROM user_groups ORDER BY sort_order ASC, name ASC");
+        $groups = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            if ($row['permissions']) {
+                $row['permissions'] = json_decode($row['permissions'], true);
+            }
+            $groups[] = $row;
+        }
+        
+        return $groups;
+    } catch (Exception $e) {
+        error_log("Error getting all user groups: " . $e->getMessage());
+        return [];
+    }
+}
+
+function getUserGroupById($groupId) {
+    global $db;
+    
+    try {
+        $stmt = $db->prepare("SELECT * FROM user_groups WHERE id = ?");
+        $stmt->bind_param("i", $groupId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            if ($row['permissions']) {
+                $row['permissions'] = json_decode($row['permissions'], true);
+            }
+            return $row;
+        }
+        
+        return null;
+    } catch (Exception $e) {
+        error_log("Error getting user group by ID: " . $e->getMessage());
+        return null;
+    }
+}
+
+function updateUserGroup($userId, $groupId) {
+    global $db;
+    
+    try {
+        $stmt = $db->prepare("UPDATE users SET group_id = ? WHERE id = ?");
+        $stmt->bind_param("ii", $groupId, $userId);
+        return $stmt->execute();
+    } catch (Exception $e) {
+        error_log("Error updating user group: " . $e->getMessage());
+        return false;
+    }
+}
+
+function getAllPermissions() {
+    global $db;
+    
+    try {
+        $result = $db->query("SELECT * FROM permissions ORDER BY category ASC, name ASC");
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } catch (Exception $e) {
+        error_log("Error getting all permissions: " . $e->getMessage());
+        return [];
+    }
+}
+
+function getGroupPermissions($groupId) {
+    global $db;
+    
+    try {
+        $stmt = $db->prepare("
+            SELECT p.* 
+            FROM permissions p
+            JOIN group_permissions gp ON p.id = gp.permission_id
+            WHERE gp.group_id = ?
+            ORDER BY p.category ASC, p.name ASC
+        ");
+        $stmt->bind_param("i", $groupId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } catch (Exception $e) {
+        error_log("Error getting group permissions: " . $e->getMessage());
+        return [];
+    }
+}
 ?>

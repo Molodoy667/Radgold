@@ -40,7 +40,14 @@ INSERT IGNORE INTO site_settings (setting_key, value, description, type) VALUES
 ('smooth_scroll', '1', 'Плавна прокрутка', 'bool'),
 ('enable_tooltips', '1', 'Підказки', 'bool'),
 ('custom_css', '', 'Кастомний CSS', 'text'),
-('custom_js', '', 'Кастомний JavaScript', 'text');
+('custom_js', '', 'Кастомний JavaScript', 'text'),
+('admin_email', '', 'Email адміністратора', 'string'),
+('admin_name', '', 'Ім\'я адміністратора', 'string'),
+('site_url', '', 'URL сайту', 'string'),
+('max_ad_duration_days', '30', 'Максимальна тривалість оголошення (днів)', 'int'),
+('ads_per_page', '12', 'Оголошень на сторінку', 'int'),
+('auto_approve_ads', '0', 'Автоматичне схвалення оголошень', 'bool'),
+('maintenance_mode', '0', 'Режим обслуговування', 'bool');
 
 
 

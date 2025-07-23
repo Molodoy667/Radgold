@@ -37,6 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $additionalConfig = $_SESSION['install_data']['additional'] ?? [];
         $themeConfig = $_SESSION['install_data']['theme'] ?? [];
         
+        // Дебаг: логуємо отримані дані
+        error_log("Install debug - Site config: " . print_r($siteConfig, true));
+        error_log("Install debug - Admin config: " . print_r($adminConfig, true));
+        error_log("Install debug - Additional config: " . print_r($additionalConfig, true));
+        
         // Валідація обов'язкових полів
         if (empty($dbConfig['host']) || empty($dbConfig['user']) || empty($dbConfig['name'])) {
             throw new Exception('Неповні дані конфігурації бази даних');
@@ -84,7 +89,7 @@ define('DB_NAME', '" . addslashes($dbConfig['name']) . "');
 // Site Configuration
 define('SITE_URL', '" . rtrim(addslashes($siteConfig['site_url']), '/') . "');
 define('SITE_NAME', '" . addslashes($siteConfig['site_name']) . "');
-define('SITE_EMAIL', '" . addslashes($siteConfig['site_email'] ?? '') . "');
+define('SITE_EMAIL', '" . addslashes($siteConfig['contact_email'] ?? '') . "');
 define('SITE_DESCRIPTION', '" . addslashes($siteConfig['site_description'] ?? 'Сучасна дошка оголошень') . "');
 
 // Security
@@ -190,16 +195,18 @@ if (session_status() == PHP_SESSION_NONE) {
             'user_groups.sql'
         ];
         
-        foreach ($sqlFiles as $sqlFile) {
+                        foreach ($sqlFiles as $sqlFile) {
             $fullPath = __DIR__ . '/' . $sqlFile;
             if (file_exists($fullPath)) {
+                error_log("Processing SQL file: $sqlFile");
                 $sql = file_get_contents($fullPath);
                 if ($sql) {
                     // Розділяємо на окремі запити
                     $queries = explode(';', $sql);
+                    $executed = 0;
                     foreach ($queries as $query) {
                         $query = trim($query);
-                        if (!empty($query)) {
+                        if (!empty($query) && !preg_match('/^--|^\/\*/', $query)) {
                             if (!$mysqli->query($query)) {
                                 // Ігноруємо помилки створення БД та таблиць (може вже існувати)
                                 $error = strtolower($mysqli->error);
@@ -209,24 +216,32 @@ if (session_status() == PHP_SESSION_NONE) {
                                     'already exists',
                                     'table \'',
                                     'duplicate column',
-                                    'multiple primary key'
+                                    'multiple primary key',
+                                    'duplicate entry'
                                 ];
                                 
                                 $should_ignore = false;
                                 foreach ($ignorable_errors as $ignore_pattern) {
                                     if (strpos($error, $ignore_pattern) !== false) {
                                         $should_ignore = true;
+                                        error_log("Ignoring SQL error in $sqlFile: " . $mysqli->error);
                                         break;
                                     }
                                 }
                                 
                                 if (!$should_ignore) {
+                                    error_log("Fatal SQL error in $sqlFile: " . $mysqli->error);
                                     throw new Exception("Помилка в {$sqlFile}: " . $mysqli->error);
                                 }
+                            } else {
+                                $executed++;
                             }
                         }
                     }
+                    error_log("Executed $executed queries from $sqlFile");
                 }
+            } else {
+                error_log("SQL file not found: $fullPath");
             }
         }
         
@@ -253,6 +268,7 @@ if (session_status() == PHP_SESSION_NONE) {
         
         $firstName = $adminConfig['admin_first_name'] ?? 'Admin';
         $lastName = $adminConfig['admin_last_name'] ?? 'User';
+        $username = $adminConfig['admin_login'];
         
         $stmt->bind_param("sssss", 
             $adminConfig['admin_login'], 
@@ -270,25 +286,37 @@ if (session_status() == PHP_SESSION_NONE) {
         
         // 6. Додаємо початкові налаштування сайту
         $settings = [
+            // Основні налаштування сайту з форми
             ['site_title', $siteConfig['site_name']],
-            ['site_name', $siteConfig['site_name']],
-            ['site_url', rtrim($siteConfig['site_url'], '/')],
-            ['site_email', $siteConfig['site_email'] ?? ''],
-            ['admin_email', $adminConfig['admin_email']],
             ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень'],
+            ['site_keywords', $siteConfig['site_keywords'] ?? 'реклама, оголошення, дошка оголошень'],
+            ['contact_email', $siteConfig['contact_email'] ?? ''],
+            
+            // Налаштування адміністратора
+            ['admin_email', $adminConfig['admin_email']],
+            ['admin_name', ($adminConfig['admin_first_name'] ?? 'Admin') . ' ' . ($adminConfig['admin_last_name'] ?? 'User')],
+            
+            // Додаткові налаштування
             ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev'],
             ['language', $additionalConfig['default_language'] ?? 'uk'],
             ['available_languages', '["uk","ru","en"]'],
+            
+            // Налаштування теми
             ['current_theme', $themeConfig['default_theme'] ?? 'light'],
             ['current_gradient', $themeConfig['default_gradient'] ?? 'gradient-1'],
             ['enable_animations', isset($additionalConfig['enable_animations']) ? '1' : '0'],
             ['enable_particles', isset($additionalConfig['enable_particles']) ? '1' : '0'],
             ['smooth_scroll', isset($additionalConfig['smooth_scroll']) ? '1' : '0'],
             ['enable_tooltips', isset($additionalConfig['enable_tooltips']) ? '1' : '0'],
+            
+            // Системні налаштування
             ['max_ad_duration_days', '30'],
             ['ads_per_page', '12'],
             ['auto_approve_ads', '0'],
-            ['maintenance_mode', '0']
+            ['maintenance_mode', '0'],
+            
+            // URL сайту (окремо, бо може мати спеціальну обробку)
+            ['site_url', rtrim($siteConfig['site_url'], '/')]
         ];
         
         // Перевіряємо чи існує таблиця site_settings

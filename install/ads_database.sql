@@ -2,7 +2,7 @@
 -- AdBoard Pro v2.0
 
 -- Таблиця категорій оголошень
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     slug VARCHAR(100) NOT NULL UNIQUE,
@@ -22,7 +22,7 @@ CREATE TABLE categories (
 );
 
 -- Таблиця міст/локацій
-CREATE TABLE locations (
+CREATE TABLE IF NOT EXISTS locations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     slug VARCHAR(100) NOT NULL UNIQUE,
@@ -39,7 +39,7 @@ CREATE TABLE locations (
 );
 
 -- Таблиця оголошень
-CREATE TABLE ads (
+CREATE TABLE IF NOT EXISTS ads (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     category_id INT NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE ads (
 );
 
 -- Таблиця зображень оголошень
-CREATE TABLE ad_images (
+CREATE TABLE IF NOT EXISTS ad_images (
     id INT PRIMARY KEY AUTO_INCREMENT,
     ad_id INT NOT NULL,
     filename VARCHAR(255) NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE ad_images (
 );
 
 -- Таблиця атрибутів категорій (додаткові поля)
-CREATE TABLE category_attributes (
+CREATE TABLE IF NOT EXISTS category_attributes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     category_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE category_attributes (
 );
 
 -- Таблиця значень атрибутів оголошень
-CREATE TABLE ad_attributes (
+CREATE TABLE IF NOT EXISTS ad_attributes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     ad_id INT NOT NULL,
     attribute_id INT NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE ad_attributes (
 );
 
 -- Таблиця улюблених оголошень
-CREATE TABLE favorites (
+CREATE TABLE IF NOT EXISTS favorites (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     ad_id INT NOT NULL,
@@ -140,7 +140,7 @@ CREATE TABLE favorites (
 );
 
 -- Таблиця переглядів оголошень
-CREATE TABLE ad_views (
+CREATE TABLE IF NOT EXISTS ad_views (
     id INT PRIMARY KEY AUTO_INCREMENT,
     ad_id INT NOT NULL,
     user_id INT NULL,
@@ -156,7 +156,7 @@ CREATE TABLE ad_views (
 );
 
 -- Таблиця чатів між користувачами
-CREATE TABLE chats (
+CREATE TABLE IF NOT EXISTS chats (
     id INT PRIMARY KEY AUTO_INCREMENT,
     ad_id INT NOT NULL,
     buyer_id INT NOT NULL,
@@ -175,7 +175,7 @@ CREATE TABLE chats (
 );
 
 -- Таблиця повідомлень в чатах
-CREATE TABLE chat_messages (
+CREATE TABLE IF NOT EXISTS chat_messages (
     id INT PRIMARY KEY AUTO_INCREMENT,
     chat_id INT NOT NULL,
     sender_id INT NOT NULL,
@@ -196,7 +196,7 @@ CREATE TABLE chat_messages (
 ALTER TABLE chats ADD FOREIGN KEY (last_message_id) REFERENCES chat_messages(id) ON DELETE SET NULL;
 
 -- Таблиця платних послуг
-CREATE TABLE paid_services (
+CREATE TABLE IF NOT EXISTS paid_services (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -210,7 +210,7 @@ CREATE TABLE paid_services (
 );
 
 -- Таблиця покупок платних послуг
-CREATE TABLE service_purchases (
+CREATE TABLE IF NOT EXISTS service_purchases (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     ad_id INT NOT NULL,
@@ -233,7 +233,7 @@ CREATE TABLE service_purchases (
 );
 
 -- Таблиця балансу користувачів
-CREATE TABLE user_balance (
+CREATE TABLE IF NOT EXISTS user_balance (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL UNIQUE,
     balance DECIMAL(10, 2) DEFAULT 0.00,
@@ -244,7 +244,7 @@ CREATE TABLE user_balance (
 );
 
 -- Таблиця транзакцій
-CREATE TABLE transactions (
+CREATE TABLE IF NOT EXISTS transactions (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     type ENUM('deposit', 'withdraw', 'purchase', 'refund', 'bonus') NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE transactions (
 );
 
 -- Таблиця пошукових запитів (для аналітики)
-CREATE TABLE search_queries (
+CREATE TABLE IF NOT EXISTS search_queries (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NULL,
     query TEXT NOT NULL,
@@ -286,7 +286,7 @@ CREATE TABLE search_queries (
 );
 
 -- Таблиця повідомлень про порушення
-CREATE TABLE reports (
+CREATE TABLE IF NOT EXISTS reports (
     id INT PRIMARY KEY AUTO_INCREMENT,
     reporter_id INT NULL,
     ad_id INT NOT NULL,
@@ -307,7 +307,7 @@ CREATE TABLE reports (
 );
 
 -- Таблиця збережених пошуків
-CREATE TABLE saved_searches (
+CREATE TABLE IF NOT EXISTS saved_searches (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -330,7 +330,7 @@ CREATE TABLE saved_searches (
 );
 
 -- Вставка базових категорій
-INSERT INTO categories (name, slug, description, icon, sort_order) VALUES
+INSERT IGNORE INTO categories (name, slug, description, icon, sort_order) VALUES
 ('Нерухомість', 'real-estate', 'Квартири, будинки, комерційна нерухомість', 'fas fa-home', 1),
 ('Транспорт', 'transport', 'Автомобілі, мотоцикли, запчастини', 'fas fa-car', 2),
 ('Робота', 'jobs', 'Вакансії та резюме', 'fas fa-briefcase', 3),
@@ -341,7 +341,7 @@ INSERT INTO categories (name, slug, description, icon, sort_order) VALUES
 ('Інше', 'other', 'Різне', 'fas fa-ellipsis-h', 8);
 
 -- Підкатегорії для нерухомості
-INSERT INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
+INSERT IGNORE INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
 ('Квартири', 'apartments', 'Продаж та оренда квартир', 'fas fa-building', 1, 1),
 ('Будинки', 'houses', 'Приватні будинки та котеджі', 'fas fa-house-user', 1, 2),
 ('Кімнати', 'rooms', 'Оренда кімнат', 'fas fa-bed', 1, 3),
@@ -349,7 +349,7 @@ INSERT INTO categories (name, slug, description, icon, parent_id, sort_order) VA
 ('Земельні ділянки', 'land', 'Продаж земельних ділянок', 'fas fa-map', 1, 5);
 
 -- Підкатегорії для транспорту
-INSERT INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
+INSERT IGNORE INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
 ('Легкові автомобілі', 'cars', 'Легкові автомобілі', 'fas fa-car', 2, 1),
 ('Вантажівки', 'trucks', 'Вантажний транспорт', 'fas fa-truck', 2, 2),
 ('Мотоцикли', 'motorcycles', 'Мотоцикли та скутери', 'fas fa-motorcycle', 2, 3),
@@ -357,7 +357,7 @@ INSERT INTO categories (name, slug, description, icon, parent_id, sort_order) VA
 ('Водний транспорт', 'boats', 'Човни, яхти, катери', 'fas fa-ship', 2, 5);
 
 -- Вставка основних міст України
-INSERT INTO locations (name, slug, region, latitude, longitude, sort_order) VALUES
+INSERT IGNORE INTO locations (name, slug, region, latitude, longitude, sort_order) VALUES
 ('Київ', 'kyiv', 'Київська область', 50.4501, 30.5234, 1),
 ('Харків', 'kharkiv', 'Харківська область', 49.9935, 36.2304, 2),
 ('Одеса', 'odesa', 'Одеська область', 46.4825, 30.7233, 3),
@@ -368,7 +368,7 @@ INSERT INTO locations (name, slug, region, latitude, longitude, sort_order) VALU
 ('Кривий Ріг', 'kryvyi-rih', 'Дніпропетровська область', 47.9077, 33.3820, 8);
 
 -- Вставка базових платних послуг
-INSERT INTO paid_services (name, description, price, duration_days, service_type) VALUES
+INSERT IGNORE INTO paid_services (name, description, price, duration_days, service_type) VALUES
 ('Виділити оголошення', 'Ваше оголошення буде виділено кольором', 50.00, 7, 'highlight'),
 ('Закріпити зверху', 'Оголошення з\'явиться в топі списку', 100.00, 3, 'top'),
 ('Термінове оголошення', 'Позначка "Термінове" привертає увагу', 30.00, 3, 'urgent'),
@@ -376,7 +376,7 @@ INSERT INTO paid_services (name, description, price, duration_days, service_type
 ('Повторна публікація', 'Автоматичне оновлення дати', 25.00, 30, 'republish');
 
 -- Додаткові атрибути для категорії "Автомобілі"
-INSERT INTO category_attributes (category_id, name, type, options, is_required, is_searchable, sort_order) VALUES
+INSERT IGNORE INTO category_attributes (category_id, name, type, options, is_required, is_searchable, sort_order) VALUES
 ((SELECT id FROM categories WHERE slug = 'cars'), 'Марка', 'select', '["BMW", "Mercedes-Benz", "Toyota", "Volkswagen", "Audi", "Ford", "Nissan", "Hyundai", "Kia", "Renault", "Opel", "Skoda", "Mazda", "Honda", "Mitsubishi", "Chevrolet", "Peugeot", "Citroën", "Fiat", "Daewoo", "Інше"]', true, true, 1),
 ((SELECT id FROM categories WHERE slug = 'cars'), 'Рік випуску', 'number', NULL, true, true, 2),
 ((SELECT id FROM categories WHERE slug = 'cars'), 'Пробіг (км)', 'number', NULL, false, true, 3),
@@ -387,7 +387,7 @@ INSERT INTO category_attributes (category_id, name, type, options, is_required, 
 ((SELECT id FROM categories WHERE slug = 'cars'), 'Колір', 'select', '["Білий", "Чорний", "Сірий", "Срібний", "Червоний", "Синій", "Зелений", "Жовтий", "Коричневий", "Інший"]', false, false, 8);
 
 -- Атрибути для категорії "Квартири"
-INSERT INTO category_attributes (category_id, name, type, options, is_required, is_searchable, sort_order) VALUES
+INSERT IGNORE INTO category_attributes (category_id, name, type, options, is_required, is_searchable, sort_order) VALUES
 ((SELECT id FROM categories WHERE slug = 'apartments'), 'Кількість кімнат', 'select', '["1", "2", "3", "4", "5+"]', true, true, 1),
 ((SELECT id FROM categories WHERE slug = 'apartments'), 'Площа (м²)', 'number', NULL, false, true, 2),
 ((SELECT id FROM categories WHERE slug = 'apartments'), 'Поверх', 'number', NULL, false, true, 3),

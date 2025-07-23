@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS adboard_site CHARACTER SET utf8mb4 COLLATE utf8mb4
 USE adboard_site;
 
 -- Таблиця налаштувань сайту
-CREATE TABLE site_settings (
+CREATE TABLE IF NOT EXISTS site_settings (
     setting_key VARCHAR(100) PRIMARY KEY,
     value TEXT,
     description VARCHAR(255),
@@ -13,7 +13,7 @@ CREATE TABLE site_settings (
 );
 
 -- Вставляємо початкові налаштування
-INSERT INTO site_settings (setting_key, value, description, type) VALUES
+INSERT IGNORE INTO site_settings (setting_key, value, description, type) VALUES
 ('site_title', 'AdBoard Pro', 'Назва сайту', 'string'),
 ('site_description', 'Сучасна дошка оголошень та рекламна компанія', 'Опис сайту', 'text'),
 ('site_keywords', 'оголошення, купити, продати, послуги, реклама', 'Ключові слова', 'text'),
@@ -45,7 +45,7 @@ INSERT INTO site_settings (setting_key, value, description, type) VALUES
 
 
 -- Таблиця користувачів
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) UNIQUE NULL,
     first_name VARCHAR(100) NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE users (
 );
 
 -- Таблиця для токенів запам'ятовування
-CREATE TABLE remember_tokens (
+CREATE TABLE IF NOT EXISTS remember_tokens (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     token VARCHAR(255) NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE remember_tokens (
 );
 
 -- Таблиця для відновлення паролю
-CREATE TABLE password_resets (
+CREATE TABLE IF NOT EXISTS password_resets (
     id INT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(255) NOT NULL,
     token VARCHAR(255) NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE password_resets (
 );
 
 -- Таблиця категорій
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     slug VARCHAR(100) UNIQUE NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE categories (
 );
 
 -- Таблиця оголошень
-CREATE TABLE ads (
+CREATE TABLE IF NOT EXISTS ads (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     category_id INT NOT NULL,
@@ -153,7 +153,7 @@ CREATE TABLE ads (
 );
 
 -- Таблиця сторінок
-CREATE TABLE pages (
+CREATE TABLE IF NOT EXISTS pages (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     slug VARCHAR(255) UNIQUE NOT NULL,
@@ -170,7 +170,7 @@ CREATE TABLE pages (
 );
 
 -- Таблиця меню
-CREATE TABLE menu_items (
+CREATE TABLE IF NOT EXISTS menu_items (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
     url VARCHAR(255) NOT NULL,
@@ -189,7 +189,7 @@ CREATE TABLE menu_items (
 );
 
 -- Таблиця повідомлень
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     id INT PRIMARY KEY AUTO_INCREMENT,
     from_user_id INT NOT NULL,
     to_user_id INT NOT NULL,
@@ -208,7 +208,7 @@ CREATE TABLE messages (
 );
 
 -- Таблиця обраних оголошень
-CREATE TABLE favorites (
+CREATE TABLE IF NOT EXISTS favorites (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     ad_id INT NOT NULL,
@@ -221,7 +221,7 @@ CREATE TABLE favorites (
 );
 
 -- Таблиця логів
-CREATE TABLE activity_logs (
+CREATE TABLE IF NOT EXISTS activity_logs (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NULL,
     action VARCHAR(100) NOT NULL,
@@ -242,7 +242,7 @@ CREATE TABLE activity_logs (
 -- Вставка початкових даних
 
 -- Налаштування сайту
-INSERT INTO site_settings (
+INSERT IGNORE INTO site_settings (
     site_title, 
     site_description, 
     site_keywords, 
@@ -261,10 +261,10 @@ INSERT INTO site_settings (
 );
 
 -- Налаштування теми
-INSERT INTO theme_settings (current_theme, current_gradient) VALUES ('light', 'gradient-1');
+INSERT IGNORE INTO theme_settings (current_theme, current_gradient) VALUES ('light', 'gradient-1');
 
 -- Створення адміністратора
-INSERT INTO users (
+INSERT IGNORE INTO users (
     username, 
     email, 
     password, 
@@ -285,7 +285,7 @@ INSERT INTO users (
 );
 
 -- Основні категорії
-INSERT INTO categories (name, slug, description, icon, sort_order) VALUES
+INSERT IGNORE INTO categories (name, slug, description, icon, sort_order) VALUES
 ('Нерухомість', 'real-estate', 'Продаж та оренда нерухомості', 'fas fa-home', 1),
 ('Транспорт', 'transport', 'Автомобілі, мотоцикли та інший транспорт', 'fas fa-car', 2),
 ('Електроніка', 'electronics', 'Комп\'ютери, телефони, побутова техніка', 'fas fa-laptop', 3),
@@ -298,21 +298,21 @@ INSERT INTO categories (name, slug, description, icon, sort_order) VALUES
 ('Інше', 'other', 'Різні товари та послуги', 'fas fa-ellipsis-h', 10);
 
 -- Підкategorії для нерухомості
-INSERT INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
+INSERT IGNORE INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
 ('Квартири', 'apartments', 'Продаж та оренда квартир', 'fas fa-building', 1, 1),
 ('Будинки', 'houses', 'Продаж та оренда будинків', 'fas fa-home', 1, 2),
 ('Комерційна нерухомість', 'commercial', 'Офіси, магазини, склади', 'fas fa-store', 1, 3),
 ('Земельні ділянки', 'land', 'Продаж земельних ділянок', 'fas fa-mountain', 1, 4);
 
 -- Підкategorії для транспорту
-INSERT INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
+INSERT IGNORE INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
 ('Легкові автомобілі', 'cars', 'Продаж легкових автомобілів', 'fas fa-car', 2, 1),
 ('Мотоцикли', 'motorcycles', 'Мотоцикли та скутери', 'fas fa-motorcycle', 2, 2),
 ('Вантажівки', 'trucks', 'Вантажний транспорт', 'fas fa-truck', 2, 3),
 ('Запчастини', 'auto-parts', 'Автозапчастини та аксесуари', 'fas fa-cog', 2, 4);
 
 -- Базові сторінки
-INSERT INTO pages (title, slug, content, meta_title, meta_description, status) VALUES
+INSERT IGNORE INTO pages (title, slug, content, meta_title, meta_description, status) VALUES
 ('Про нас', 'about', 
 '<h1>Про компанію AdBoard Pro</h1>
 <p>AdBoard Pro - це інноваційна платформа, яка поєднує в собі функціональність рекламної компанії та сучасної дошки оголошень.</p>
@@ -352,7 +352,7 @@ INSERT INTO pages (title, slug, content, meta_title, meta_description, status) V
 'published');
 
 -- Початкові дані для налаштувань сайту
-INSERT INTO site_settings (
+INSERT IGNORE INTO site_settings (
     site_title, 
     site_description, 
     site_keywords, 
@@ -377,7 +377,7 @@ INSERT INTO site_settings (
 );
 
 -- Початкові дані для налаштувань теми
-INSERT INTO theme_settings (
+INSERT IGNORE INTO theme_settings (
     current_theme,
     current_gradient,
     enable_animations,
@@ -394,7 +394,7 @@ INSERT INTO theme_settings (
 );
 
 -- Таблиця системних оновлень
-CREATE TABLE system_updates (
+CREATE TABLE IF NOT EXISTS system_updates (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     version VARCHAR(50) NOT NULL,
@@ -417,7 +417,7 @@ ADD COLUMN value TEXT,
 ADD INDEX idx_setting_key (setting_key);
 
 -- Таблиця додаткової інформації про партнерів
-CREATE TABLE partner_info (
+CREATE TABLE IF NOT EXISTS partner_info (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     company_name VARCHAR(255) NOT NULL,

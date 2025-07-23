@@ -200,9 +200,26 @@ if (session_status() == PHP_SESSION_NONE) {
                         $query = trim($query);
                         if (!empty($query)) {
                             if (!$mysqli->query($query)) {
-                                // Ігноруємо помилки створення БД (може вже існувати)
-                                if (strpos($mysqli->error, 'database exists') === false && 
-                                    strpos($mysqli->error, 'table exists') === false) {
+                                // Ігноруємо помилки створення БД та таблиць (може вже існувати)
+                                $error = strtolower($mysqli->error);
+                                $ignorable_errors = [
+                                    'database exists',
+                                    'table exists', 
+                                    'already exists',
+                                    'table \'',
+                                    'duplicate column',
+                                    'multiple primary key'
+                                ];
+                                
+                                $should_ignore = false;
+                                foreach ($ignorable_errors as $ignore_pattern) {
+                                    if (strpos($error, $ignore_pattern) !== false) {
+                                        $should_ignore = true;
+                                        break;
+                                    }
+                                }
+                                
+                                if (!$should_ignore) {
                                     throw new Exception("Помилка в {$sqlFile}: " . $mysqli->error);
                                 }
                             }

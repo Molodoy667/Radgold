@@ -1,6 +1,11 @@
 <?php
 // Крок 8: Процес встановлення
 
+// Встановлюємо режим дебагу для установки
+if (!defined('DEBUG_MODE')) {
+    define('DEBUG_MODE', false);
+}
+
 // Обробка AJAX POST запиту для фактичної установки
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'install') {
     // Очищаємо будь-який попередній вивід
@@ -301,7 +306,7 @@ if (session_status() == PHP_SESSION_NONE) {
         $response = [
             'success' => false,
             'error' => $e->getMessage(),
-            'trace' => DEBUG_MODE ? $e->getTraceAsString() : null
+            'trace' => (defined('DEBUG_MODE') && DEBUG_MODE) ? $e->getTraceAsString() : null
         ];
         
         echo json_encode($response, JSON_UNESCAPED_UNICODE);

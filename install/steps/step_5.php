@@ -1,70 +1,69 @@
 <?php
-// Крок 5: Налаштування теми оформлення
-$themeData = $_SESSION['install_data']['theme'] ?? [];
+// Крок 5: Додаткові налаштування
+$additionalData = $_SESSION['install_data']['additional'] ?? [];
 ?>
 
 <div class="step-content animate__animated animate__fadeIn">
     <div class="step-header">
-        <h3><i class="fas fa-palette me-3"></i>Налаштування теми оформлення</h3>
-        <p class="text-muted">Оберіть тему за замовчуванням та градієнт для оформлення</p>
+        <h3><i class="fas fa-cogs me-3"></i>Додаткові налаштування</h3>
+        <p class="text-muted">Налаштуйте мову, часовий пояс та візуальні ефекти</p>
     </div>
 
-    <form method="POST" id="themeForm">
+    <form method="POST" id="additionalForm">
         <input type="hidden" name="step" value="5">
         
-        <!-- Вибір теми -->
-        <div class="mb-5">
+        <!-- Мова сайту -->
+        <div class="settings-section mb-5">
             <h5 class="mb-4">
-                <i class="fas fa-moon me-2"></i>Тема за замовчуванням
+                <i class="fas fa-globe me-2"></i>Мова сайту за замовчуванням
             </h5>
             <div class="row">
-                <div class="col-md-6">
-                    <div class="theme-option" data-theme="light">
+                <div class="col-md-4">
+                    <div class="language-option">
                         <input type="radio" 
-                               id="theme_light" 
-                               name="default_theme" 
-                               value="light" 
-                               <?php echo ($themeData['default_theme'] ?? 'light') === 'light' ? 'checked' : ''; ?>>
-                        <label for="theme_light" class="theme-card">
-                            <div class="theme-preview light-preview">
-                                <div class="preview-header"></div>
-                                <div class="preview-content">
-                                    <div class="preview-sidebar"></div>
-                                    <div class="preview-main">
-                                        <div class="preview-block"></div>
-                                        <div class="preview-block"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="theme-info">
-                                <h6><i class="fas fa-sun me-2"></i>Світла тема</h6>
-                                <p class="mb-0">Класичний світлий дизайн</p>
+                               id="lang_uk" 
+                               name="default_language" 
+                               value="uk" 
+                               <?php echo ($additionalData['default_language'] ?? 'uk') === 'uk' ? 'checked' : ''; ?>>
+                        <label for="lang_uk" class="language-card">
+                            <div class="flag-icon">🇺🇦</div>
+                            <div class="language-info">
+                                <h6>Українська</h6>
+                                <p class="mb-0">Ukrainian</p>
                             </div>
                         </label>
                     </div>
                 </div>
                 
-                <div class="col-md-6">
-                    <div class="theme-option" data-theme="dark">
+                <div class="col-md-4">
+                    <div class="language-option">
                         <input type="radio" 
-                               id="theme_dark" 
-                               name="default_theme" 
-                               value="dark" 
-                               <?php echo ($themeData['default_theme'] ?? 'light') === 'dark' ? 'checked' : ''; ?>>
-                        <label for="theme_dark" class="theme-card">
-                            <div class="theme-preview dark-preview">
-                                <div class="preview-header"></div>
-                                <div class="preview-content">
-                                    <div class="preview-sidebar"></div>
-                                    <div class="preview-main">
-                                        <div class="preview-block"></div>
-                                        <div class="preview-block"></div>
-                                    </div>
-                                </div>
+                               id="lang_ru" 
+                               name="default_language" 
+                               value="ru" 
+                               <?php echo ($additionalData['default_language'] ?? 'uk') === 'ru' ? 'checked' : ''; ?>>
+                        <label for="lang_ru" class="language-card">
+                            <div class="flag-icon">🇷🇺</div>
+                            <div class="language-info">
+                                <h6>Русский</h6>
+                                <p class="mb-0">Russian</p>
                             </div>
-                            <div class="theme-info">
-                                <h6><i class="fas fa-moon me-2"></i>Темна тема</h6>
-                                <p class="mb-0">Сучасний темний дизайн</p>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="language-option">
+                        <input type="radio" 
+                               id="lang_en" 
+                               name="default_language" 
+                               value="en" 
+                               <?php echo ($additionalData['default_language'] ?? 'uk') === 'en' ? 'checked' : ''; ?>>
+                        <label for="lang_en" class="language-card">
+                            <div class="flag-icon">🇺🇸</div>
+                            <div class="language-info">
+                                <h6>English</h6>
+                                <p class="mb-0">English</p>
                             </div>
                         </label>
                     </div>
@@ -72,154 +71,230 @@ $themeData = $_SESSION['install_data']['theme'] ?? [];
             </div>
         </div>
 
-        <!-- Вибір градієнту -->
-        <div class="mb-5">
+        <!-- Часовий пояс -->
+        <div class="settings-section mb-5">
             <h5 class="mb-4">
-                <i class="fas fa-brush me-2"></i>Градієнт за замовчуванням
+                <i class="fas fa-clock me-2"></i>Часовий пояс
             </h5>
-            <div class="gradient-picker">
-                <input type="hidden" 
-                       id="selected_gradient" 
-                       name="default_gradient" 
-                       value="<?php echo htmlspecialchars($themeData['default_gradient'] ?? 'gradient-1'); ?>">
-                
-                <div class="gradient-grid">
-                    <?php
-                    $gradients = [
-                        'gradient-1' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        'gradient-2' => 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                        'gradient-3' => 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                        'gradient-4' => 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                        'gradient-5' => 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                        'gradient-6' => 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                        'gradient-7' => 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-                        'gradient-8' => 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-                        'gradient-9' => 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
-                        'gradient-10' => 'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
-                        'gradient-11' => 'linear-gradient(135deg, #ff8a80 0%, #ff80ab 100%)',
-                        'gradient-12' => 'linear-gradient(135deg, #81c784 0%, #aed581 100%)',
-                        'gradient-13' => 'linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%)',
-                        'gradient-14' => 'linear-gradient(135deg, #ffb74d 0%, #ffa726 100%)',
-                        'gradient-15' => 'linear-gradient(135deg, #9575cd 0%, #7986cb 100%)',
-                        'gradient-16' => 'linear-gradient(135deg, #4db6ac 0%, #26a69a 100%)',
-                        'gradient-17' => 'linear-gradient(135deg, #f06292 0%, #ec407a 100%)',
-                        'gradient-18' => 'linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%)',
-                        'gradient-19' => 'linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%)',
-                        'gradient-20' => 'linear-gradient(135deg, #26c6da 0%, #00acc1 100%)',
-                        'gradient-21' => 'linear-gradient(135deg, #66bb6a 0%, #4caf50 100%)',
-                        'gradient-22' => 'linear-gradient(135deg, #ffca28 0%, #ffc107 100%)',
-                        'gradient-23' => 'linear-gradient(135deg, #ff7043 0%, #ff5722 100%)',
-                        'gradient-24' => 'linear-gradient(135deg, #8d6e63 0%, #795548 100%)',
-                        'gradient-25' => 'linear-gradient(135deg, #78909c 0%, #607d8b 100%)',
-                        'gradient-26' => 'linear-gradient(135deg, #e91e63 0%, #ad1457 100%)',
-                        'gradient-27' => 'linear-gradient(135deg, #673ab7 0%, #512da8 100%)',
-                        'gradient-28' => 'linear-gradient(135deg, #3f51b5 0%, #303f9f 100%)',
-                        'gradient-29' => 'linear-gradient(135deg, #009688 0%, #00695c 100%)',
-                        'gradient-30' => 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)'
-                    ];
-                    
-                    $selectedGradient = $themeData['default_gradient'] ?? 'gradient-1';
-                    
-                    foreach ($gradients as $key => $gradient):
-                    ?>
-                        <div class="gradient-item <?php echo $key === $selectedGradient ? 'selected' : ''; ?>" 
-                             data-gradient="<?php echo $key; ?>" 
-                             style="background: <?php echo $gradient; ?>"
-                             title="<?php echo ucfirst(str_replace('-', ' ', $key)); ?>">
-                            <div class="gradient-check">
-                                <i class="fas fa-check"></i>
-                            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <select class="form-select form-select-lg" name="timezone" id="timezone">
+                        <option value="">Оберіть часовий пояс</option>
+                        <optgroup label="Європа">
+                            <option value="Europe/Kiev" <?php echo ($additionalData['timezone'] ?? 'Europe/Kiev') === 'Europe/Kiev' ? 'selected' : ''; ?>>
+                                🇺🇦 Київ (UTC+2)
+                            </option>
+                            <option value="Europe/Warsaw" <?php echo ($additionalData['timezone'] ?? '') === 'Europe/Warsaw' ? 'selected' : ''; ?>>
+                                🇵🇱 Варшава (UTC+1)
+                            </option>
+                            <option value="Europe/Berlin" <?php echo ($additionalData['timezone'] ?? '') === 'Europe/Berlin' ? 'selected' : ''; ?>>
+                                🇩🇪 Берлін (UTC+1)
+                            </option>
+                            <option value="Europe/London" <?php echo ($additionalData['timezone'] ?? '') === 'Europe/London' ? 'selected' : ''; ?>>
+                                🇬🇧 Лондон (UTC+0)
+                            </option>
+                            <option value="Europe/Paris" <?php echo ($additionalData['timezone'] ?? '') === 'Europe/Paris' ? 'selected' : ''; ?>>
+                                🇫🇷 Париж (UTC+1)
+                            </option>
+                            <option value="Europe/Rome" <?php echo ($additionalData['timezone'] ?? '') === 'Europe/Rome' ? 'selected' : ''; ?>>
+                                🇮🇹 Рим (UTC+1)
+                            </option>
+                            <option value="Europe/Madrid" <?php echo ($additionalData['timezone'] ?? '') === 'Europe/Madrid' ? 'selected' : ''; ?>>
+                                🇪🇸 Мадрид (UTC+1)
+                            </option>
+                            <option value="Europe/Amsterdam" <?php echo ($additionalData['timezone'] ?? '') === 'Europe/Amsterdam' ? 'selected' : ''; ?>>
+                                🇳🇱 Амстердам (UTC+1)
+                            </option>
+                            <option value="Europe/Stockholm" <?php echo ($additionalData['timezone'] ?? '') === 'Europe/Stockholm' ? 'selected' : ''; ?>>
+                                🇸🇪 Стокгольм (UTC+1)
+                            </option>
+                            <option value="Europe/Helsinki" <?php echo ($additionalData['timezone'] ?? '') === 'Europe/Helsinki' ? 'selected' : ''; ?>>
+                                🇫🇮 Гельсінкі (UTC+2)
+                            </option>
+                        </optgroup>
+                        
+                        <optgroup label="Америка">
+                            <option value="America/New_York" <?php echo ($additionalData['timezone'] ?? '') === 'America/New_York' ? 'selected' : ''; ?>>
+                                🇺🇸 Нью-Йорк (UTC-5)
+                            </option>
+                            <option value="America/Los_Angeles" <?php echo ($additionalData['timezone'] ?? '') === 'America/Los_Angeles' ? 'selected' : ''; ?>>
+                                🇺🇸 Лос-Анджелес (UTC-8)
+                            </option>
+                            <option value="America/Chicago" <?php echo ($additionalData['timezone'] ?? '') === 'America/Chicago' ? 'selected' : ''; ?>>
+                                🇺🇸 Чикаго (UTC-6)
+                            </option>
+                            <option value="America/Toronto" <?php echo ($additionalData['timezone'] ?? '') === 'America/Toronto' ? 'selected' : ''; ?>>
+                                🇨🇦 Торонто (UTC-5)
+                            </option>
+                            <option value="America/Vancouver" <?php echo ($additionalData['timezone'] ?? '') === 'America/Vancouver' ? 'selected' : ''; ?>>
+                                🇨🇦 Ванкувер (UTC-8)
+                            </option>
+                            <option value="America/Mexico_City" <?php echo ($additionalData['timezone'] ?? '') === 'America/Mexico_City' ? 'selected' : ''; ?>>
+                                🇲🇽 Мехіко (UTC-6)
+                            </option>
+                            <option value="America/Sao_Paulo" <?php echo ($additionalData['timezone'] ?? '') === 'America/Sao_Paulo' ? 'selected' : ''; ?>>
+                                🇧🇷 Сан-Паулу (UTC-3)
+                            </option>
+                            <option value="America/Buenos_Aires" <?php echo ($additionalData['timezone'] ?? '') === 'America/Buenos_Aires' ? 'selected' : ''; ?>>
+                                🇦🇷 Буенос-Айрес (UTC-3)
+                            </option>
+                        </optgroup>
+                        
+                        <optgroup label="Азія">
+                            <option value="Asia/Tokyo" <?php echo ($additionalData['timezone'] ?? '') === 'Asia/Tokyo' ? 'selected' : ''; ?>>
+                                🇯🇵 Токіо (UTC+9)
+                            </option>
+                            <option value="Asia/Shanghai" <?php echo ($additionalData['timezone'] ?? '') === 'Asia/Shanghai' ? 'selected' : ''; ?>>
+                                🇨🇳 Шанхай (UTC+8)
+                            </option>
+                            <option value="Asia/Seoul" <?php echo ($additionalData['timezone'] ?? '') === 'Asia/Seoul' ? 'selected' : ''; ?>>
+                                🇰🇷 Сеул (UTC+9)
+                            </option>
+                            <option value="Asia/Singapore" <?php echo ($additionalData['timezone'] ?? '') === 'Asia/Singapore' ? 'selected' : ''; ?>>
+                                🇸🇬 Сінгапур (UTC+8)
+                            </option>
+                            <option value="Asia/Dubai" <?php echo ($additionalData['timezone'] ?? '') === 'Asia/Dubai' ? 'selected' : ''; ?>>
+                                🇦🇪 Дубай (UTC+4)
+                            </option>
+                            <option value="Asia/Mumbai" <?php echo ($additionalData['timezone'] ?? '') === 'Asia/Mumbai' ? 'selected' : ''; ?>>
+                                🇮🇳 Мумбай (UTC+5:30)
+                            </option>
+                            <option value="Asia/Bangkok" <?php echo ($additionalData['timezone'] ?? '') === 'Asia/Bangkok' ? 'selected' : ''; ?>>
+                                🇹🇭 Бангкок (UTC+7)
+                            </option>
+                            <option value="Asia/Jakarta" <?php echo ($additionalData['timezone'] ?? '') === 'Asia/Jakarta' ? 'selected' : ''; ?>>
+                                🇮🇩 Джакарта (UTC+7)
+                            </option>
+                        </optgroup>
+                        
+                        <optgroup label="Австралія/Океанія">
+                            <option value="Australia/Sydney" <?php echo ($additionalData['timezone'] ?? '') === 'Australia/Sydney' ? 'selected' : ''; ?>>
+                                🇦🇺 Сідней (UTC+10)
+                            </option>
+                            <option value="Australia/Melbourne" <?php echo ($additionalData['timezone'] ?? '') === 'Australia/Melbourne' ? 'selected' : ''; ?>>
+                                🇦🇺 Мельбурн (UTC+10)
+                            </option>
+                            <option value="Australia/Perth" <?php echo ($additionalData['timezone'] ?? '') === 'Australia/Perth' ? 'selected' : ''; ?>>
+                                🇦🇺 Перт (UTC+8)
+                            </option>
+                            <option value="Pacific/Auckland" <?php echo ($additionalData['timezone'] ?? '') === 'Pacific/Auckland' ? 'selected' : ''; ?>>
+                                🇳🇿 Окленд (UTC+12)
+                            </option>
+                        </optgroup>
+                        
+                        <optgroup label="Африка">
+                            <option value="Africa/Cairo" <?php echo ($additionalData['timezone'] ?? '') === 'Africa/Cairo' ? 'selected' : ''; ?>>
+                                🇪🇬 Каїр (UTC+2)
+                            </option>
+                            <option value="Africa/Lagos" <?php echo ($additionalData['timezone'] ?? '') === 'Africa/Lagos' ? 'selected' : ''; ?>>
+                                🇳🇬 Лагос (UTC+1)
+                            </option>
+                            <option value="Africa/Johannesburg" <?php echo ($additionalData['timezone'] ?? '') === 'Africa/Johannesburg' ? 'selected' : ''; ?>>
+                                🇿🇦 Йоганнесбург (UTC+2)
+                            </option>
+                            <option value="Africa/Casablanca" <?php echo ($additionalData['timezone'] ?? '') === 'Africa/Casablanca' ? 'selected' : ''; ?>>
+                                🇲🇦 Касабланка (UTC+1)
+                            </option>
+                        </optgroup>
+                    </select>
+                    <div class="form-text">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Поточний час буде відображатися згідно з обраним часовим поясом
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Візуальні ефекти -->
+        <div class="settings-section mb-5">
+            <h5 class="mb-4">
+                <i class="fas fa-magic me-2"></i>Візуальні ефекти
+            </h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="effect-option">
+                        <div class="form-check form-switch form-switch-lg">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="enable_animations" 
+                                   name="enable_animations" 
+                                   value="1"
+                                   <?php echo ($additionalData['enable_animations'] ?? '1') === '1' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="enable_animations">
+                                <div class="effect-info">
+                                    <h6><i class="fas fa-play-circle me-2"></i>Анімації</h6>
+                                    <p class="mb-0">Плавні переходи між сторінками та елементами</p>
+                                </div>
+                            </label>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            
-            <div class="gradient-preview mt-4">
-                <h6>Попередній перегляд:</h6>
-                <div class="preview-elements">
-                    <button type="button" class="btn btn-gradient preview-btn">Кнопка</button>
-                    <div class="preview-header-gradient">Заголовок</div>
-                    <div class="preview-card-gradient">
-                        <h6>Карточка</h6>
-                        <p class="mb-0">Приклад контенту з градієнтом</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Додаткові налаштування -->
-        <div class="mb-5">
-            <h5 class="mb-4">
-                <i class="fas fa-cogs me-2"></i>Додаткові налаштування
-            </h5>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               id="enable_animations" 
-                               name="enable_animations" 
-                               <?php echo ($themeData['enable_animations'] ?? true) ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="enable_animations">
-                            <i class="fas fa-magic me-2"></i>Увімкнути анімації
-                        </label>
                     </div>
                 </div>
                 
                 <div class="col-md-6">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               id="enable_particles" 
-                               name="enable_particles" 
-                               <?php echo ($themeData['enable_particles'] ?? false) ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="enable_particles">
-                            <i class="fas fa-sparkles me-2"></i>Частинки на фоні
-                        </label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               id="smooth_scroll" 
-                               name="smooth_scroll" 
-                               <?php echo ($themeData['smooth_scroll'] ?? true) ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="smooth_scroll">
-                            <i class="fas fa-arrows-alt-v me-2"></i>Плавна прокрутка
-                        </label>
+                    <div class="effect-option">
+                        <div class="form-check form-switch form-switch-lg">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="enable_particles" 
+                                   name="enable_particles" 
+                                   value="1"
+                                   <?php echo ($additionalData['enable_particles'] ?? '0') === '1' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="enable_particles">
+                                <div class="effect-info">
+                                    <h6><i class="fas fa-sparkles me-2"></i>Частинки на фоні</h6>
+                                    <p class="mb-0">Інтерактивні частинки для динамічного ефекту</p>
+                                </div>
+                            </label>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="col-md-6">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               id="enable_tooltips" 
-                               name="enable_tooltips" 
-                               <?php echo ($themeData['enable_tooltips'] ?? true) ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="enable_tooltips">
-                            <i class="fas fa-question-circle me-2"></i>Підказки
-                        </label>
+                    <div class="effect-option">
+                        <div class="form-check form-switch form-switch-lg">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="smooth_scroll" 
+                                   name="smooth_scroll" 
+                                   value="1"
+                                   <?php echo ($additionalData['smooth_scroll'] ?? '1') === '1' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="smooth_scroll">
+                                <div class="effect-info">
+                                    <h6><i class="fas fa-arrows-alt-v me-2"></i>Плавна прокрутка</h6>
+                                    <p class="mb-0">М'яка прокрутка сторінки для кращого UX</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="effect-option">
+                        <div class="form-check form-switch form-switch-lg">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="enable_tooltips" 
+                                   name="enable_tooltips" 
+                                   value="1"
+                                   <?php echo ($additionalData['enable_tooltips'] ?? '1') === '1' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="enable_tooltips">
+                                <div class="effect-info">
+                                    <h6><i class="fas fa-comment-dots me-2"></i>Підказки</h6>
+                                    <p class="mb-0">Корисні підказки при наведенні на елементи</p>
+                                </div>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="info-box">
-            <i class="fas fa-info-circle me-2"></i>
-            <strong>Примітка:</strong> Всі налаштування теми можна буде змінити в розділі "Тема та дизайн" адміністративної панелі.
-        </div>
-
-        <div class="navigation-buttons">
-            <a href="?step=4" class="btn btn-outline-secondary">
+        <!-- Кнопки навігації -->
+        <div class="step-navigation">
+            <a href="?step=4" class="btn btn-outline-secondary btn-lg">
                 <i class="fas fa-chevron-left me-2"></i>Назад
             </a>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary btn-lg">
                 Далі<i class="fas fa-chevron-right ms-2"></i>
             </button>
         </div>
@@ -227,245 +302,161 @@ $themeData = $_SESSION['install_data']['theme'] ?? [];
 </div>
 
 <style>
-.theme-option {
-    margin-bottom: 20px;
-}
-
-.theme-card {
-    display: block;
-    border: 2px solid #e9ecef;
+.settings-section {
+    background: var(--bs-card-bg);
+    border: 1px solid var(--bs-border-color);
     border-radius: 12px;
-    padding: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: white;
-    text-decoration: none;
-    color: inherit;
+    padding: 2rem;
 }
 
-.theme-card:hover {
-    border-color: var(--primary-color, #667eea);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.theme-option input[type="radio"]:checked + .theme-card {
-    border-color: var(--primary-color, #667eea);
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-}
-
-.theme-preview {
-    width: 100%;
-    height: 120px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 15px;
-    border: 1px solid #dee2e6;
-}
-
-.light-preview {
-    background: #f8f9fa;
-}
-
-.dark-preview {
-    background: #343a40;
-}
-
-.preview-header {
-    height: 25px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.preview-content {
-    display: flex;
-    height: 95px;
-}
-
-.preview-sidebar {
-    width: 30%;
-    background: #e9ecef;
-}
-
-.dark-preview .preview-sidebar {
-    background: #495057;
-}
-
-.preview-main {
-    flex: 1;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.preview-block {
-    height: 20px;
-    background: #dee2e6;
-    border-radius: 4px;
-}
-
-.dark-preview .preview-block {
-    background: #6c757d;
-}
-
-.theme-info h6 {
-    margin-bottom: 5px;
-    color: #495057;
-}
-
-.theme-info p {
-    color: #6c757d;
-    font-size: 0.9em;
-}
-
-.gradient-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    gap: 10px;
-    max-width: 600px;
-}
-
-.gradient-item {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    cursor: pointer;
+.language-option {
     position: relative;
+    margin-bottom: 1rem;
+}
+
+.language-card {
+    display: block;
+    border: 2px solid var(--bs-border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
     transition: all 0.3s ease;
-    border: 3px solid transparent;
+    background: var(--bs-body-bg);
+    height: 100%;
 }
 
-.gradient-item:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+.language-card:hover {
+    border-color: var(--bs-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.gradient-item.selected {
-    border-color: #fff;
-    box-shadow: 0 0 0 2px var(--primary-color, #667eea);
-    transform: scale(1.05);
+.language-option input[type="radio"]:checked + .language-card {
+    border-color: var(--bs-primary);
+    background: rgba(var(--bs-primary-rgb), 0.1);
 }
 
-.gradient-check {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 18px;
-    opacity: 0;
-    transition: all 0.3s ease;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+.flag-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
 }
 
-.gradient-item.selected .gradient-check {
-    opacity: 1;
+.language-info h6 {
+    margin-bottom: 0.25rem;
+    color: var(--bs-body-color);
 }
 
-.preview-elements {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
+.language-info p {
+    color: var(--bs-text-muted);
+    font-size: 0.875rem;
 }
 
-.preview-btn {
-    background: var(--current-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-}
-
-.preview-header-gradient {
-    padding: 8px 16px;
-    background: var(--current-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
-    color: white;
-    border-radius: 6px;
-    font-weight: 600;
-}
-
-.preview-card-gradient {
-    padding: 15px;
+.effect-option {
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
     border-radius: 8px;
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-                var(--current-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%)) border-box;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.effect-option:hover {
+    border-color: var(--bs-primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-switch .form-check-input:checked + .form-check-label .effect-option {
+    background: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.effect-info h6 {
+    margin-bottom: 0.5rem;
+    color: var(--bs-body-color);
+}
+
+.effect-info p {
+    color: var(--bs-text-muted);
+    font-size: 0.875rem;
+}
+
+.form-switch-lg .form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+}
+
+.form-switch-lg .form-check-label {
+    padding-left: 4rem;
+}
+
+.language-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#timezone {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const gradientItems = document.querySelectorAll('.gradient-item');
-    const selectedGradientInput = document.getElementById('selected_gradient');
+    // Попередній перегляд ефектів
+    const animationsToggle = document.getElementById('enable_animations');
+    const particlesToggle = document.getElementById('enable_particles');
+    const smoothScrollToggle = document.getElementById('smooth_scroll');
+    const tooltipsToggle = document.getElementById('enable_tooltips');
     
-    // Градієнти
-    const gradients = {
-        'gradient-1': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'gradient-2': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        'gradient-3': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        'gradient-4': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-        'gradient-5': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-        'gradient-6': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-        'gradient-7': 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-        'gradient-8': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-        'gradient-9': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
-        'gradient-10': 'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
-        'gradient-11': 'linear-gradient(135deg, #ff8a80 0%, #ff80ab 100%)',
-        'gradient-12': 'linear-gradient(135deg, #81c784 0%, #aed581 100%)',
-        'gradient-13': 'linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%)',
-        'gradient-14': 'linear-gradient(135deg, #ffb74d 0%, #ffa726 100%)',
-        'gradient-15': 'linear-gradient(135deg, #9575cd 0%, #7986cb 100%)',
-        'gradient-16': 'linear-gradient(135deg, #4db6ac 0%, #26a69a 100%)',
-        'gradient-17': 'linear-gradient(135deg, #f06292 0%, #ec407a 100%)',
-        'gradient-18': 'linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%)',
-        'gradient-19': 'linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%)',
-        'gradient-20': 'linear-gradient(135deg, #26c6da 0%, #00acc1 100%)',
-        'gradient-21': 'linear-gradient(135deg, #66bb6a 0%, #4caf50 100%)',
-        'gradient-22': 'linear-gradient(135deg, #ffca28 0%, #ffc107 100%)',
-        'gradient-23': 'linear-gradient(135deg, #ff7043 0%, #ff5722 100%)',
-        'gradient-24': 'linear-gradient(135deg, #8d6e63 0%, #795548 100%)',
-        'gradient-25': 'linear-gradient(135deg, #78909c 0%, #607d8b 100%)',
-        'gradient-26': 'linear-gradient(135deg, #e91e63 0%, #ad1457 100%)',
-        'gradient-27': 'linear-gradient(135deg, #673ab7 0%, #512da8 100%)',
-        'gradient-28': 'linear-gradient(135deg, #3f51b5 0%, #303f9f 100%)',
-        'gradient-29': 'linear-gradient(135deg, #009688 0%, #00695c 100%)',
-        'gradient-30': 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)'
-    };
+    // Оновлення часу для обраного часового поясу
+    const timezoneSelect = document.getElementById('timezone');
     
-    // Обробка вибору градієнту
-    gradientItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // Видаляємо вибір з усіх елементів
-            gradientItems.forEach(g => g.classList.remove('selected'));
-            
-            // Додаємо вибір до поточного
-            this.classList.add('selected');
-            
-            // Оновлюємо приховане поле
-            const gradientKey = this.dataset.gradient;
-            selectedGradientInput.value = gradientKey;
-            
-            // Оновлюємо попередній перегляд
-            updateGradientPreview(gradients[gradientKey]);
-        });
-    });
-    
-    // Функція оновлення попереднього перегляду
-    function updateGradientPreview(gradient) {
-        document.documentElement.style.setProperty('--current-gradient', gradient);
+    function updateTimezonePreview() {
+        const selectedTimezone = timezoneSelect.value;
+        if (selectedTimezone) {
+            try {
+                const now = new Date();
+                const formatter = new Intl.DateTimeFormat('uk-UA', {
+                    timeZone: selectedTimezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                
+                const timeString = formatter.format(now);
+                const helpText = timezoneSelect.parentNode.querySelector('.form-text');
+                helpText.innerHTML = `<i class="fas fa-info-circle me-1"></i>Поточний час: ${timeString}`;
+            } catch (e) {
+                console.error('Помилка форматування часу:', e);
+            }
+        }
     }
     
-    // Ініціалізація попереднього перегляду
-    const currentGradient = selectedGradientInput.value;
-    if (gradients[currentGradient]) {
-        updateGradientPreview(gradients[currentGradient]);
-    }
+    timezoneSelect.addEventListener('change', updateTimezonePreview);
+    updateTimezonePreview(); // Початкове оновлення
     
-    // Скриття радіо кнопок
-    const radioInputs = document.querySelectorAll('input[type="radio"]');
-    radioInputs.forEach(input => {
-        input.style.display = 'none';
+    // Оновлення кожну секунду
+    setInterval(updateTimezonePreview, 1000);
+    
+    // Валідація форми
+    document.getElementById('additionalForm').addEventListener('submit', function(e) {
+        const language = document.querySelector('input[name="default_language"]:checked');
+        const timezone = document.getElementById('timezone').value;
+        
+        if (!language) {
+            e.preventDefault();
+            alert('Будь ласка, оберіть мову за замовчуванням');
+            return;
+        }
+        
+        if (!timezone) {
+            e.preventDefault();
+            alert('Будь ласка, оберіть часовий пояс');
+            return;
+        }
     });
 });
 </script>

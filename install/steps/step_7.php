@@ -382,19 +382,40 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Валідація форми
     form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
         if (!form.checkValidity()) {
             e.preventDefault();
             e.stopPropagation();
+            
+            // Скидаємо стан кнопки при помилці валідації
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Далі<i class="fas fa-chevron-right ms-2"></i>';
+            }
+        } else {
+            // Додаткова перевірка сили паролю
+            const passwordStrength = checkPasswordStrength(passwordInput.value);
+            if (passwordStrength.score < 2 && passwordInput.value.length > 0) {
+                e.preventDefault();
+                alert('Будь ласка, оберіть більш надійний пароль для безпеки адміністративного доступу.');
+                passwordInput.focus();
+                
+                // Скидаємо стан кнопки
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Далі<i class="fas fa-chevron-right ms-2"></i>';
+                }
+                return;
+            }
+            
+            // Показуємо стан завантаження при успішній валідації
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
+            }
         }
         form.classList.add('was-validated');
-        
-        // Додаткова перевірка сили паролю
-        const passwordStrength = checkPasswordStrength(passwordInput.value);
-        if (passwordStrength.score < 2 && passwordInput.value.length > 0) {
-            e.preventDefault();
-            alert('Будь ласка, оберіть більш надійний пароль для безпеки адміністративного доступу.');
-            passwordInput.focus();
-        }
     });
     
     // Автофокус на першому полі

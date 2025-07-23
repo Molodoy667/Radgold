@@ -180,13 +180,15 @@ ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
         // Очищаємо дані сесії установки
         unset($_SESSION['install_data']);
         
-        echo json_encode(['success' => true, 'message' => 'Установка завершена успішно']);
-        exit();
-        
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-        exit();
+                    echo json_encode(['success' => true, 'message' => 'Установка завершена успішно']);
+            exit();
+            
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit();
+        }
     }
+    exit(); // Додаткова страховка
 }
 ?>
 

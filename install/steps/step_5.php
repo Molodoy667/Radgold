@@ -443,19 +443,36 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Валідація форми
     document.getElementById('additionalForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
         const language = document.querySelector('input[name="default_language"]:checked');
         const timezone = document.getElementById('timezone').value;
         
         if (!language) {
             e.preventDefault();
             alert('Будь ласка, оберіть мову за замовчуванням');
+            // Скидаємо стан кнопки
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Далі<i class="fas fa-chevron-right ms-2"></i>';
+            }
             return;
         }
         
         if (!timezone) {
             e.preventDefault();
             alert('Будь ласка, оберіть часовий пояс');
+            // Скидаємо стан кнопки
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Далі<i class="fas fa-chevron-right ms-2"></i>';
+            }
             return;
+        }
+        
+        // Показуємо стан завантаження при успішній валідації
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
         }
     });
 });

@@ -385,41 +385,30 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn ? submitBtn.innerHTML : '';
         
-        // Спершу показуємо стан завантаження
+        // Спершу перевіряємо валідацію
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return; // Виходимо, не показуючи завантаження
+        }
+        
+        // Додаткова перевірка сили паролю
+        const passwordStrength = checkPasswordStrength(passwordInput.value);
+        if (passwordStrength.score < 2 && passwordInput.value.length > 0) {
+            e.preventDefault();
+            alert('Будь ласка, оберіть більш надійний пароль для безпеки адміністративного доступу.');
+            passwordInput.focus();
+            form.classList.remove('was-validated');
+            return; // Виходимо, не показуючи завантаження
+        }
+        
+        // Тільки якщо валідація пройшла - показуємо завантаження
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
         }
         
-        // Потім перевіряємо валідацію
-        if (!form.checkValidity()) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Скидаємо стан кнопки при помилці валідації
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }
-        } else {
-            // Додаткова перевірка сили паролю
-            const passwordStrength = checkPasswordStrength(passwordInput.value);
-            if (passwordStrength.score < 2 && passwordInput.value.length > 0) {
-                e.preventDefault();
-                alert('Будь ласка, оберіть більш надійний пароль для безпеки адміністративного доступу.');
-                passwordInput.focus();
-                
-                // Скидаємо стан кнопки при слабкому паролі
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }
-                form.classList.remove('was-validated');
-                return;
-            }
-            
-            // Якщо все ОК, залишаємо стан завантаження
-        }
         form.classList.add('was-validated');
     });
     

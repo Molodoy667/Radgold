@@ -449,36 +449,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const language = document.querySelector('input[name="default_language"]:checked');
         const timezone = document.getElementById('timezone').value;
         
-        // Спершу показуємо стан завантаження
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
-        }
-        
-        // Потім перевіряємо валідацію
+        // Спершу перевіряємо валідацію
         if (!language) {
             e.preventDefault();
             alert('Будь ласка, оберіть мову за замовчуванням');
-            // Скидаємо стан кнопки при помилці
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }
-            return;
+            return; // Виходимо, не показуючи завантаження
         }
         
         if (!timezone) {
             e.preventDefault();
             alert('Будь ласка, оберіть часовий пояс');
-            // Скидаємо стан кнопки при помилці
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }
-            return;
+            return; // Виходимо, не показуючи завантаження
         }
         
-        // Якщо все ОК, залишаємо стан завантаження
+        // Тільки якщо валідація пройшла - показуємо завантаження
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
+        }
     });
 });
 </script>

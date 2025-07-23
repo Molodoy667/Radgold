@@ -191,6 +191,9 @@ ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
         exit();
     }
 }
+
+// Якщо це не AJAX запит, показуємо HTML
+ob_end_flush(); // Завершуємо буферизацію для HTML виводу
 ?>
 
 <div class="step-content animate__animated animate__fadeIn">

@@ -823,7 +823,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             // Відправляємо POST запит для фактичної установки  
-            const response = await fetch('install/ajax_step8.php', {
+            const response = await fetch('ajax_step8.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

@@ -675,8 +675,9 @@ function generateGradients() {
                                 4 => 'Сайт',
                                 5 => 'Тема',
                                 6 => 'Адмін',
-                                7 => 'Установка',
-                                8 => 'Завершення'
+                                7 => 'Додатково',
+                                8 => 'Установка',
+                                9 => 'Завершення'
                             ];
                             echo $labels[$i] ?? '';
                             ?>
@@ -724,6 +725,9 @@ function generateGradients() {
                         break;
                     case 8:
                         include 'steps/step_8.php';
+                        break;
+                    case 9:
+                        include 'steps/step_9.php';
                         break;
                     default:
                         echo '<p>Невірний крок установки</p>';

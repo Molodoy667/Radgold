@@ -41,8 +41,6 @@ INSERT IGNORE INTO site_settings (setting_key, value, description, type) VALUES
 ('enable_tooltips', '1', 'Підказки', 'bool'),
 ('custom_css', '', 'Кастомний CSS', 'text'),
 ('custom_js', '', 'Кастомний JavaScript', 'text'),
-('admin_email', '', 'Email адміністратора', 'string'),
-('admin_name', '', 'Ім\'я адміністратора', 'string'),
 ('site_url', '', 'URL сайту', 'string'),
 ('max_ad_duration_days', '30', 'Максимальна тривалість оголошення (днів)', 'int'),
 ('ads_per_page', '12', 'Оголошень на сторінку', 'int'),

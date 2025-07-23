@@ -284,39 +284,33 @@ if (session_status() == PHP_SESSION_NONE) {
         
         $stmt->close();
         
-        // 6. Додаємо початкові налаштування сайту
+        // 6. Додаємо початкові налаштування сайту (БЕЗ даних адміністратора)
         $settings = [
             // Основні налаштування сайту з форми
             ['site_title', $siteConfig['site_name']],
             ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень'],
             ['site_keywords', $siteConfig['site_keywords'] ?? 'реклама, оголошення, дошка оголошень'],
             ['contact_email', $siteConfig['contact_email'] ?? ''],
+            ['site_url', rtrim($siteConfig['site_url'], '/')],
             
-            // Налаштування адміністратора
-            ['admin_email', $adminConfig['admin_email']],
-            ['admin_name', ($adminConfig['admin_first_name'] ?? 'Admin') . ' ' . ($adminConfig['admin_last_name'] ?? 'User')],
-            
-            // Додаткові налаштування
+            // Додаткові налаштування з форми
             ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev'],
             ['language', $additionalConfig['default_language'] ?? 'uk'],
             ['available_languages', '["uk","ru","en"]'],
             
-            // Налаштування теми
+            // Налаштування теми з форми
             ['current_theme', $themeConfig['default_theme'] ?? 'light'],
             ['current_gradient', $themeConfig['default_gradient'] ?? 'gradient-1'],
-            ['enable_animations', isset($additionalConfig['enable_animations']) ? '1' : '0'],
-            ['enable_particles', isset($additionalConfig['enable_particles']) ? '1' : '0'],
-            ['smooth_scroll', isset($additionalConfig['smooth_scroll']) ? '1' : '0'],
-            ['enable_tooltips', isset($additionalConfig['enable_tooltips']) ? '1' : '0'],
+            ['enable_animations', $additionalConfig['enable_animations'] ?? '0'],
+            ['enable_particles', $additionalConfig['enable_particles'] ?? '0'],
+            ['smooth_scroll', $additionalConfig['smooth_scroll'] ?? '0'],
+            ['enable_tooltips', $additionalConfig['enable_tooltips'] ?? '0'],
             
-            // Системні налаштування
+            // Системні налаштування (дефолтні значення)
             ['max_ad_duration_days', '30'],
             ['ads_per_page', '12'],
             ['auto_approve_ads', '0'],
-            ['maintenance_mode', '0'],
-            
-            // URL сайту (окремо, бо може мати спеціальну обробку)
-            ['site_url', rtrim($siteConfig['site_url'], '/')]
+            ['maintenance_mode', '0']
         ];
         
         // Перевіряємо чи існує таблиця site_settings

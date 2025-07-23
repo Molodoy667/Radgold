@@ -7,6 +7,7 @@ require_once __DIR__ . '/core/config.php';
 require_once __DIR__ . '/core/functions.php';
 
 echo "<h2>Тест збереження даних установки</h2>";
+echo "<p><strong>Важливо:</strong> Дані адміністратора зберігаються в таблиці <code>users</code>, а НЕ в <code>site_settings</code>!</p>";
 
 // Перевіряємо що записано в site_settings
 echo "<h3>Налаштування сайту (site_settings):</h3>";
@@ -153,6 +154,60 @@ if (file_exists(__DIR__ . '/.installed')) {
     echo "<p style='color: red;'>Файл .installed не існує!</p>";
 }
 
+// Показуємо маппінг ключових полів
+echo "<h3>Маппінг ключових полів:</h3>";
+echo "<table border='1' style='border-collapse: collapse; width: 100%;'>";
+echo "<tr><th>Крок форми</th><th>Поле форми</th><th>Таблиця</th><th>Поле БД</th><th>Поточне значення</th></tr>";
+
+// Основні поля сайту
+$site_fields = [
+    ['Крок 4', 'site_name', 'site_settings', 'site_title', getSiteSetting('site_title', 'не встановлено')],
+    ['Крок 4', 'site_description', 'site_settings', 'site_description', getSiteSetting('site_description', 'не встановлено')],
+    ['Крок 4', 'contact_email', 'site_settings', 'contact_email', getSiteSetting('contact_email', 'не встановлено')],
+    ['Крок 5', 'default_language', 'site_settings', 'language', getSiteSetting('language', 'не встановлено')],
+    ['Крок 5', 'enable_animations', 'site_settings', 'enable_animations', getSiteSetting('enable_animations', 'не встановлено')],
+    ['Крок 6', 'default_theme', 'site_settings', 'current_theme', getSiteSetting('current_theme', 'не встановлено')]
+];
+
+foreach ($site_fields as $field) {
+    echo "<tr>";
+    echo "<td>" . htmlspecialchars($field[0]) . "</td>";
+    echo "<td>" . htmlspecialchars($field[1]) . "</td>";
+    echo "<td>" . htmlspecialchars($field[2]) . "</td>";
+    echo "<td>" . htmlspecialchars($field[3]) . "</td>";
+    echo "<td>" . htmlspecialchars($field[4]) . "</td>";
+    echo "</tr>";
+}
+
+// Показуємо адміна з users
+try {
+    $admin_result = $db->query("SELECT username, email, first_name, last_name, role, group_id FROM users WHERE role = 'admin' LIMIT 1");
+    if ($admin_result->num_rows > 0) {
+        $admin = $admin_result->fetch_assoc();
+        $admin_fields = [
+            ['Крок 7', 'admin_login', 'users', 'username', $admin['username']],
+            ['Крок 7', 'admin_email', 'users', 'email', $admin['email']],
+            ['Крок 7', 'admin_first_name', 'users', 'first_name', $admin['first_name']],
+            ['Крок 7', 'admin_last_name', 'users', 'last_name', $admin['last_name']],
+            ['Система', 'auto', 'users', 'group_id', $admin['group_id'] . ' (Супер Адмін)']
+        ];
+        
+        foreach ($admin_fields as $field) {
+            echo "<tr style='background-color: #e8f5e8;'>";
+            echo "<td>" . htmlspecialchars($field[0]) . "</td>";
+            echo "<td>" . htmlspecialchars($field[1]) . "</td>";
+            echo "<td>" . htmlspecialchars($field[2]) . "</td>";
+            echo "<td>" . htmlspecialchars($field[3]) . "</td>";
+            echo "<td>" . htmlspecialchars($field[4]) . "</td>";
+            echo "</tr>";
+        }
+    }
+} catch (Exception $e) {
+    echo "<tr><td colspan='5' style='color: red;'>Помилка отримання адміна: " . $e->getMessage() . "</td></tr>";
+}
+
+echo "</table>";
+
 echo "<hr>";
-echo "<p><a href='admin/'>Перейти в адмін-панель</a> | <a href='./'>Перейти на головну</a></p>";
+echo "<p><a href='admin/'>Перейти в адмін-панель</a> | <a href='./'>Перейти на головну</a> | <a href='install_fields_mapping.md'>Документація полів</a></p>";
 ?>

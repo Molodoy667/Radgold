@@ -175,14 +175,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 5:
-            // Додаткові налаштування
+            // Додаткові налаштування (правильна обробка чекбоксів)
             $additionalData = [
                 'default_language' => $_POST['default_language'] ?? 'uk',
                 'timezone' => $_POST['timezone'] ?? 'Europe/Kiev',
-                'enable_animations' => $_POST['enable_animations'] ?? '0',
-                'enable_particles' => $_POST['enable_particles'] ?? '0',
-                'smooth_scroll' => $_POST['smooth_scroll'] ?? '0',
-                'enable_tooltips' => $_POST['enable_tooltips'] ?? '0'
+                'enable_animations' => isset($_POST['enable_animations']) ? '1' : '0',
+                'enable_particles' => isset($_POST['enable_particles']) ? '1' : '0',
+                'smooth_scroll' => isset($_POST['smooth_scroll']) ? '1' : '0',
+                'enable_tooltips' => isset($_POST['enable_tooltips']) ? '1' : '0'
             ];
             
             $_SESSION['install_data']['additional'] = $additionalData;

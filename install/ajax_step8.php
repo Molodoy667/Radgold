@@ -7,6 +7,53 @@ if (!defined('DEBUG_MODE')) {
     define('DEBUG_MODE', false);
 }
 
+// Функція для розбору SQL з підтримкою DELIMITER
+function parseSqlWithDelimiter($sql) {
+    $queries = [];
+    $currentQuery = '';
+    $delimiter = ';';
+    
+    // Видаляємо коментарі та розбиваємо на рядки
+    $lines = explode("\n", $sql);
+    
+    foreach ($lines as $line) {
+        $line = trim($line);
+        
+        // Пропускаємо порожні рядки та коментарі
+        if (empty($line) || substr($line, 0, 2) == '--' || substr($line, 0, 2) == '/*') {
+            continue;
+        }
+        
+        // Перевіряємо на зміну delimiter
+        if (preg_match('/^DELIMITER\s+(.+)$/i', $line, $matches)) {
+            $delimiter = trim($matches[1]);
+            continue;
+        }
+        
+        // Додаємо рядок до поточного запиту
+        $currentQuery .= $line . "\n";
+        
+        // Перевіряємо чи закінчується запит delimiter'ом
+        if (substr(rtrim($line), -strlen($delimiter)) === $delimiter) {
+            // Видаляємо delimiter з кінця
+            $currentQuery = substr(trim($currentQuery), 0, -strlen($delimiter));
+            
+            if (!empty(trim($currentQuery))) {
+                $queries[] = trim($currentQuery);
+            }
+            
+            $currentQuery = '';
+        }
+    }
+    
+    // Додаємо останній запит якщо він є
+    if (!empty(trim($currentQuery))) {
+        $queries[] = trim($currentQuery);
+    }
+    
+    return $queries;
+}
+
 // Очищаємо будь-який попередній вивід
 while (ob_get_level()) {
     ob_end_clean();
@@ -201,8 +248,8 @@ if (session_status() == PHP_SESSION_NONE) {
                 error_log("Processing SQL file: $sqlFile");
                 $sql = file_get_contents($fullPath);
                 if ($sql) {
-                    // Розділяємо на окремі запити
-                    $queries = explode(';', $sql);
+                    // Функція для розбору SQL з підтримкою DELIMITER
+                    $queries = parseSqlWithDelimiter($sql);
                     $executed = 0;
                     foreach ($queries as $query) {
                         $query = trim($query);
@@ -217,7 +264,9 @@ if (session_status() == PHP_SESSION_NONE) {
                                     'table \'',
                                     'duplicate column',
                                     'multiple primary key',
-                                    'duplicate entry'
+                                    'duplicate entry',
+                                    'trigger already exists',
+                                    'event already exists'
                                 ];
                                 
                                 $should_ignore = false;
@@ -231,6 +280,7 @@ if (session_status() == PHP_SESSION_NONE) {
                                 
                                 if (!$should_ignore) {
                                     error_log("Fatal SQL error in $sqlFile: " . $mysqli->error);
+                                    error_log("Query that failed: " . substr($query, 0, 200) . "...");
                                     throw new Exception("Помилка в {$sqlFile}: " . $mysqli->error);
                                 }
                             } else {

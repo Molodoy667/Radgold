@@ -405,32 +405,43 @@ CREATE INDEX idx_transactions_user_date ON transactions(user_id, created_at);
 CREATE INDEX idx_views_ad_date ON ad_views(ad_id, created_at);
 
 -- Тригери для автоматичного управління
-DELIMITER $$
 
 -- Тригер для оновлення лічильника переглядів
+DROP TRIGGER IF EXISTS update_ad_views_count;
+DELIMITER $$
 CREATE TRIGGER update_ad_views_count 
 AFTER INSERT ON ad_views 
 FOR EACH ROW 
 BEGIN 
     UPDATE ads SET views_count = views_count + 1 WHERE id = NEW.ad_id;
 END$$
+DELIMITER ;
 
--- Тригер для оновлення лічільника улюблених
+-- Тригер для оновлення лічільника улюблених (додавання)
+DROP TRIGGER IF EXISTS update_favorites_count_add;
+DELIMITER $$
 CREATE TRIGGER update_favorites_count_add 
 AFTER INSERT ON favorites 
 FOR EACH ROW 
 BEGIN 
     UPDATE ads SET favorites_count = favorites_count + 1 WHERE id = NEW.ad_id;
 END$$
+DELIMITER ;
 
+-- Тригер для оновлення лічільника улюблених (видалення)
+DROP TRIGGER IF EXISTS update_favorites_count_remove;
+DELIMITER $$
 CREATE TRIGGER update_favorites_count_remove 
 AFTER DELETE ON favorites 
 FOR EACH ROW 
 BEGIN 
     UPDATE ads SET favorites_count = favorites_count - 1 WHERE id = OLD.ad_id;
 END$$
+DELIMITER ;
 
 -- Тригер для оновлення балансу при транзакціях
+DROP TRIGGER IF EXISTS update_user_balance;
+DELIMITER $$
 CREATE TRIGGER update_user_balance 
 AFTER INSERT ON transactions 
 FOR EACH ROW 
@@ -442,8 +453,11 @@ BEGIN
         total_spent = CASE WHEN NEW.type IN ('purchase', 'withdraw') THEN total_spent + NEW.amount ELSE total_spent END,
         total_earned = CASE WHEN NEW.type IN ('deposit', 'refund', 'bonus') THEN total_earned + NEW.amount ELSE total_earned END;
 END$$
+DELIMITER ;
 
 -- Тригер для оновлення last_message_id в чатах
+DROP TRIGGER IF EXISTS update_chat_last_message;
+DELIMITER $$
 CREATE TRIGGER update_chat_last_message 
 AFTER INSERT ON chat_messages 
 FOR EACH ROW 
@@ -453,7 +467,6 @@ BEGIN
         updated_at = CURRENT_TIMESTAMP 
     WHERE id = NEW.chat_id;
 END$$
-
 DELIMITER ;
 
 -- Створення користувача для бази даних (опціонально)

@@ -64,26 +64,33 @@ ALTER TABLE ads ADD INDEX IF NOT EXISTS idx_category_status (category_id, status
 ALTER TABLE ads ADD INDEX IF NOT EXISTS idx_location_status (location_id, status);
 
 -- Додаємо тригери для оновлення статистики
-DELIMITER //
 
 -- Тригер для оновлення last_login при авторизації
-CREATE TRIGGER IF NOT EXISTS update_last_login 
+DROP TRIGGER IF EXISTS update_last_login;
+DELIMITER $$
+CREATE TRIGGER update_last_login 
 AFTER UPDATE ON users
 FOR EACH ROW
 BEGIN
     IF NEW.status = 'active' AND OLD.status != 'active' THEN
         UPDATE users SET last_login = NOW() WHERE id = NEW.id;
     END IF;
-END//
+END$$
+DELIMITER ;
+
+-- Видалення старої події якщо існує
+DROP EVENT IF EXISTS auto_unban_users;
 
 -- Тригер для автоматичного розблокування користувачів
-CREATE EVENT IF NOT EXISTS auto_unban_users
+DELIMITER $$
+CREATE EVENT auto_unban_users
 ON SCHEDULE EVERY 1 HOUR
 DO
+BEGIN
   UPDATE users 
   SET status = 'active', ban_reason = NULL, ban_until = NULL 
-  WHERE status = 'banned' AND ban_until IS NOT NULL AND ban_until <= NOW()//
-
+  WHERE status = 'banned' AND ban_until IS NOT NULL AND ban_until <= NOW();
+END$$
 DELIMITER ;
 
 -- Вставляємо початкові дані для демонстрації

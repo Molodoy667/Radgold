@@ -1,322 +1,286 @@
 <?php
-// Система дебагінгу AdBoard Pro
+/**
+ * Улучшенный debug файл для AdBoard Pro
+ * Специально для диагностики проблем с БД и JSON
+ */
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-echo "<!DOCTYPE html>
-<html lang='uk'>
-<head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>AdBoard Pro - System Debug</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .test { margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-        .success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
-        .error { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
-        .warning { background: #fff3cd; border-color: #ffeaa7; color: #856404; }
-        .info { background: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
-        h1, h2 { color: #333; }
-        code { background: #f8f9fa; padding: 2px 5px; border-radius: 3px; }
-        .gradient-test { width: 50px; height: 50px; border-radius: 50%; display: inline-block; margin: 5px; }
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <h1>🔧 AdBoard Pro - Системна діагностика</h1>";
+echo "<!DOCTYPE html>";
+echo "<html lang='uk'>";
+echo "<head>";
+echo "<meta charset='UTF-8'>";
+echo "<meta name='viewport' content='width=device-width, initial-scale=1.0'>";
+echo "<title>Системная диагностика AdBoard Pro</title>";
+echo "<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' rel='stylesheet'>";
+echo "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'>";
+echo "</head>";
+echo "<body class='bg-light'>";
 
-// Тест 1: Структура файлів
-echo "<div class='test'>";
-echo "<h2>📁 Тест 1: Структура файлів</h2>";
+echo "<div class='container my-5'>";
+echo "<div class='card shadow'>";
+echo "<div class='card-header bg-danger text-white'>";
+echo "<h1 class='mb-0'><i class='fas fa-bug me-2'></i>Системная диагностика AdBoard Pro</h1>";
+echo "</div>";
+echo "<div class='card-body'>";
 
-$requiredFiles = [
-    'core/config.php',
-    'core/functions.php',
-    'install/index.php',
-    'install/database.sql',
-    'languages/uk.php',
-    'languages/ru.php',
-    'languages/en.php',
-    'pages/user/profile.php',
-    'themes/header.php',
-    'themes/footer.php'
-];
+// Тест 1: Общая информация
+echo "<div class='row mb-4'>";
+echo "<div class='col-12'>";
+echo "<h3><i class='fas fa-info-circle me-2'></i>Общая информация</h3>";
+echo "<div class='table-responsive'>";
+echo "<table class='table table-striped'>";
 
-$allFilesOk = true;
-foreach ($requiredFiles as $file) {
-    if (file_exists($file)) {
-        echo "✅ <code>$file</code> - існує<br>";
-    } else {
-        echo "❌ <code>$file</code> - відсутній<br>";
-        $allFilesOk = false;
-    }
-}
+echo "<tr><td><strong>PHP версия</strong></td><td>" . PHP_VERSION . "</td></tr>";
+echo "<tr><td><strong>Сервер</strong></td><td>" . ($_SERVER['SERVER_SOFTWARE'] ?? 'Неизвестно') . "</td></tr>";
+echo "<tr><td><strong>Документ рут</strong></td><td>" . ($_SERVER['DOCUMENT_ROOT'] ?? 'Неизвестно') . "</td></tr>";
+echo "<tr><td><strong>Текущая папка</strong></td><td>" . __DIR__ . "</td></tr>";
+echo "<tr><td><strong>Memory limit</strong></td><td>" . ini_get('memory_limit') . "</td></tr>";
 
-if ($allFilesOk) {
-    echo "</div><div class='test success'><strong>✅ Всі основні файли присутні!</strong>";
-} else {
-    echo "</div><div class='test error'><strong>❌ Деякі файли відсутні!</strong>";
-}
+echo "</table>";
+echo "</div>";
+echo "</div>";
 echo "</div>";
 
-// Тест 2: Підключення до config.php
-echo "<div class='test'>";
-echo "<h2>⚙️ Тест 2: Підключення конфігурації</h2>";
+// Тест 2: Файлы конфигурации
+echo "<div class='row mb-4'>";
+echo "<div class='col-12'>";
+echo "<h3><i class='fas fa-cog me-2'></i>Конфигурация</h3>";
+echo "<div class='table-responsive'>";
+echo "<table class='table table-striped'>";
 
-try {
-    require_once 'core/config.php';
-    echo "✅ config.php підключено успішно<br>";
-    echo "✅ DB_HOST: " . DB_HOST . "<br>";
-    echo "✅ DB_NAME: " . DB_NAME . "<br>";
-    echo "✅ SITE_NAME: " . SITE_NAME . "<br>";
+$configFile = 'core/config.php';
+echo "<tr>";
+echo "<td><strong>Файл config.php</strong></td>";
+if (file_exists($configFile)) {
+    echo "<td class='text-success'><i class='fas fa-check'></i> Существует</td>";
     
-    if (isset($db)) {
-        echo "✅ Об'єкт бази даних створено<br>";
-        echo "</div><div class='test success'><strong>✅ Конфігурація працює!</strong>";
-    } else {
-        echo "❌ Об'єкт бази даних не створено<br>";
-        echo "</div><div class='test error'><strong>❌ Проблема з БД!</strong>";
-    }
-} catch (Exception $e) {
-    echo "❌ Помилка: " . $e->getMessage() . "<br>";
-    echo "</div><div class='test error'><strong>❌ Помилка конфігурації!</strong>";
-}
-echo "</div>";
-
-// Тест 3: Функції
-echo "<div class='test'>";
-echo "<h2>🔧 Тест 3: Основні функції</h2>";
-
-require_once 'core/functions.php';
-
-$functions = [
-    'isLoggedIn',
-    'getUserId', 
-    'getUserById',
-    'getSiteSetting',
-    'setSiteSetting',
-    'getAllGradients',
-    '__'
-];
-
-$functionsOk = true;
-foreach ($functions as $func) {
-    if (function_exists($func)) {
-        echo "✅ <code>$func()</code> - існує<br>";
-    } else {
-        echo "❌ <code>$func()</code> - відсутня<br>";
-        $functionsOk = false;
-    }
-}
-
-if ($functionsOk) {
-    echo "</div><div class='test success'><strong>✅ Всі функції доступні!</strong>";
-} else {
-    echo "</div><div class='test error'><strong>❌ Деякі функції відсутні!</strong>";
-}
-echo "</div>";
-
-// Тест 4: Градієнти
-echo "<div class='test'>";
-echo "<h2>🎨 Тест 4: Система градієнтів</h2>";
-
-if (function_exists('getAllGradients')) {
-    $gradients = getAllGradients();
-    echo "✅ Завантажено " . count($gradients) . " градієнтів<br><br>";
-    
-    echo "<div style='max-width: 600px;'>";
-    foreach ($gradients as $key => $css) {
-        echo "<div class='gradient-test' style='background: $css' title='$key'></div>";
-    }
-    echo "</div><br>";
-    
-    if (count($gradients) >= 30) {
-        echo "</div><div class='test success'><strong>✅ Система градієнтів працює! (30+ градієнтів)</strong>";
-    } else {
-        echo "</div><div class='test warning'><strong>⚠️ Градієнтів менше 30!</strong>";
-    }
-} else {
-    echo "❌ Функція getAllGradients() недоступна<br>";
-    echo "</div><div class='test error'><strong>❌ Система градієнтів не працює!</strong>";
-}
-echo "</div>";
-
-// Тест 5: Перевірка SQL файлів
-echo "<div class='test'>";
-echo "<h2>🗄️ Тест 5: SQL файли</h2>";
-
-$sqlFiles = [
-    'install/database.sql',
-    'install/ads_database.sql',
-    'install/admin_tables.sql'
-];
-
-$sqlOk = true;
-foreach ($sqlFiles as $file) {
-    if (file_exists($file)) {
-        $content = file_get_contents($file);
-        $lines = count(explode("\n", $content));
-        $size = round(filesize($file) / 1024, 2);
-        echo "✅ <code>$file</code> - $lines рядків, $size KB<br>";
+    // Пробуем подключить конфигурацию
+    try {
+        require_once $configFile;
+        echo "<td class='text-success'><i class='fas fa-check'></i> Успешно подключен</td>";
         
-        // Перевірка на дублювання avatar
-        if (strpos($file, 'database.sql') !== false) {
-            $avatarCount = substr_count($content, 'avatar VARCHAR');
-            if ($avatarCount > 1) {
-                echo "⚠️ Знайдено $avatarCount входжень 'avatar VARCHAR' - можливе дублювання<br>";
-                $sqlOk = false;
-            }
-        }
-    } else {
-        echo "❌ <code>$file</code> - відсутній<br>";
-        $sqlOk = false;
-    }
-}
-
-if ($sqlOk) {
-    echo "</div><div class='test success'><strong>✅ SQL файли в порядку!</strong>";
-} else {
-    echo "</div><div class='test warning'><strong>⚠️ Виявлені проблеми в SQL файлах!</strong>";
-}
-echo "</div>";
-
-// Тест 6: Мовні файли
-echo "<div class='test'>";
-echo "<h2>🌍 Тест 6: Мультимовність</h2>";
-
-$languages = ['uk', 'ru', 'en'];
-$langOk = true;
-
-foreach ($languages as $lang) {
-    $file = "languages/$lang.php";
-    if (file_exists($file)) {
-        $translations = include $file;
-        if (is_array($translations)) {
-            $keys = count($translations, COUNT_RECURSIVE);
-            echo "✅ <code>$lang.php</code> - $keys перекладів<br>";
-            
-            // Перевірка наявності profile секції
-            if (isset($translations['profile'])) {
-                echo "✅ Секція 'profile' присутня в $lang<br>";
+        // Проверяем константы
+        $constants = ['DB_HOST', 'DB_USER', 'DB_NAME', 'SITE_NAME'];
+        foreach ($constants as $const) {
+            echo "<tr><td><strong>$const</strong></td>";
+            if (defined($const)) {
+                echo "<td class='text-success'>" . constant($const) . "</td>";
+                echo "<td><i class='fas fa-check text-success'></i> OK</td>";
             } else {
-                echo "⚠️ Секція 'profile' відсутня в $lang<br>";
-                $langOk = false;
+                echo "<td class='text-danger'>Не определено</td>";
+                echo "<td><i class='fas fa-times text-danger'></i> Ошибка</td>";
             }
-        } else {
-            echo "❌ <code>$lang.php</code> - некоректний формат<br>";
-            $langOk = false;
+            echo "</tr>";
         }
-    } else {
-        echo "❌ <code>$lang.php</code> - відсутній<br>";
-        $langOk = false;
+        
+    } catch (Exception $e) {
+        echo "<td class='text-danger'><i class='fas fa-times'></i> Ошибка: " . $e->getMessage() . "</td>";
     }
-}
-
-if ($langOk) {
-    echo "</div><div class='test success'><strong>✅ Мультимовність налаштована!</strong>";
 } else {
-    echo "</div><div class='test warning'><strong>⚠️ Проблеми з мовними файлами!</strong>";
+    echo "<td class='text-danger'><i class='fas fa-times'></i> Не существует</td>";
+    echo "<td class='text-warning'>Файл конфигурации отсутствует</td>";
 }
+echo "</tr>";
+
+echo "</table>";
+echo "</div>";
+echo "</div>";
 echo "</div>";
 
-// Тест 7: Інсталятор
-echo "<div class='test'>";
-echo "<h2>💾 Тест 7: Інсталятор</h2>";
+// Тест 3: База данных
+echo "<div class='row mb-4'>";
+echo "<div class='col-12'>";
+echo "<h3><i class='fas fa-database me-2'></i>База данных</h3>";
+echo "<div class='table-responsive'>";
+echo "<table class='table table-striped'>";
 
-$isInstalled = file_exists('.installed');
-echo "Статус установки: " . ($isInstalled ? "✅ Встановлено" : "⚠️ Не встановлено") . "<br>";
-
-$installSteps = [];
-for ($i = 1; $i <= 9; $i++) {
-    $stepFile = "install/steps/step_$i.php";
-    if (file_exists($stepFile)) {
-        $installSteps[] = $i;
-        echo "✅ Крок $i - існує<br>";
+// Проверяем глобальную переменную $db
+echo "<tr>";
+echo "<td><strong>Глобальная переменная \$db</strong></td>";
+if (isset($db) && $db instanceof mysqli) {
+    echo "<td class='text-success'><i class='fas fa-check'></i> Создана (mysqli)</td>";
+    
+    if ($db->connect_error) {
+        echo "<td class='text-danger'><i class='fas fa-times'></i> Ошибка подключения: " . $db->connect_error . "</td>";
     } else {
-        echo "❌ Крок $i - відсутній<br>";
+        echo "<td class='text-success'><i class='fas fa-check'></i> Подключено успешно</td>";
+        
+        // Тестируем запрос
+        echo "<tr><td><strong>Тест запроса</strong></td>";
+        try {
+            $result = $db->query("SELECT 1 as test");
+            if ($result) {
+                $row = $result->fetch_assoc();
+                echo "<td class='text-success'><i class='fas fa-check'></i> Запросы работают</td>";
+                echo "<td>Результат: " . $row['test'] . "</td>";
+            } else {
+                echo "<td class='text-danger'><i class='fas fa-times'></i> Запрос не выполнился</td>";
+                echo "<td>Ошибка: " . $db->error . "</td>";
+            }
+        } catch (Exception $e) {
+            echo "<td class='text-danger'><i class='fas fa-times'></i> Исключение</td>";
+            echo "<td>Ошибка: " . $e->getMessage() . "</td>";
+        }
+        echo "</tr>";
+        
+        // Проверяем таблицы
+        $tables = ['users', 'site_settings', 'categories', 'ads'];
+        foreach ($tables as $table) {
+            echo "<tr><td><strong>Таблица $table</strong></td>";
+            try {
+                $result = $db->query("SELECT COUNT(*) as count FROM $table");
+                if ($result) {
+                    $row = $result->fetch_assoc();
+                    echo "<td class='text-success'><i class='fas fa-check'></i> " . $row['count'] . " записей</td>";
+                    echo "<td>OK</td>";
+                } else {
+                    echo "<td class='text-warning'><i class='fas fa-exclamation-triangle'></i> Не найдена</td>";
+                    echo "<td>Ошибка: " . $db->error . "</td>";
+                }
+            } catch (Exception $e) {
+                echo "<td class='text-danger'><i class='fas fa-times'></i> Ошибка</td>";
+                echo "<td>" . $e->getMessage() . "</td>";
+            }
+            echo "</tr>";
+        }
     }
-}
-
-if (count($installSteps) === 9) {
-    echo "</div><div class='test success'><strong>✅ Інсталятор готовий! (9 кроків)</strong>";
 } else {
-    echo "</div><div class='test error'><strong>❌ Інсталятор неповний!</strong>";
+    echo "<td class='text-danger'><i class='fas fa-times'></i> НЕ создана</td>";
+    echo "<td class='text-danger'>Объект базы данных не существует!</td>";
 }
+echo "</tr>";
+
+echo "</table>";
+echo "</div>";
+echo "</div>";
 echo "</div>";
 
-// Тест 8: Директорії
-echo "<div class='test'>";
-echo "<h2>📂 Тест 8: Директорії</h2>";
+// Тест 4: Функции
+echo "<div class='row mb-4'>";
+echo "<div class='col-12'>";
+echo "<h3><i class='fas fa-code me-2'></i>Критические функции</h3>";
+echo "<div class='table-responsive'>";
+echo "<table class='table table-striped'>";
 
-$requiredDirs = [
-    'uploads',
-    'uploads/avatars',
-    'cache',
-    'logs',
-    'admin',
-    'ajax',
-    'core',
-    'themes',
-    'pages',
-    'languages',
-    'install'
+// Проверяем функции
+$functionsFile = 'core/functions.php';
+if (file_exists($functionsFile)) {
+    try {
+        require_once $functionsFile;
+        echo "<tr><td><strong>Файл functions.php</strong></td><td class='text-success'>Подключен</td><td><i class='fas fa-check text-success'></i></td></tr>";
+        
+        // Тестируем функции
+        $functions = [
+            'getSiteSetting' => 'Получение настроек сайта',
+            '__' => 'Функция перевода'
+        ];
+        
+        foreach ($functions as $func => $desc) {
+            echo "<tr><td><strong>$desc ($func)</strong></td>";
+            if (function_exists($func)) {
+                echo "<td class='text-success'>Существует</td>";
+                
+                // Тестируем функцию
+                try {
+                    if ($func === 'getSiteSetting') {
+                        $result = getSiteSetting('language', 'uk');
+                        echo "<td class='text-success'>Результат: $result</td>";
+                    } elseif ($func === '__') {
+                        $result = __('test');
+                        echo "<td class='text-success'>Результат: $result</td>";
+                    }
+                } catch (Exception $e) {
+                    echo "<td class='text-danger'>Ошибка: " . $e->getMessage() . "</td>";
+                }
+            } else {
+                echo "<td class='text-danger'>НЕ существует</td>";
+                echo "<td><i class='fas fa-times text-danger'></i></td>";
+            }
+            echo "</tr>";
+        }
+        
+    } catch (Exception $e) {
+        echo "<tr><td><strong>Файл functions.php</strong></td><td class='text-danger'>Ошибка подключения</td><td>" . $e->getMessage() . "</td></tr>";
+    }
+} else {
+    echo "<tr><td><strong>Файл functions.php</strong></td><td class='text-danger'>НЕ найден</td><td><i class='fas fa-times text-danger'></i></td></tr>";
+}
+
+echo "</table>";
+echo "</div>";
+echo "</div>";
+echo "</div>";
+
+// Тест 5: JSON
+echo "<div class='row mb-4'>";
+echo "<div class='col-12'>";
+echo "<h3><i class='fas fa-code me-2'></i>Тест JSON</h3>";
+echo "<div class='alert alert-info'>";
+
+$testData = [
+    'success' => true,
+    'message' => 'Тест JSON работает',
+    'timestamp' => date('Y-m-d H:i:s'),
+    'db_status' => isset($db) && !$db->connect_error,
+    'ukrainian_text' => 'Тест українського тексту'
 ];
 
-$dirsOk = true;
-foreach ($requiredDirs as $dir) {
-    if (is_dir($dir)) {
-        $writable = is_writable($dir) ? "(записуваний)" : "(тільки читання)";
-        echo "✅ <code>$dir/</code> - існує $writable<br>";
-    } else {
-        echo "❌ <code>$dir/</code> - відсутній<br>";
-        $dirsOk = false;
-    }
-}
+$jsonString = json_encode($testData, JSON_UNESCAPED_UNICODE);
+$decoded = json_decode($jsonString, true);
 
-if ($dirsOk) {
-    echo "</div><div class='test success'><strong>✅ Всі директорії на місці!</strong>";
+if ($jsonString && $decoded && $decoded['success'] === true) {
+    echo "<i class='fas fa-check text-success me-2'></i><strong>JSON обработка работает!</strong><br>";
+    echo "<small>JSON строка: <code>" . htmlspecialchars($jsonString) . "</code></small>";
 } else {
-    echo "</div><div class='test error'><strong>❌ Деякі директорії відсутні!</strong>";
+    echo "<i class='fas fa-times text-danger me-2'></i><strong>Проблемы с JSON!</strong><br>";
+    echo "Ошибка: " . json_last_error_msg();
 }
+
+echo "</div>";
+echo "</div>";
 echo "</div>";
 
-// Тест 9: Тестування перекладів
-echo "<div class='test'>";
-echo "<h2>🔤 Тест 9: Функція перекладів</h2>";
+// Тест 6: Рекомендации
+echo "<div class='row mb-4'>";
+echo "<div class='col-12'>";
+echo "<h3><i class='fas fa-lightbulb me-2'></i>Рекомендации по исправлению</h3>";
 
-if (function_exists('__')) {
-    $testKey = 'profile.my_profile';
-    $translation = __($testKey);
-    
-    echo "Тест ключа: <code>$testKey</code><br>";
-    echo "Результат: <strong>$translation</strong><br>";
-    
-    if ($translation !== $testKey) {
-        echo "</div><div class='test success'><strong>✅ Функція перекладу працює!</strong>";
-    } else {
-        echo "</div><div class='test warning'><strong>⚠️ Переклад не знайдено, але функція працює!</strong>";
-    }
-} else {
-    echo "❌ Функція __() недоступна<br>";
-    echo "</div><div class='test error'><strong>❌ Функція перекладу не працює!</strong>";
+if (!isset($db) || $db->connect_error) {
+    echo "<div class='alert alert-danger'>";
+    echo "<h5>🚨 Критическая проблема с базой данных!</h5>";
+    echo "<ol>";
+    echo "<li><strong>Проверьте данные подключения к БД</strong> в файле <code>core/config.php</code></li>";
+    echo "<li><strong>Убедитесь что MySQL сервер запущен</strong></li>";
+    echo "<li><strong>Проверьте права пользователя БД</strong></li>";
+    echo "<li><strong>Убедитесь что база данных существует</strong></li>";
+    echo "</ol>";
+    echo "</div>";
 }
+
+echo "<div class='alert alert-warning'>";
+echo "<h5>📋 Для исправления JSON ошибок:</h5>";
+echo "<ol>";
+echo "<li><strong>Запустите переустановку</strong> - удалите файл <code>.installed</code> и перейдите в <code>/install/</code></li>";
+echo "<li><strong>Используйте правильные данные БД</strong>: хост=localhost, пользователь=iteiyzke_project, БД=iteiyzke_project</li>";
+echo "<li><strong>Убедитесь что у пользователя БД есть все права</strong></li>";
+echo "<li><strong>Проверьте логи ошибок сервера</strong> для дополнительной информации</li>";
+echo "</ol>";
 echo "</div>";
 
-// Загальний підсумок
-echo "<div class='test info'>";
-echo "<h2>📊 Загальний підсумок</h2>";
-echo "<p>Діагностика завершена. Перевірте результати вище для виявлення та усунення проблем.</p>";
-echo "<p><strong>Рекомендації:</strong></p>";
-echo "<ul>";
-echo "<li>Якщо система не встановлена, перейдіть на <a href='install/'>install/</a></li>";
-echo "<li>Перевірте налаштування бази даних у <code>core/config.php</code></li>";
-echo "<li>Переконайтесь, що директорії uploads та cache мають права на запис</li>";
-echo "<li>Після установки протестуйте профіль користувача</li>";
-echo "</ul>";
+echo "</div>";
 echo "</div>";
 
-echo "    </div>
-</body>
-</html>";
+echo "</div>"; // card-body
+echo "</div>"; // card
+echo "</div>"; // container
+
+echo "<script>";
+echo "console.log('Debug system loaded successfully');";
+echo "console.log('DB status:', " . (isset($db) && !$db->connect_error ? 'true' : 'false') . ");";
+echo "</script>";
+
+echo "</body>";
+echo "</html>";
 ?>

@@ -23,8 +23,19 @@ function getUserId() {
 
 // Базова функція перекладу
 function __($key) {
-    // Отримуємо поточну мову з налаштувань сайту
-    $currentLang = getSiteSetting('language', 'uk');
+    // Отримуємо поточну мову з налаштувань сайту (з fallback на 'uk')
+    $currentLang = 'uk'; // За замовчуванням
+    
+    // Спробуємо отримати з налаштувань тільки якщо БД доступна
+    try {
+        global $db;
+        if ($db && !$db->connect_error) {
+            $currentLang = getSiteSetting('language', 'uk');
+        }
+    } catch (Exception $e) {
+        // Ігноруємо помилки БД при отриманні мови
+        error_log("Language detection error: " . $e->getMessage());
+    }
     
     // Завантажуємо переклади
     static $translations = [];
@@ -446,26 +457,39 @@ function getSiteSetting($key, $default = null) {
     
     static $settings = null;
     
+    // Перевіряємо чи існує підключення до БД
+    if ($db === null || !($db instanceof mysqli) || $db->connect_error) {
+        return $default;
+    }
+    
     if ($settings === null) {
         $settings = [];
-        $result = $db->query("SELECT setting_key, value, type FROM site_settings");
-        while ($row = $result->fetch_assoc()) {
-            $value = $row['value'];
-            
-            // Конвертуємо значення відповідно до типу
-            switch ($row['type']) {
-                case 'bool':
-                    $value = (bool)((int)$value);
-                    break;
-                case 'int':
-                    $value = (int)$value;
-                    break;
-                case 'json':
-                    $value = json_decode($value, true);
-                    break;
+        try {
+            $result = $db->query("SELECT setting_key, value, type FROM site_settings");
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    $value = $row['value'];
+                    
+                    // Конвертуємо значення відповідно до типу
+                    switch ($row['type']) {
+                        case 'bool':
+                            $value = (bool)((int)$value);
+                            break;
+                        case 'int':
+                            $value = (int)$value;
+                            break;
+                        case 'json':
+                            $value = json_decode($value, true);
+                            break;
+                    }
+                    
+                    $settings[$row['setting_key']] = $value;
+                }
             }
-            
-            $settings[$row['setting_key']] = $value;
+        } catch (Exception $e) {
+            // Якщо є помилка БД, повертаємо значення за замовчуванням
+            error_log("getSiteSetting error: " . $e->getMessage());
+            return $default;
         }
     }
     

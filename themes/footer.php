@@ -251,6 +251,128 @@
                 $('#loadingOverlay').fadeOut(200);
             }
         });
+        
+        // Візуальні ефекти на основі налаштувань
+        initVisualEffects();
+        
+        function initVisualEffects() {
+            const body = document.body;
+            
+            // Анімації
+            if (body.dataset.animations === 'true') {
+                body.classList.add('animations-enabled');
+                
+                // Додаємо CSS для анімацій
+                if (!document.querySelector('#animations-css')) {
+                    const style = document.createElement('style');
+                    style.id = 'animations-css';
+                    style.textContent = `
+                        .animations-enabled * {
+                            transition: all 0.3s ease;
+                        }
+                        .animations-enabled .card:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                        }
+                        .animations-enabled .btn:hover {
+                            transform: translateY(-1px);
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            // Плавна прокрутка
+            if (body.dataset.smoothScroll === 'true') {
+                body.style.scrollBehavior = 'smooth';
+            }
+            
+            // Підказки
+            if (body.dataset.tooltips === 'true') {
+                // Ініціалізуємо Bootstrap tooltips
+                $('[data-bs-toggle="tooltip"]').tooltip();
+                
+                // Додаємо підказки для елементів з title
+                $('[title]:not([data-bs-toggle="tooltip"])').each(function() {
+                    $(this).attr('data-bs-toggle', 'tooltip').tooltip();
+                });
+            }
+            
+            // Частинки
+            if (body.dataset.particles === 'true') {
+                loadParticles();
+            }
+        }
+        
+        function loadParticles() {
+            if (document.getElementById('particles-js')) return;
+            
+            const particlesContainer = document.createElement('div');
+            particlesContainer.id = 'particles-js';
+            particlesContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                pointer-events: none;
+                overflow: hidden;
+            `;
+            document.body.insertBefore(particlesContainer, document.body.firstChild);
+            
+            createSimpleParticles();
+        }
+        
+        function createSimpleParticles() {
+            const container = document.getElementById('particles-js');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    width: ${1 + Math.random() * 3}px;
+                    height: ${1 + Math.random() * 3}px;
+                    background: rgba(${document.body.classList.contains('dark-theme') ? '255,255,255' : '0,0,0'}, 0.1);
+                    border-radius: 50%;
+                    animation: particleFloat ${10 + Math.random() * 20}s infinite linear;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation-delay: ${Math.random() * 10}s;
+                `;
+                container.appendChild(particle);
+            }
+            
+            // Додаємо CSS анімацію
+            if (!document.querySelector('#particles-css')) {
+                const style = document.createElement('style');
+                style.id = 'particles-css';
+                style.textContent = `
+                    @keyframes particleFloat {
+                        0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+                        10% { opacity: 1; }
+                        90% { opacity: 1; }
+                        100% { transform: translateY(-100vh) translateX(50px) rotate(360deg); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // Функція для оновлення ефектів з адмінки
+        window.updateVisualSettings = function(settings) {
+            const body = document.body;
+            
+            Object.keys(settings).forEach(key => {
+                const dataKey = key.replace('enable_', '').replace('_', '-');
+                body.dataset[dataKey] = settings[key] ? 'true' : 'false';
+            });
+            
+            // Перезавантажуємо ефекти
+            initVisualEffects();
+        };
     </script>
 </body>
 </html>

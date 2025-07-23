@@ -4,43 +4,45 @@ USE adboard_site;
 
 -- Таблиця налаштувань сайту
 CREATE TABLE site_settings (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    site_title VARCHAR(255) DEFAULT 'AdBoard Pro',
-    site_description TEXT,
-    site_keywords TEXT,
-    site_author VARCHAR(255) DEFAULT 'AdBoard Pro Team',
-    logo_url VARCHAR(255) DEFAULT 'images/default_logo.svg',
-    favicon_url VARCHAR(255) DEFAULT 'images/favicon.svg',
-    contact_email VARCHAR(255),
-    contact_phone VARCHAR(50),
-    contact_address TEXT,
-    timezone VARCHAR(50) DEFAULT 'Europe/Kiev',
-    language VARCHAR(10) DEFAULT 'uk',
-    social_facebook VARCHAR(255),
-    social_twitter VARCHAR(255),
-    social_instagram VARCHAR(255),
-    social_linkedin VARCHAR(255),
-    social_youtube VARCHAR(255),
-    analytics_code TEXT,
-    meta_robots VARCHAR(50) DEFAULT 'index, follow',
+    setting_key VARCHAR(100) PRIMARY KEY,
+    value TEXT,
+    description VARCHAR(255),
+    type ENUM('string', 'text', 'int', 'bool', 'json') DEFAULT 'string',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Таблиця налаштувань теми
-CREATE TABLE theme_settings (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    current_theme ENUM('light', 'dark') DEFAULT 'light',
-    current_gradient VARCHAR(50) DEFAULT 'gradient-1',
-    enable_animations BOOLEAN DEFAULT TRUE,
-    enable_particles BOOLEAN DEFAULT FALSE,
-    smooth_scroll BOOLEAN DEFAULT TRUE,
-    enable_tooltips BOOLEAN DEFAULT TRUE,
-    custom_css TEXT,
-    custom_js TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+-- Вставляємо початкові налаштування
+INSERT INTO site_settings (setting_key, value, description, type) VALUES
+('site_title', 'AdBoard Pro', 'Назва сайту', 'string'),
+('site_description', 'Сучасна дошка оголошень та рекламна компанія', 'Опис сайту', 'text'),
+('site_keywords', 'оголошення, купити, продати, послуги, реклама', 'Ключові слова', 'text'),
+('site_author', 'AdBoard Pro Team', 'Автор сайту', 'string'),
+('logo_url', 'images/default_logo.svg', 'URL логотипу', 'string'),
+('favicon_url', 'images/favicon.svg', 'URL фавікону', 'string'),
+('contact_email', '', 'Email для контактів', 'string'),
+('contact_phone', '', 'Телефон для контактів', 'string'),
+('contact_address', '', 'Адреса для контактів', 'text'),
+('timezone', 'Europe/Kiev', 'Часовий пояс', 'string'),
+('language', 'uk', 'Мова за замовчуванням', 'string'),
+('available_languages', '["uk","ru","en"]', 'Доступні мови', 'json'),
+('social_facebook', '', 'Facebook URL', 'string'),
+('social_twitter', '', 'Twitter URL', 'string'),
+('social_instagram', '', 'Instagram URL', 'string'),
+('social_linkedin', '', 'LinkedIn URL', 'string'),
+('social_youtube', '', 'YouTube URL', 'string'),
+('analytics_code', '', 'Код аналітики', 'text'),
+('meta_robots', 'index, follow', 'Meta robots', 'string'),
+('current_theme', 'light', 'Поточна тема', 'string'),
+('current_gradient', 'gradient-1', 'Поточний градієнт', 'string'),
+('enable_animations', '1', 'Увімкнути анімації', 'bool'),
+('enable_particles', '0', 'Частинки на фоні', 'bool'),
+('smooth_scroll', '1', 'Плавна прокрутка', 'bool'),
+('enable_tooltips', '1', 'Підказки', 'bool'),
+('custom_css', '', 'Кастомний CSS', 'text'),
+('custom_js', '', 'Кастомний JavaScript', 'text');
+
+
 
 -- Таблиця користувачів
 CREATE TABLE users (

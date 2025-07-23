@@ -125,7 +125,11 @@ function getSiteName() {
         }
     </style>
 </head>
-<body class="<?php echo $currentTheme; ?>-theme">
+<body class="<?php echo $currentTheme; ?>-theme"
+      data-animations="<?php echo getSiteSetting('enable_animations', true) ? 'true' : 'false'; ?>"
+      data-particles="<?php echo getSiteSetting('enable_particles', false) ? 'true' : 'false'; ?>"
+      data-smooth-scroll="<?php echo getSiteSetting('smooth_scroll', true) ? 'true' : 'false'; ?>"
+      data-tooltips="<?php echo getSiteSetting('enable_tooltips', true) ? 'true' : 'false'; ?>">
     
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">

@@ -32,7 +32,7 @@ if (isInstalled()) {
 $step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
 $error = '';
 $success = '';
-$maxSteps = 8;
+$maxSteps = 9;
 
 // Ініціалізація даних установки
 if (!isset($_SESSION['install_data'])) {
@@ -122,23 +122,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 5:
-            // Налаштування теми
-            $themeData = [
-                'default_theme' => $_POST['default_theme'] ?? 'light',
-                'default_gradient' => $_POST['default_gradient'] ?? 'gradient-1',
-                'enable_animations' => isset($_POST['enable_animations']),
-                'enable_particles' => isset($_POST['enable_particles']),
-                'smooth_scroll' => isset($_POST['smooth_scroll']),
-                'enable_tooltips' => isset($_POST['enable_tooltips'])
+            // Додаткові налаштування
+            $additionalData = [
+                'default_language' => $_POST['default_language'] ?? 'uk',
+                'timezone' => $_POST['timezone'] ?? 'Europe/Kiev',
+                'enable_animations' => $_POST['enable_animations'] ?? '0',
+                'enable_particles' => $_POST['enable_particles'] ?? '0',
+                'smooth_scroll' => $_POST['smooth_scroll'] ?? '0',
+                'enable_tooltips' => $_POST['enable_tooltips'] ?? '0'
             ];
             
-            $_SESSION['install_data']['theme'] = $themeData;
-            logInstallStep('theme', 'Налаштування теми збережено', 'success');
+            $_SESSION['install_data']['additional'] = $additionalData;
+            logInstallStep('additional', 'Додаткові налаштування збережені', 'success');
             header('Location: ?step=6');
             exit();
             break;
 
         case 6:
+            // Налаштування теми
+            $themeData = [
+                'default_theme' => $_POST['default_theme'] ?? 'light',
+                'default_gradient' => $_POST['default_gradient'] ?? 'gradient-1'
+            ];
+            
+            $_SESSION['install_data']['theme'] = $themeData;
+            logInstallStep('theme', 'Налаштування теми збережено', 'success');
+            header('Location: ?step=7');
+            exit();
+            break;
+
+        case 7:
             // Реєстрація адміністратора
             $adminData = [
                 'admin_login' => trim($_POST['admin_login'] ?? ''),
@@ -177,14 +190,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $_SESSION['install_data']['admin'] = $adminData;
             logInstallStep('admin', 'Дані адміністратора збережено', 'success');
-            header('Location: ?step=7');
+            header('Location: ?step=8');
             exit();
             break;
 
-        case 7:
+        case 8:
             try {
                 installSite();
-                header('Location: ?step=8');
+                header('Location: ?step=9');
                 exit();
             } catch (Exception $e) {
                 $error = 'Помилка установки: ' . $e->getMessage();

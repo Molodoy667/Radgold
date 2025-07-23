@@ -405,4 +405,92 @@ function truncateText($text, $length = 100) {
     }
     return substr($text, 0, $length) . '...';
 }
+
+function getSiteSetting($key, $default = null) {
+    global $db;
+    
+    static $settings = null;
+    
+    if ($settings === null) {
+        $settings = [];
+        $result = $db->query("SELECT setting_key, value, type FROM site_settings");
+        while ($row = $result->fetch_assoc()) {
+            $value = $row['value'];
+            
+            // Конвертуємо значення відповідно до типу
+            switch ($row['type']) {
+                case 'bool':
+                    $value = (bool)((int)$value);
+                    break;
+                case 'int':
+                    $value = (int)$value;
+                    break;
+                case 'json':
+                    $value = json_decode($value, true);
+                    break;
+            }
+            
+            $settings[$row['setting_key']] = $value;
+        }
+    }
+    
+    return $settings[$key] ?? $default;
+}
+
+function setSiteSetting($key, $value, $type = null) {
+    global $db;
+    
+    if ($type === null) {
+        $type = guessSettingType($value);
+    }
+    
+    // Конвертуємо значення для збереження в БД
+    switch ($type) {
+        case 'bool':
+            $value = $value ? '1' : '0';
+            break;
+        case 'int':
+            $value = (string)(int)$value;
+            break;
+        case 'json':
+            $value = is_array($value) ? json_encode($value) : $value;
+            break;
+        default:
+            $value = (string)$value;
+    }
+    
+    $stmt = $db->prepare("
+        INSERT INTO site_settings (setting_key, value, type) 
+        VALUES (?, ?, ?) 
+        ON DUPLICATE KEY UPDATE 
+        value = VALUES(value), 
+        updated_at = CURRENT_TIMESTAMP
+    ");
+    $stmt->bind_param("sss", $key, $value, $type);
+    $stmt->execute();
+    
+    // Очищуємо кеш
+    static $settings;
+    $settings = null;
+}
+
+function guessSettingType($value) {
+    if (is_bool($value)) {
+        return 'bool';
+    }
+    
+    if (is_int($value) || is_numeric($value)) {
+        return 'int';
+    }
+    
+    if (is_array($value)) {
+        return 'json';
+    }
+    
+    if (strlen($value) > 255) {
+        return 'text';
+    }
+    
+    return 'string';
+}
 ?>

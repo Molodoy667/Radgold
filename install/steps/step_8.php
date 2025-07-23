@@ -1,9 +1,12 @@
 <?php
 // Крок 8: Процес встановлення
+ob_start(); // Починаємо буферизацію виводу
 
-// Обробка POST запиту для фактичної установки
+// Обробка AJAX POST запиту для фактичної установки
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'install') {
-    header('Content-Type: application/json');
+    // Очищуємо буфер та встановлюємо правильні заголовки
+    ob_end_clean();
+    header('Content-Type: application/json; charset=utf-8');
     
     try {
         // Отримуємо дані з сесії

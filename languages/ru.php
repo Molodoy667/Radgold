@@ -547,5 +547,28 @@ return [
         'repair' => 'Восстановление',
         'clean' => 'Очистка',
     ],
+
+    // Профиль пользователя
+    'profile' => [
+        'my_profile' => 'Мой профиль',
+        'personal_info' => 'Личная информация',
+        'avatar_settings' => 'Настройки аватара',
+        'password_settings' => 'Смена пароля',
+        'account_settings' => 'Настройки аккаунта',
+        'first_name' => 'Имя',
+        'last_name' => 'Фамилия',
+        'username' => 'Никнейм',
+        'email' => 'Email',
+        'phone' => 'Телефон',
+        'bio' => 'О себе',
+        'current_password' => 'Текущий пароль',
+        'new_password' => 'Новый пароль',
+        'confirm_password' => 'Подтвердите пароль',
+        'avatar' => 'Аватар',
+        'upload_avatar' => 'Загрузить аватар',
+        'remove_avatar' => 'Удалить аватар',
+        'save_changes' => 'Сохранить изменения',
+        'change_password' => 'Изменить пароль',
+    ],
 ];
 ?>

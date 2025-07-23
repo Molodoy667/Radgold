@@ -17,6 +17,41 @@ function isLoggedIn() {
     return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 
+function getUserId() {
+    return $_SESSION['user_id'] ?? null;
+}
+
+// Базова функція перекладу
+function __($key) {
+    // Отримуємо поточну мову з налаштувань сайту
+    $currentLang = getSiteSetting('language', 'uk');
+    
+    // Завантажуємо переклади
+    static $translations = [];
+    if (!isset($translations[$currentLang])) {
+        $langFile = __DIR__ . '/../languages/' . $currentLang . '.php';
+        if (file_exists($langFile)) {
+            $translations[$currentLang] = include $langFile;
+        } else {
+            $translations[$currentLang] = [];
+        }
+    }
+    
+    // Розбираємо ключ по крапках (наприклад: 'profile.my_profile')
+    $keys = explode('.', $key);
+    $result = $translations[$currentLang];
+    
+    foreach ($keys as $k) {
+        if (isset($result[$k])) {
+            $result = $result[$k];
+        } else {
+            return $key; // Повертаємо оригінальний ключ якщо переклад не знайдено
+        }
+    }
+    
+    return is_string($result) ? $result : $key;
+}
+
 // Перевірка ролі адміністратора
 function isAdmin() {
     return isLoggedIn() && $_SESSION['user_role'] === 'admin';

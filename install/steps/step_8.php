@@ -114,15 +114,23 @@ ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
         // 5. Створення адміністратора
         $adminPassword = password_hash($adminConfig['admin_password'], PASSWORD_DEFAULT);
         $stmt = $mysqli->prepare("
-            INSERT INTO users (username, email, password, role, status, created_at, email_verified_at) 
-            VALUES (?, ?, ?, 'admin', 'active', NOW(), NOW())
+            INSERT INTO users (username, first_name, last_name, email, password, role, status, created_at, email_verified_at) 
+            VALUES (?, ?, ?, ?, ?, 'admin', 'active', NOW(), NOW())
             ON DUPLICATE KEY UPDATE 
             username = VALUES(username), 
+            first_name = VALUES(first_name),
+            last_name = VALUES(last_name),
             email = VALUES(email), 
             password = VALUES(password)
         ");
         
-        $stmt->bind_param("sss", $adminConfig['admin_login'], $adminConfig['admin_email'], $adminPassword);
+        $stmt->bind_param("sssss", 
+            $adminConfig['admin_login'], 
+            $adminConfig['admin_first_name'] ?? 'Admin', 
+            $adminConfig['admin_last_name'] ?? 'User',
+            $adminConfig['admin_email'], 
+            $adminPassword
+        );
         if (!$stmt->execute()) {
             throw new Exception('Помилка створення адміністратора: ' . $stmt->error);
         }

@@ -320,6 +320,29 @@ return [
         'reply' => 'Відповісти',
     ],
     
+    // Профіль користувача
+    'profile' => [
+        'my_profile' => 'Мій профіль',
+        'personal_info' => 'Особиста інформація',
+        'avatar_settings' => 'Налаштування аватару',
+        'password_settings' => 'Зміна паролю',
+        'account_settings' => 'Налаштування акаунту',
+        'first_name' => 'Ім\'я',
+        'last_name' => 'Прізвище',
+        'username' => 'Нікнейм',
+        'email' => 'Email',
+        'phone' => 'Телефон',
+        'bio' => 'Про себе',
+        'current_password' => 'Поточний пароль',
+        'new_password' => 'Новий пароль',
+        'confirm_password' => 'Підтвердіть пароль',
+        'avatar' => 'Аватар',
+        'upload_avatar' => 'Завантажити аватар',
+        'remove_avatar' => 'Видалити аватар',
+        'save_changes' => 'Зберегти зміни',
+        'change_password' => 'Змінити пароль',
+    ],
+
     // Адмін панель
     'admin' => [
         'dashboard' => 'Панель управління',

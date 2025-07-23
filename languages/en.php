@@ -547,5 +547,28 @@ return [
         'repair' => 'Repair',
         'clean' => 'Clean',
     ],
+
+    // User Profile
+    'profile' => [
+        'my_profile' => 'My Profile',
+        'personal_info' => 'Personal Information',
+        'avatar_settings' => 'Avatar Settings',
+        'password_settings' => 'Password Change',
+        'account_settings' => 'Account Settings',
+        'first_name' => 'First Name',
+        'last_name' => 'Last Name',
+        'username' => 'Username',
+        'email' => 'Email',
+        'phone' => 'Phone',
+        'bio' => 'About Me',
+        'current_password' => 'Current Password',
+        'new_password' => 'New Password',
+        'confirm_password' => 'Confirm Password',
+        'avatar' => 'Avatar',
+        'upload_avatar' => 'Upload Avatar',
+        'remove_avatar' => 'Remove Avatar',
+        'save_changes' => 'Save Changes',
+        'change_password' => 'Change Password',
+    ],
 ];
 ?>

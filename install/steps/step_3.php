@@ -232,7 +232,12 @@ $(document).ready(function() {
     
     // Валідація форми перед відправкою
     $('form').on('submit', function(e) {
+        const $submitBtn = $(this).find('button[type="submit"]');
+        const originalText = $submitBtn.html();
         let isValid = true;
+        
+        // Показуємо стан завантаження
+        $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Обробка...');
         
         // Перевіряємо всі обов'язкові поля
         $(this).find('[required]').each(function() {
@@ -253,6 +258,9 @@ $(document).ready(function() {
         
         if (!isValid) {
             e.preventDefault();
+            
+            // Скидаємо стан кнопки при помилці
+            $submitBtn.prop('disabled', false).html(originalText);
             
             // Показуємо помилку
             const $alert = $('<div class="alert alert-danger mt-3"><i class="fas fa-exclamation-triangle me-2"></i>Виправте помилки у формі</div>');

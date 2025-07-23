@@ -321,9 +321,10 @@ $additionalData = $_SESSION['install_data']['additional'] ?? [];
     padding: 1.5rem;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     background: var(--bs-body-bg);
     height: 100%;
+    will-change: transform;
 }
 
 .language-card:hover {

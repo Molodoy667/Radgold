@@ -68,5 +68,19 @@ $(document).ready(function() {
             $('#nextBtn').removeClass('animate__animated animate__pulse');
         }
     });
+    
+    // Обробка форми
+    $('form').on('submit', function(e) {
+        const $submitBtn = $('#nextBtn');
+        const originalText = $submitBtn.html();
+        
+        if (!$('#acceptLicense').is(':checked')) {
+            e.preventDefault();
+            alert('Будь ласка, прийміть ліцензійну угоду для продовження');
+            return;
+        }
+        
+        $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Обробка...');
+    });
 });
 </script>

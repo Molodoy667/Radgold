@@ -150,6 +150,14 @@ $(document).ready(function() {
         $(this).css('animation-delay', (index * 0.1) + 's');
     });
     
+    // Обробка форми
+    $('form').on('submit', function(e) {
+        const $submitBtn = $(this).find('button[type="submit"]');
+        if ($submitBtn.length) {
+            $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Обробка...');
+        }
+    });
+    
     // Автоматичне оновлення кожні 5 секунд якщо є помилки
     <?php if (!$canProceed): ?>
     let autoRefreshCount = 0;

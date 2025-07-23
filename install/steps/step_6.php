@@ -376,21 +376,27 @@ document.addEventListener('DOMContentLoaded', function() {
         'gradient-30': 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)'
     };
     
-    // Обробка вибору градієнту
+    // Обробка вибору градієнту з дебаунсингом
+    let updateTimeout;
     gradientItems.forEach(item => {
         item.addEventListener('click', function() {
-            // Видаляємо вибір з усіх елементів
-            gradientItems.forEach(g => g.classList.remove('selected'));
+            // Очищуємо попередній таймаут
+            if (updateTimeout) {
+                clearTimeout(updateTimeout);
+            }
             
-            // Додаємо вибір до поточного
+            // Миттєво оновлюємо UI
+            gradientItems.forEach(g => g.classList.remove('selected'));
             this.classList.add('selected');
             
             // Оновлюємо приховане поле
             const gradientKey = this.dataset.gradient;
             selectedGradientInput.value = gradientKey;
             
-            // Оновлюємо попередній перегляд
-            updateGradientPreview(gradients[gradientKey]);
+            // Відкладаємо оновлення попереднього перегляду для уникнення підвисання
+            updateTimeout = setTimeout(() => {
+                updateGradientPreview(gradients[gradientKey]);
+            }, 100);
         });
     });
     
@@ -403,6 +409,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentGradient = selectedGradientInput.value;
     if (gradients[currentGradient]) {
         updateGradientPreview(gradients[currentGradient]);
+    }
+    
+    // Обробка кнопки submit
+    const form = document.getElementById('themeForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
+            }
+        });
     }
 });
 </script>

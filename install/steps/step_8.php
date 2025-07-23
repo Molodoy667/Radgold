@@ -188,7 +188,6 @@ ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
             exit();
         }
     }
-    exit(); // Додаткова страховка
 }
 ?>
 

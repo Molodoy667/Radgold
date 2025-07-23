@@ -579,3 +579,110 @@ async function performSearch(query, $results) {
 // Глобальні функції для доступу з HTML
 window.Utils = Utils;
 window.API = API;
+
+// Додаткові функції для дошки оголошень
+
+// Перевірка авторизації користувача
+function isLoggedIn() {
+    return document.body.dataset.userLoggedIn === 'true' || 
+           sessionStorage.getItem('user_logged_in') === 'true';
+}
+
+// Показ модального вікна входу
+function showLoginModal() {
+    // Перенаправлення на сторінку входу замість модального вікна
+    const currentPage = window.location.pathname;
+    const returnUrl = encodeURIComponent(window.location.href);
+    window.location.href = `/pages/user/login.php?return=${returnUrl}`;
+}
+
+// Показ повідомлень
+function showNotification(message, type = 'info') {
+    // Використовуємо SweetAlert якщо доступний
+    if (typeof Swal !== 'undefined') {
+        const iconMap = {
+            'success': 'success',
+            'error': 'error', 
+            'warning': 'warning',
+            'info': 'info'
+        };
+        
+        Swal.fire({
+            text: message,
+            icon: iconMap[type] || 'info',
+            timer: 3000,
+            timerProgressBar: true,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false
+        });
+        return;
+    }
+    
+    // Fallback до простих повідомлень
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} notification animate__animated animate__slideInRight`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 400px;
+        margin-bottom: 10px;
+    `;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}-circle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Автоматичне приховування через 5 секунд
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.classList.add('animate__slideOutRight');
+            setTimeout(() => notification.remove(), 500);
+        }
+    }, 5000);
+}
+
+// Оновлення кнопки улюблених
+function updateFavoriteButton(adId, isFavorite) {
+    const buttons = document.querySelectorAll(`[onclick*="toggleFavorite(${adId})"]`);
+    buttons.forEach(button => {
+        const icon = button.querySelector('i');
+        if (icon) {
+            if (isFavorite) {
+                icon.classList.remove('far');
+                icon.classList.add('fas', 'text-danger');
+                button.title = 'Видалити з улюблених';
+            } else {
+                icon.classList.remove('fas', 'text-danger');
+                icon.classList.add('far');
+                button.title = 'Додати в улюблені';
+            }
+        }
+    });
+}
+
+// Перевірка статусу авторизації при завантаженні сторінки
+document.addEventListener('DOMContentLoaded', function() {
+    // Перевіряємо авторизацію через AJAX
+    fetch('/ajax/check_auth.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.logged_in) {
+                document.body.dataset.userLoggedIn = 'true';
+                sessionStorage.setItem('user_logged_in', 'true');
+                sessionStorage.setItem('user_data', JSON.stringify(data.user));
+            } else {
+                document.body.dataset.userLoggedIn = 'false';
+                sessionStorage.removeItem('user_logged_in');
+                sessionStorage.removeItem('user_data');
+            }
+        })
+        .catch(error => {
+            console.log('Auth check failed:', error);
+        });
+});

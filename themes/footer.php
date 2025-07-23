@@ -1,44 +1,66 @@
     </div> <!-- End Main Content Container -->
 
+    <?php
+    // Helper functions for footer (if not already defined)
+    if (!function_exists('getSiteUrl')) {
+        function getSiteUrl($path = '') {
+            $baseUrl = defined('SITE_URL') ? SITE_URL : 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+            return $baseUrl . ($path ? '/' . ltrim($path, '/') : '');
+        }
+    }
+    
+    if (!function_exists('getSiteName')) {
+        function getSiteName() {
+            return defined('SITE_NAME') ? SITE_NAME : 'AdBoard Pro';
+        }
+    }
+    
+    if (!function_exists('getSiteDescription')) {
+        function getSiteDescription() {
+            return defined('SITE_DESCRIPTION') ? SITE_DESCRIPTION : 'Рекламна компанія та дошка оголошень';
+        }
+    }
+    ?>
+
     <!-- Footer -->
     <footer class="footer mt-5 py-5">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="footer-brand">
-                        <img src="<?php echo $metaTags['logo']; ?>" alt="<?php echo SITE_NAME; ?>" height="50" class="mb-3">
-                        <h5><?php echo SITE_NAME; ?></h5>
-                        <p class="text-muted"><?php echo SITE_DESCRIPTION; ?></p>
+                        <img src="<?php echo isset($metaTags['logo']) ? $metaTags['logo'] : 'images/default_logo.svg'; ?>" alt="<?php echo getSiteName(); ?>" height="50" class="mb-3">
+                        <h5><?php echo getSiteName(); ?></h5>
+                        <p class="text-muted"><?php echo getSiteDescription(); ?></p>
                     </div>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="text-uppercase fw-bold">Навігація</h6>
                     <ul class="list-unstyled">
-                        <li><a href="<?php echo SITE_URL; ?>" class="text-decoration-none">Головна</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/ads" class="text-decoration-none">Оголошення</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/services" class="text-decoration-none">Послуги</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/about" class="text-decoration-none">Про нас</a></li>
+                        <li><a href="<?php echo getSiteUrl(); ?>" class="text-decoration-none">Головна</a></li>
+                        <li><a href="<?php echo getSiteUrl('ads'); ?>" class="text-decoration-none">Оголошення</a></li>
+                        <li><a href="<?php echo getSiteUrl('services'); ?>" class="text-decoration-none">Послуги</a></li>
+                        <li><a href="<?php echo getSiteUrl('about'); ?>" class="text-decoration-none">Про нас</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="text-uppercase fw-bold">Послуги</h6>
                     <ul class="list-unstyled">
-                        <li><a href="<?php echo SITE_URL; ?>/advertising" class="text-decoration-none">Реклама</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/marketing" class="text-decoration-none">Маркетинг</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/design" class="text-decoration-none">Дизайн</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/consulting" class="text-decoration-none">Консалтинг</a></li>
+                        <li><a href="<?php echo getSiteUrl('advertising'); ?>" class="text-decoration-none">Реклама</a></li>
+                        <li><a href="<?php echo getSiteUrl('marketing'); ?>" class="text-decoration-none">Маркетинг</a></li>
+                        <li><a href="<?php echo getSiteUrl('design'); ?>" class="text-decoration-none">Дизайн</a></li>
+                        <li><a href="<?php echo getSiteUrl('consulting'); ?>" class="text-decoration-none">Консалтинг</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="text-uppercase fw-bold">Підтримка</h6>
                     <ul class="list-unstyled">
-                        <li><a href="<?php echo SITE_URL; ?>/help" class="text-decoration-none">Допомога</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/faq" class="text-decoration-none">FAQ</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/contact" class="text-decoration-none">Контакти</a></li>
-                        <li><a href="<?php echo SITE_URL; ?>/privacy" class="text-decoration-none">Конфіденційність</a></li>
+                        <li><a href="<?php echo getSiteUrl('help'); ?>" class="text-decoration-none">Допомога</a></li>
+                        <li><a href="<?php echo getSiteUrl('faq'); ?>" class="text-decoration-none">FAQ</a></li>
+                        <li><a href="<?php echo getSiteUrl('contact'); ?>" class="text-decoration-none">Контакти</a></li>
+                        <li><a href="<?php echo getSiteUrl('privacy'); ?>" class="text-decoration-none">Конфіденційність</a></li>
                     </ul>
                 </div>
                 
@@ -71,12 +93,12 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <p class="mb-0 text-muted">
-                        &copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?>. Всі права захищені.
+                        &copy; <?php echo date('Y'); ?> <?php echo getSiteName(); ?>. Всі права захищені.
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <a href="<?php echo SITE_URL; ?>/terms" class="text-decoration-none text-muted me-3">Умови використання</a>
-                    <a href="<?php echo SITE_URL; ?>/privacy" class="text-decoration-none text-muted">Політика конфіденційності</a>
+                    <a href="<?php echo getSiteUrl('terms'); ?>" class="text-decoration-none text-muted me-3">Умови використання</a>
+                    <a href="<?php echo getSiteUrl('privacy'); ?>" class="text-decoration-none text-muted">Політика конфіденційності</a>
                 </div>
             </div>
         </div>
@@ -229,6 +251,128 @@
                 $('#loadingOverlay').fadeOut(200);
             }
         });
+        
+        // Візуальні ефекти на основі налаштувань
+        initVisualEffects();
+        
+        function initVisualEffects() {
+            const body = document.body;
+            
+            // Анімації
+            if (body.dataset.animations === 'true') {
+                body.classList.add('animations-enabled');
+                
+                // Додаємо CSS для анімацій
+                if (!document.querySelector('#animations-css')) {
+                    const style = document.createElement('style');
+                    style.id = 'animations-css';
+                    style.textContent = `
+                        .animations-enabled * {
+                            transition: all 0.3s ease;
+                        }
+                        .animations-enabled .card:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                        }
+                        .animations-enabled .btn:hover {
+                            transform: translateY(-1px);
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            // Плавна прокрутка
+            if (body.dataset.smoothScroll === 'true') {
+                body.style.scrollBehavior = 'smooth';
+            }
+            
+            // Підказки
+            if (body.dataset.tooltips === 'true') {
+                // Ініціалізуємо Bootstrap tooltips
+                $('[data-bs-toggle="tooltip"]').tooltip();
+                
+                // Додаємо підказки для елементів з title
+                $('[title]:not([data-bs-toggle="tooltip"])').each(function() {
+                    $(this).attr('data-bs-toggle', 'tooltip').tooltip();
+                });
+            }
+            
+            // Частинки
+            if (body.dataset.particles === 'true') {
+                loadParticles();
+            }
+        }
+        
+        function loadParticles() {
+            if (document.getElementById('particles-js')) return;
+            
+            const particlesContainer = document.createElement('div');
+            particlesContainer.id = 'particles-js';
+            particlesContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                pointer-events: none;
+                overflow: hidden;
+            `;
+            document.body.insertBefore(particlesContainer, document.body.firstChild);
+            
+            createSimpleParticles();
+        }
+        
+        function createSimpleParticles() {
+            const container = document.getElementById('particles-js');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    width: ${1 + Math.random() * 3}px;
+                    height: ${1 + Math.random() * 3}px;
+                    background: rgba(${document.body.classList.contains('dark-theme') ? '255,255,255' : '0,0,0'}, 0.1);
+                    border-radius: 50%;
+                    animation: particleFloat ${10 + Math.random() * 20}s infinite linear;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation-delay: ${Math.random() * 10}s;
+                `;
+                container.appendChild(particle);
+            }
+            
+            // Додаємо CSS анімацію
+            if (!document.querySelector('#particles-css')) {
+                const style = document.createElement('style');
+                style.id = 'particles-css';
+                style.textContent = `
+                    @keyframes particleFloat {
+                        0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+                        10% { opacity: 1; }
+                        90% { opacity: 1; }
+                        100% { transform: translateY(-100vh) translateX(50px) rotate(360deg); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // Функція для оновлення ефектів з адмінки
+        window.updateVisualSettings = function(settings) {
+            const body = document.body;
+            
+            Object.keys(settings).forEach(key => {
+                const dataKey = key.replace('enable_', '').replace('_', '-');
+                body.dataset[dataKey] = settings[key] ? 'true' : 'false';
+            });
+            
+            // Перезавантажуємо ефекти
+            initVisualEffects();
+        };
     </script>
 </body>
 </html>

@@ -33,6 +33,39 @@ spl_autoload_register(function ($class) {
     }
 });
 
+// Перевірка установки
+if (!file_exists(__DIR__ . '/../.installed')) {
+    // Перевіряємо, чи не знаходимося ми вже в інсталяторі
+    $currentScript = $_SERVER['SCRIPT_NAME'];
+    $requestUri = $_SERVER['REQUEST_URI'];
+    
+    if (strpos($currentScript, '/install/') === false && strpos($requestUri, '/install/') === false) {
+        $installUrl = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/install/';
+        header('Location: ' . $installUrl);
+        exit('Сайт не встановлений. Перенаправлення на інсталятор...');
+    }
+}
+
+// Підключення до бази даних
+try {
+    $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $db->set_charset('utf8mb4');
+    
+    if ($db->connect_error) {
+        if (DEBUG_MODE) {
+            die('Помилка підключення до БД: ' . $db->connect_error);
+        } else {
+            die('Помилка підключення до бази даних');
+        }
+    }
+} catch (Exception $e) {
+    if (DEBUG_MODE) {
+        die('Помилка БД: ' . $e->getMessage());
+    } else {
+        die('Помилка бази даних');
+    }
+}
+
 // Старт сесії
 if (session_status() == PHP_SESSION_NONE) {
     session_name(SESSION_NAME);

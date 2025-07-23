@@ -77,15 +77,27 @@ $adminData = $_SESSION['install_data']['admin'] ?? [];
                                    id="admin_password" 
                                    name="admin_password" 
                                    required 
-                                   minlength="6"
+                                   minlength="8"
                                    placeholder="Введіть надійний пароль">
+                            <button class="btn btn-outline-success" 
+                                    type="button" 
+                                    id="generatePassword"
+                                    title="Згенерувати надійний пароль">
+                                <i class="fas fa-magic"></i>
+                            </button>
                             <button class="btn btn-outline-secondary" 
                                     type="button" 
                                     id="togglePassword"
                                     title="Показати/сховати пароль">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <div class="invalid-feedback">Пароль має містити мінімум 6 символів</div>
+                            <div class="invalid-feedback">Пароль має містити мінімум 8 символів</div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Натисніть <span class="text-success"><i class="fas fa-magic"></i></span> щоб згенерувати надійний пароль автоматично
+                            </small>
                         </div>
                         <div class="password-strength mt-2">
                             <div class="strength-indicator">
@@ -272,6 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('admin_password');
     const confirmPasswordInput = document.getElementById('admin_password_confirm');
     const toggleButton = document.getElementById('togglePassword');
+    const generateButton = document.getElementById('generatePassword');
     const strengthBar = document.getElementById('strengthBar');
     const strengthText = document.getElementById('strengthText');
     const loginInput = document.getElementById('admin_login');
@@ -285,6 +298,70 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.classList.toggle('fa-eye');
         icon.classList.toggle('fa-eye-slash');
     });
+    
+    // Генерація надійного паролю
+    generateButton.addEventListener('click', function() {
+        const password = generateSecurePassword();
+        passwordInput.value = password;
+        confirmPasswordInput.value = password;
+        
+        // Показуємо пароль тимчасово щоб користувач його бачив
+        passwordInput.setAttribute('type', 'text');
+        confirmPasswordInput.setAttribute('type', 'text');
+        
+        // Оновлюємо індикатор сили
+        const strength = checkPasswordStrength(password);
+        updatePasswordStrength(strength);
+        validatePasswordMatch();
+        
+        // Через 3 секунди ховаємо пароль
+        setTimeout(() => {
+            passwordInput.setAttribute('type', 'password');
+            confirmPasswordInput.setAttribute('type', 'password');
+            toggleButton.querySelector('i').className = 'fas fa-eye';
+        }, 3000);
+        
+        // Показуємо повідомлення
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-check text-white"></i>';
+        this.classList.remove('btn-outline-success');
+        this.classList.add('btn-success');
+        
+        setTimeout(() => {
+            this.innerHTML = originalText;
+            this.classList.remove('btn-success');
+            this.classList.add('btn-outline-success');
+        }, 2000);
+    });
+    
+    // Функція генерації надійного паролю
+    function generateSecurePassword() {
+        const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+        
+        let password = '';
+        
+        // Обов'язково додаємо по одному символу з кожної категорії
+        password += getRandomChar(lowercase);
+        password += getRandomChar(uppercase);
+        password += getRandomChar(numbers);
+        password += getRandomChar(symbols);
+        
+        // Додаємо ще 8 випадкових символів
+        const allChars = lowercase + uppercase + numbers + symbols;
+        for (let i = 0; i < 8; i++) {
+            password += getRandomChar(allChars);
+        }
+        
+        // Перемішуємо символи
+        return password.split('').sort(() => Math.random() - 0.5).join('');
+    }
+    
+    function getRandomChar(chars) {
+        return chars.charAt(Math.floor(Math.random() * chars.length));
+    }
     
     // Перевірка сили паролю
     passwordInput.addEventListener('input', function() {

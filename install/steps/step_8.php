@@ -13,10 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         ob_end_clean();
     }
     
-    // Встановлюємо правильні заголовки JSON
-    header('Content-Type: application/json; charset=utf-8');
-    header('Cache-Control: no-cache, must-revalidate');
-    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+    // Встановлюємо правильні заголовки JSON ТІЛЬКИ якщо заголовки ще не відправлені
+    if (!headers_sent()) {
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+    }
     
     // Відключаємо вивід помилок в JSON
     ini_set('display_errors', 0);
@@ -73,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 // AdBoard Pro Configuration
 // Generated on " . date('Y-m-d H:i:s') . "
 
-// Database Configuration
+// Database Configuration  
 define('DB_HOST', '" . addslashes($dbConfig['host']) . "');
 define('DB_USER', '" . addslashes($dbConfig['user']) . "');
 define('DB_PASS', '" . addslashes($dbConfig['pass'] ?? '') . "');
@@ -820,8 +822,8 @@ document.addEventListener('DOMContentLoaded', function() {
         addLogEntry('Початок установки AdBoard Pro', 'info');
         
         try {
-            // Відправляємо POST запит для фактичної установки
-            const response = await fetch(window.location.href, {
+            // Відправляємо POST запит для фактичної установки  
+            const response = await fetch('install/ajax_step8.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

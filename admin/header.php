@@ -309,6 +309,13 @@ $gradients = generateGradients();
                 </a>
             </div>
             
+            <div class="nav-item">
+                <a href="<?php echo SITE_URL; ?>/admin/translator" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'translator.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-language"></i>
+                    <span>Перекладач</span>
+                </a>
+            </div>
+            
             <!-- Розділювач -->
             <hr class="my-3">
             
@@ -342,7 +349,7 @@ $gradients = generateGradients();
                     <?php
                     $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                     if ($currentPage !== 'dashboard' && $currentPage !== 'index') {
-                        $pageTitle = ucfirst(str_replace(['-', '_'], ' ', $currentPage));
+                        $pageTitle = $currentPage === 'translator' ? 'Перекладач' : ucfirst(str_replace(['-', '_'], ' ', $currentPage));
                         echo '<li class="breadcrumb-item active">' . $pageTitle . '</li>';
                     }
                     ?>

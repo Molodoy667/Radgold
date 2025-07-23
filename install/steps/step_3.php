@@ -29,7 +29,7 @@
                    class="form-control" 
                    id="db_name" 
                    name="db_name" 
-                   value="<?php echo htmlspecialchars($_SESSION['install_data']['db_config']['name'] ?? 'adboard_site'); ?>" 
+                   value="<?php echo htmlspecialchars($_SESSION['install_data']['db_config']['name'] ?? 'iteiyzke_project'); ?>" 
                    placeholder="adboard_site"
                    pattern="[a-zA-Z0-9_]+"
                    required>
@@ -47,7 +47,7 @@
                    class="form-control" 
                    id="db_user" 
                    name="db_user" 
-                   value="<?php echo htmlspecialchars($_SESSION['install_data']['db_config']['user'] ?? 'root'); ?>" 
+                   value="<?php echo htmlspecialchars($_SESSION['install_data']['db_config']['user'] ?? 'iteiyzke_project'); ?>" 
                    placeholder="root"
                    required>
             <div class="invalid-feedback"></div>

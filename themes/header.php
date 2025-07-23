@@ -146,10 +146,10 @@ function getSiteName() {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo getSiteUrl(); ?>"><i class="fas fa-home me-1"></i>Головна</a>
+                        <a class="nav-link" href="<?php echo getSiteUrl(); ?>"><i class="fas fa-home me-1"></i><?php echo function_exists('__') ? __('home') : 'Головна'; ?></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo getSiteUrl('pages/ads.php'); ?>"><i class="fas fa-bullhorn me-1"></i>Оголошення</a>
+                        <a class="nav-link" href="<?php echo getSiteUrl('pages/ads.php'); ?>"><i class="fas fa-bullhorn me-1"></i><?php echo function_exists('__') ? __('categories') : 'Оголошення'; ?></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?php echo getSiteUrl('services'); ?>"><i class="fas fa-cogs me-1"></i>Послуги</a>
@@ -170,23 +170,53 @@ function getSiteName() {
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="<?php echo getSiteUrl('profile'); ?>"><i class="fas fa-user me-2"></i>Профіль</a></li>
-                                <li><a class="dropdown-item" href="<?php echo getSiteUrl('my-ads'); ?>"><i class="fas fa-list me-2"></i>Мої оголошення</a></li>
+                                <li><a class="dropdown-item" href="<?php echo getSiteUrl('my-ads'); ?>"><i class="fas fa-list me-2"></i><?php echo function_exists('__') ? __('my_ads') : 'Мої оголошення'; ?></a></li>
                                 <?php if (function_exists('isAdmin') && isAdmin()): ?>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="<?php echo getSiteUrl('admin'); ?>"><i class="fas fa-cog me-2"></i>Адміністрування</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo getSiteUrl('admin'); ?>"><i class="fas fa-cog me-2"></i><?php echo function_exists('__') ? __('admin_panel') : 'Адміністрування'; ?></a></li>
                                 <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?php echo getSiteUrl('logout'); ?>"><i class="fas fa-sign-out-alt me-2"></i>Вихід</a></li>
+                                <li><a class="dropdown-item" href="<?php echo getSiteUrl('logout'); ?>"><i class="fas fa-sign-out-alt me-2"></i><?php echo function_exists('__') ? __('logout') : 'Вихід'; ?></a></li>
                             </ul>
                         </li>
                     <?php else: ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo getSiteUrl('login'); ?>"><i class="fas fa-sign-in-alt me-1"></i>Вхід</a>
+                            <a class="nav-link" href="<?php echo getSiteUrl('login'); ?>"><i class="fas fa-sign-in-alt me-1"></i><?php echo function_exists('__') ? __('login') : 'Вхід'; ?></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo getSiteUrl('register'); ?>"><i class="fas fa-user-plus me-1"></i>Реєстрація</a>
+                            <a class="nav-link" href="<?php echo getSiteUrl('register'); ?>"><i class="fas fa-user-plus me-1"></i><?php echo function_exists('__') ? __('register') : 'Реєстрація'; ?></a>
                         </li>
                     <?php endif; ?>
+                    
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-globe me-1"></i>
+                            <?php 
+                            $currentLang = $_SESSION['current_language'] ?? getSiteSetting('language', 'uk');
+                            $langFlags = ['uk' => '🇺🇦', 'ru' => '🇷🇺', 'en' => '🇺🇸'];
+                            $langNames = ['uk' => 'UA', 'ru' => 'RU', 'en' => 'EN'];
+                            echo ($langFlags[$currentLang] ?? '🌐') . ' ' . ($langNames[$currentLang] ?? 'Language');
+                            ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item <?php echo $currentLang === 'uk' ? 'active' : ''; ?>" href="#" onclick="changeLanguage('uk')">
+                                    🇺🇦 Українська
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item <?php echo $currentLang === 'ru' ? 'active' : ''; ?>" href="#" onclick="changeLanguage('ru')">
+                                    🇷🇺 Російська
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item <?php echo $currentLang === 'en' ? 'active' : ''; ?>" href="#" onclick="changeLanguage('en')">
+                                    🇺🇸 English
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     
                     <!-- Theme Toggle Button -->
                     <li class="nav-item">
@@ -246,3 +276,30 @@ function getSiteName() {
 
     <!-- Main Content Container -->
     <div class="main-content">
+
+<script>
+// Функція зміни мови
+function changeLanguage(lang) {
+    fetch('<?php echo getSiteUrl('change_language'); ?>', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'language=' + lang
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Перезавантажуємо сторінку для застосування нової мови
+            location.reload();
+        } else {
+            alert('Помилка зміни мови: ' + (data.message || 'Невідома помилка'));
+        }
+    })
+    .catch(error => {
+        console.error('Error changing language:', error);
+        alert('Помилка зміни мови');
+    });
+}
+</script>

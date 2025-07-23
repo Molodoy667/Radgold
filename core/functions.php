@@ -21,24 +21,69 @@ function getUserId() {
     return $_SESSION['user_id'] ?? null;
 }
 
-// Базова функція перекладу
+// Функція перекладу з підтримкою бази даних
 function __($key) {
-    // Отримуємо поточну мову з налаштувань сайту (з fallback на 'uk')
-    $currentLang = 'uk'; // За замовчуванням
+    global $db;
     
-    // Спробуємо отримати з налаштувань тільки якщо БД доступна
-    try {
-        global $db;
-        if ($db && !$db->connect_error) {
-            $currentLang = getSiteSetting('language', 'uk');
+    // Отримуємо поточну мову з сесії, налаштувань користувача або сайту
+    $currentLang = $_SESSION['current_language'] ?? null;
+    
+    // Якщо мова не встановлена в сесії, спробуємо отримати з користувацьких налаштувань
+    if (!$currentLang && isLoggedIn() && isset($_SESSION['user_id'])) {
+        try {
+            $user_id = intval($_SESSION['user_id']);
+            $stmt = $db->prepare("SELECT language FROM users WHERE id = ? AND language IS NOT NULL");
+            if ($stmt) {
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                if ($row = $result->fetch_assoc()) {
+                    $currentLang = $row['language'];
+                    $_SESSION['current_language'] = $currentLang; // Зберігаємо в сесії
+                }
+                $stmt->close();
+            }
+        } catch (Exception $e) {
+            error_log("User language detection error: " . $e->getMessage());
         }
-    } catch (Exception $e) {
-        // Ігноруємо помилки БД при отриманні мови
-        error_log("Language detection error: " . $e->getMessage());
     }
     
-    // Завантажуємо переклади
+    // Fallback на налаштування сайту
+    if (!$currentLang) {
+        $currentLang = getSiteSetting('language', 'uk');
+    }
+    
+    // Кеш перекладів
     static $translations = [];
+    static $db_translations = [];
+    
+    // Спочатку спробуємо отримати з бази даних
+    if ($db && !$db->connect_error) {
+        if (!isset($db_translations[$currentLang])) {
+            try {
+                $stmt = $db->prepare("SELECT translation_key, " . $db->real_escape_string($currentLang) . " as translation FROM translations WHERE " . $db->real_escape_string($currentLang) . " IS NOT NULL");
+                if ($stmt) {
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $db_translations[$currentLang] = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $db_translations[$currentLang][$row['translation_key']] = $row['translation'];
+                    }
+                    $stmt->close();
+                }
+            } catch (Exception $e) {
+                error_log("Translation DB error: " . $e->getMessage());
+                $db_translations[$currentLang] = [];
+            }
+        }
+        
+        // Якщо знайшли в базі, повертаємо
+        if (isset($db_translations[$currentLang][$key])) {
+            return $db_translations[$currentLang][$key];
+        }
+    }
+    
+    // Fallback на файли перекладів
     if (!isset($translations[$currentLang])) {
         $langFile = __DIR__ . '/../languages/' . $currentLang . '.php';
         if (file_exists($langFile)) {
@@ -48,7 +93,7 @@ function __($key) {
         }
     }
     
-    // Розбираємо ключ по крапках (наприклад: 'profile.my_profile')
+    // Розбираємо ключ по крапках
     $keys = explode('.', $key);
     $result = $translations[$currentLang];
     
@@ -56,7 +101,7 @@ function __($key) {
         if (isset($result[$k])) {
             $result = $result[$k];
         } else {
-            return $key; // Повертаємо оригінальний ключ якщо переклад не знайдено
+            return $key; // Повертаємо оригінальний ключ
         }
     }
     

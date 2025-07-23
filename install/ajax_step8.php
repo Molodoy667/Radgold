@@ -185,7 +185,8 @@ if (session_status() == PHP_SESSION_NONE) {
         $sqlFiles = [
             'database.sql',
             'ads_database.sql',
-            'admin_tables.sql'
+            'admin_tables.sql',
+            'translations.sql'
         ];
         
         foreach ($sqlFiles as $sqlFile) {

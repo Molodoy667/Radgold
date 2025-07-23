@@ -19,6 +19,47 @@ function logInstallStep($step, $message, $status = 'info') {
     ];
 }
 
+// Функція створення бази даних та імпорту схеми
+function createDatabaseAndSchema($host, $user, $pass, $name) {
+    // Підключення до MySQL
+    $mysqli = new mysqli($host, $user, $pass);
+    
+    if ($mysqli->connect_error) {
+        throw new Exception('Помилка підключення до MySQL: ' . $mysqli->connect_error);
+    }
+    
+    // Створюємо базу даних
+    if (!$mysqli->query("CREATE DATABASE IF NOT EXISTS `{$name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
+        throw new Exception('Не вдалося створити базу даних: ' . $mysqli->error);
+    }
+    
+    $mysqli->select_db($name);
+    
+    // Імпортуємо схему
+    $sqlFiles = [
+        'install/database.sql',
+        'install/ads_database.sql', 
+        'install/admin_tables.sql'
+    ];
+    
+    foreach ($sqlFiles as $sqlFile) {
+        if (file_exists($sqlFile)) {
+            $sql = file_get_contents($sqlFile);
+            if ($sql) {
+                $mysqli->multi_query($sql);
+                while ($mysqli->next_result()) {
+                    // Очищаємо результати
+                }
+                if ($mysqli->error) {
+                    throw new Exception("Помилка в {$sqlFile}: " . $mysqli->error);
+                }
+            }
+        }
+    }
+    
+    $mysqli->close();
+}
+
 // Перевірка чи сайт вже встановлений
 function isInstalled() {
     return file_exists('../core/config.php') && file_exists('../.installed');
@@ -84,16 +125,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     break;
                 }
                 
-                $_SESSION['install_data']['db_config'] = [
-                    'host' => $db_host,
-                    'user' => $db_user,
-                    'pass' => $db_pass,
-                    'name' => $db_name
-                ];
-                
-                logInstallStep('database', 'Конфігурація БД збережена', 'success');
-                header('Location: ?step=4');
-                exit();
+                            $_SESSION['install_data']['db_config'] = [
+                'host' => $db_host,
+                'user' => $db_user,
+                'pass' => $db_pass,
+                'name' => $db_name
+            ];
+            
+            // Створюємо базу даних та імпортуємо схему
+            try {
+                createDatabaseAndSchema($db_host, $db_user, $db_pass, $db_name);
+                logInstallStep('database', 'База даних створена та схема імпортована', 'success');
+            } catch (Exception $e) {
+                $error = 'Помилка створення БД: ' . $e->getMessage();
+                logInstallStep('database', $error, 'error');
+                break;
+            }
+            
+            header('Location: ?step=4');
+            exit();
             }
             break;
 
@@ -104,9 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'site_url' => trim($_POST['site_url'] ?? ''),
                 'site_description' => trim($_POST['site_description'] ?? ''),
                 'site_keywords' => trim($_POST['site_keywords'] ?? ''),
-                'contact_email' => trim($_POST['contact_email'] ?? ''),
-                'timezone' => $_POST['timezone'] ?? 'Europe/Kiev',
-                'language' => $_POST['language'] ?? 'uk'
+                'contact_email' => trim($_POST['contact_email'] ?? '')
             ];
             
             if (empty($siteData['site_name']) || empty($siteData['site_url']) || 

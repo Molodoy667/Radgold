@@ -493,4 +493,55 @@ function guessSettingType($value) {
     
     return 'string';
 }
+
+function getUserById($userId) {
+    global $db;
+    
+    $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    return $result->fetch_assoc();
+}
+
+function getAllGradients() {
+    return [
+        'gradient-1' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'gradient-2' => 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'gradient-3' => 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'gradient-4' => 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'gradient-5' => 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        'gradient-6' => 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        'gradient-7' => 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+        'gradient-8' => 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+        'gradient-9' => 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+        'gradient-10' => 'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
+        'gradient-11' => 'linear-gradient(135deg, #ff8a80 0%, #ff80ab 100%)',
+        'gradient-12' => 'linear-gradient(135deg, #81c784 0%, #aed581 100%)',
+        'gradient-13' => 'linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%)',
+        'gradient-14' => 'linear-gradient(135deg, #ffb74d 0%, #ffa726 100%)',
+        'gradient-15' => 'linear-gradient(135deg, #9575cd 0%, #7986cb 100%)',
+        'gradient-16' => 'linear-gradient(135deg, #4db6ac 0%, #26a69a 100%)',
+        'gradient-17' => 'linear-gradient(135deg, #f06292 0%, #ec407a 100%)',
+        'gradient-18' => 'linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%)',
+        'gradient-19' => 'linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%)',
+        'gradient-20' => 'linear-gradient(135deg, #26c6da 0%, #00acc1 100%)',
+        'gradient-21' => 'linear-gradient(135deg, #66bb6a 0%, #4caf50 100%)',
+        'gradient-22' => 'linear-gradient(135deg, #ffca28 0%, #ffc107 100%)',
+        'gradient-23' => 'linear-gradient(135deg, #ff7043 0%, #ff5722 100%)',
+        'gradient-24' => 'linear-gradient(135deg, #8d6e63 0%, #795548 100%)',
+        'gradient-25' => 'linear-gradient(135deg, #78909c 0%, #607d8b 100%)',
+        'gradient-26' => 'linear-gradient(135deg, #e91e63 0%, #ad1457 100%)',
+        'gradient-27' => 'linear-gradient(135deg, #673ab7 0%, #512da8 100%)',
+        'gradient-28' => 'linear-gradient(135deg, #3f51b5 0%, #303f9f 100%)',
+        'gradient-29' => 'linear-gradient(135deg, #009688 0%, #00695c 100%)',
+        'gradient-30' => 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)'
+    ];
+}
+
+function getGradientCSS($gradientKey) {
+    $gradients = getAllGradients();
+    return $gradients[$gradientKey] ?? $gradients['gradient-1'];
+}
 ?>

@@ -50,6 +50,7 @@ CREATE TABLE users (
     username VARCHAR(50) UNIQUE NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
+    avatar VARCHAR(255) NULL DEFAULT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(20) NULL,
     password VARCHAR(255) NOT NULL,

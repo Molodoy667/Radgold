@@ -8,8 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     try {
         // Отримуємо дані з сесії
         $dbConfig = $_SESSION['install_data']['db_config'] ?? [];
-        $adminConfig = $_SESSION['install_data']['admin_config'] ?? [];
-        $siteConfig = $_SESSION['install_data']['site_config'] ?? [];
+        $adminConfig = $_SESSION['install_data']['admin'] ?? [];
+        $siteConfig = $_SESSION['install_data']['site'] ?? [];
+        $additionalConfig = $_SESSION['install_data']['additional'] ?? [];
+        $themeConfig = $_SESSION['install_data']['theme'] ?? [];
         
         if (empty($dbConfig) || empty($adminConfig)) {
             throw new Exception('Відсутні дані конфігурації');

@@ -236,10 +236,10 @@ $(document).ready(function() {
         const originalText = $submitBtn.html();
         let isValid = true;
         
-        // Показуємо стан завантаження
+        // Спершу показуємо стан завантаження
         $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Обробка...');
         
-        // Перевіряємо всі обов'язкові поля
+        // Потім перевіряємо всі обов'язкові поля
         $(this).find('[required]').each(function() {
             if (!$(this).val().trim()) {
                 $(this).addClass('is-invalid');
@@ -270,6 +270,7 @@ $(document).ready(function() {
                 $alert.remove();
             }, 5000);
         }
+        // Якщо все ОК, залишаємо стан завантаження
     });
     
     // Очищуємо валідацію при введенні

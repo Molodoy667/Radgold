@@ -383,7 +383,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Валідація форми
     form.addEventListener('submit', function(e) {
         const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn ? submitBtn.innerHTML : '';
         
+        // Спершу показуємо стан завантаження
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
+        }
+        
+        // Потім перевіряємо валідацію
         if (!form.checkValidity()) {
             e.preventDefault();
             e.stopPropagation();
@@ -391,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Скидаємо стан кнопки при помилці валідації
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Далі<i class="fas fa-chevron-right ms-2"></i>';
+                submitBtn.innerHTML = originalText;
             }
         } else {
             // Додаткова перевірка сили паролю
@@ -401,19 +409,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Будь ласка, оберіть більш надійний пароль для безпеки адміністративного доступу.');
                 passwordInput.focus();
                 
-                // Скидаємо стан кнопки
+                // Скидаємо стан кнопки при слабкому паролі
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Далі<i class="fas fa-chevron-right ms-2"></i>';
+                    submitBtn.innerHTML = originalText;
                 }
+                form.classList.remove('was-validated');
                 return;
             }
             
-            // Показуємо стан завантаження при успішній валідації
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
-            }
+            // Якщо все ОК, залишаємо стан завантаження
         }
         form.classList.add('was-validated');
     });

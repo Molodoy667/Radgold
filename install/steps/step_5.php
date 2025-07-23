@@ -445,16 +445,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Валідація форми
     document.getElementById('additionalForm').addEventListener('submit', function(e) {
         const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn ? submitBtn.innerHTML : '';
         const language = document.querySelector('input[name="default_language"]:checked');
         const timezone = document.getElementById('timezone').value;
         
+        // Спершу показуємо стан завантаження
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
+        }
+        
+        // Потім перевіряємо валідацію
         if (!language) {
             e.preventDefault();
             alert('Будь ласка, оберіть мову за замовчуванням');
-            // Скидаємо стан кнопки
+            // Скидаємо стан кнопки при помилці
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Далі<i class="fas fa-chevron-right ms-2"></i>';
+                submitBtn.innerHTML = originalText;
             }
             return;
         }
@@ -462,19 +470,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!timezone) {
             e.preventDefault();
             alert('Будь ласка, оберіть часовий пояс');
-            // Скидаємо стан кнопки
+            // Скидаємо стан кнопки при помилці
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Далі<i class="fas fa-chevron-right ms-2"></i>';
+                submitBtn.innerHTML = originalText;
             }
             return;
         }
         
-        // Показуємо стан завантаження при успішній валідації
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
-        }
+        // Якщо все ОК, залишаємо стан завантаження
     });
 });
 </script>

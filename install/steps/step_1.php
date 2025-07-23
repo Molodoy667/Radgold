@@ -74,13 +74,19 @@ $(document).ready(function() {
         const $submitBtn = $('#nextBtn');
         const originalText = $submitBtn.html();
         
+        // Спершу показуємо стан завантаження
+        $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Обробка...');
+        
+        // Потім перевіряємо валідацію
         if (!$('#acceptLicense').is(':checked')) {
             e.preventDefault();
             alert('Будь ласка, прийміть ліцензійну угоду для продовження');
+            // Скидаємо стан кнопки при помилці
+            $submitBtn.prop('disabled', false).html(originalText);
             return;
         }
         
-        $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Обробка...');
+        // Якщо все ОК, залишаємо стан завантаження
     });
 });
 </script>

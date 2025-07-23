@@ -134,7 +134,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Валідація форми
     form.addEventListener('submit', function(e) {
         const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn ? submitBtn.innerHTML : '';
         
+        // Спершу показуємо стан завантаження
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
+        }
+        
+        // Потім перевіряємо валідацію
         if (!form.checkValidity()) {
             e.preventDefault();
             e.stopPropagation();
@@ -142,15 +150,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Скидаємо стан кнопки при помилці валідації
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Далі<i class="fas fa-chevron-right ms-2"></i>';
-            }
-        } else {
-            // Показуємо стан завантаження тільки при успішній валідації
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обробка...';
+                submitBtn.innerHTML = originalText;
             }
         }
+        // Якщо все ОК, залишаємо стан завантаження
+        
         form.classList.add('was-validated');
     });
     

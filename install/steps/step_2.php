@@ -153,6 +153,9 @@ $(document).ready(function() {
     // Обробка форми
     $('form').on('submit', function(e) {
         const $submitBtn = $(this).find('button[type="submit"]');
+        const originalText = $submitBtn.html();
+        
+        // Показуємо стан завантаження (крок 2 не має валідації)
         if ($submitBtn.length) {
             $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Обробка...');
         }

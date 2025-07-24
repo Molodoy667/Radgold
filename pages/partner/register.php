@@ -51,11 +51,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $partnerId = getLastInsertId();
                 savePartnerInfo($partnerId, $company, $website);
                 
-                $success = 'Реєстрація успішна! Ваш акаунт буде активовано після модерації';
+                $success = 'Реєстрація успішна! Перенаправляємо в особистий кабінет...';
                 // Відправка вітального email
                 sendWelcomeEmail($email, $firstName, 'partner');
                 // Повідомлення адмінам
                 notifyAdminsNewPartner($email, $company);
+                
+                // Автоматичний вхід та перенаправлення
+                session_start();
+                $_SESSION['user_id'] = $partnerId;
+                $_SESSION['user_type'] = 'partner';
+                $_SESSION['user_role'] = 'partner';
+                
+                // Перенаправлення через JavaScript
+                echo "<script>
+                    setTimeout(function() {
+                        window.location.href = 'dashboard.php';
+                    }, 2000);
+                </script>";
             } else {
                 $error = 'Помилка при реєстрації. Спробуйте ще раз';
             }

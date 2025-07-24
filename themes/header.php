@@ -1882,6 +1882,23 @@ function changeGradient(gradient) {
     // Save to localStorage immediately
     localStorage.setItem('user_gradient', gradient);
     
+    // Update gradient circles active state
+    const gradientCircles = document.querySelectorAll('.gradient-circle');
+    gradientCircles.forEach(circle => {
+        circle.classList.remove('active');
+        const checkIcon = circle.querySelector('i');
+        if (checkIcon) {
+            checkIcon.remove();
+        }
+        
+        if (circle.dataset.gradient === gradient) {
+            circle.classList.add('active');
+            const checkIcon = document.createElement('i');
+            checkIcon.className = 'fas fa-check';
+            circle.appendChild(checkIcon);
+        }
+    });
+    
     // Градієнти (30 штук)
     const gradients = {
         'gradient-1': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',

@@ -863,4 +863,90 @@ function getGroupPermissions($groupId) {
         return [];
     }
 }
+
+/**
+ * Отримує IP адресу клієнта
+ */
+function getClientIP() {
+    $ipKeys = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 
+               'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];
+    
+    foreach ($ipKeys as $key) {
+        if (array_key_exists($key, $_SERVER) === true) {
+            foreach (explode(',', $_SERVER[$key]) as $ip) {
+                $ip = trim($ip);
+                
+                if (filter_var($ip, FILTER_VALIDATE_IP, 
+                    FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) {
+                    return $ip;
+                }
+            }
+        }
+    }
+    
+    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+}
+
+/**
+ * Логування активності користувачів
+ */
+function logActivity($userId, $action, $description, $meta = []) {
+    try {
+        $db = Database::getInstance();
+        
+        // Додаємо додаткову інформацію
+        $meta['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $meta['timestamp'] = date('Y-m-d H:i:s');
+        
+        $stmt = $db->prepare("
+            INSERT INTO activity_logs (user_id, action, description, meta_data, ip_address, created_at) 
+            VALUES (?, ?, ?, ?, ?, NOW())
+        ");
+        
+        $metaJson = json_encode($meta);
+        $ipAddress = getClientIP();
+        
+        $stmt->bind_param("issss", $userId, $action, $description, $metaJson, $ipAddress);
+        $stmt->execute();
+        $stmt->close();
+        
+        return true;
+    } catch (Exception $e) {
+        error_log("Activity log error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Логування помилок
+ */
+function logError($message, $context = []) {
+    $timestamp = date('Y-m-d H:i:s');
+    $ip = getClientIP();
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    $userId = $_SESSION['user_id'] ?? null;
+    
+    $logEntry = "[{$timestamp}] IP: {$ip} | User: {$userId} | {$message}";
+    
+    if (!empty($context)) {
+        $logEntry .= " | Context: " . json_encode($context);
+    }
+    
+    $logEntry .= " | UA: {$userAgent}" . PHP_EOL;
+    
+    // Логуємо в файл
+    $logFile = __DIR__ . '/../logs/error.log';
+    $logDir = dirname($logFile);
+    
+    if (!is_dir($logDir)) {
+        mkdir($logDir, 0755, true);
+    }
+    
+    error_log($logEntry, 3, $logFile);
+    
+    // Також логуємо в стандартний лог PHP
+    error_log($message);
+    
+    return true;
+}
 ?>

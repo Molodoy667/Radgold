@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'email' => $email,
                 'phone' => $phone,
                 'password' => password_hash($password, PASSWORD_DEFAULT),
+                'role' => 'user',
                 'user_type' => 'user',
                 'status' => 'active',
                 'newsletter' => $agreeNewsletter,

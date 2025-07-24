@@ -48,66 +48,194 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../../themes/header.php';
 ?>
 
-<div class="auth-container partner-auth-container">
-    <div class="auth-background">
-        <div class="auth-particles"></div>
-        <div class="auth-shapes">
+<div class="modern-auth-container user-login-container">
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="floating-shapes">
             <div class="shape shape-1"></div>
             <div class="shape shape-2"></div>
             <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+        <div class="gradient-orbs">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
         </div>
     </div>
     
     <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-lg-10 col-xl-8">
-                <div class="auth-card partner-auth">
-                    <div class="row g-0">
-                        <!-- Ліва частина з інформацією -->
-                        <div class="col-md-6 auth-info">
-                            <div class="auth-info-content">
-                                <div class="auth-brand">
-                                    <i class="fas fa-chart-line"></i>
-                                    <h2>AdBoard Pro</h2>
-                                    <p>Для рекламодавців</p>
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-5">
+                <div class="modern-auth-card partner-login-card">
+                    <!-- Header -->
+                    <div class="auth-header">
+                        <div class="header-icon partner-login-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h1>Партнерський вхід</h1>
+                        <p>Увійдіть до партнерського акаунту</p>
+                    </div>
+                    
+                    <!-- Alerts -->
+                    <?php if ($error): ?>
+                        <div class="modern-alert error-alert">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span><?php echo $error; ?></span>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <?php if ($success): ?>
+                        <div class="modern-alert success-alert">
+                            <i class="fas fa-check-circle"></i>
+                            <span><?php echo $success; ?></span>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <!-- Social Login -->
+                    <div class="social-login-section">
+                        <button type="button" class="social-btn google-btn" onclick="googleLogin()">
+                            <i class="fab fa-google"></i>
+                            <span>Увійти через Google</span>
+                        </button>
+                        
+                        <div class="divider">
+                            <span>або</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <form method="POST" id="modernLoginForm" class="modern-form" novalidate>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="email" 
+                                       id="email" 
+                                       name="email" 
+                                       placeholder="Email адреса *"
+                                       value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"
+                                       required>
+                                <div class="input-icon">
+                                    <i class="fas fa-envelope"></i>
                                 </div>
+                                <div class="input-line"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="password" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Пароль *"
+                                       required>
+                                <div class="input-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="input-line"></div>
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="login-options">
+                            <label class="modern-checkbox">
+                                <input type="checkbox" name="remember">
+                                <span class="checkmark"></span>
+                                <span class="checkbox-text">Запам'ятати мене</span>
+                            </label>
+                            
+                            <a href="#" class="forgot-password-link" onclick="showPasswordReset()">
+                                Забули пароль?
+                            </a>
+                        </div>
+                        
+                        <button type="submit" name="login" class="modern-submit-btn partner-login-btn">
+                            <span class="btn-text">Увійти як партнер</span>
+                            <div class="btn-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                    </form>
+                    
+                    <!-- Password Reset Form (Hidden) -->
+                    <form method="POST" id="passwordResetForm" class="modern-form" style="display: none;" novalidate>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="email" 
+                                       id="reset_email" 
+                                       name="reset_email" 
+                                       placeholder="Email для відновлення *"
+                                       required>
+                                <div class="input-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="input-line"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="reset-buttons">
+                            <button type="submit" name="reset_password" class="modern-submit-btn reset-btn">
+                                <span class="btn-text">Відновити</span>
+                                <div class="btn-icon">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                            </button>
+                            
+                            <button type="button" class="cancel-btn" onclick="hidePasswordReset()">
+                                Скасувати
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Footer Links -->
+                    <div class="auth-footer-links">
+                        <p>Ще не маєте партнерського акаунту?</p>
+                        <a href="register.php" class="register-link partner-register">
+                            <i class="fas fa-handshake"></i>
+                            <span>Зареєструватись як партнер</span>
+                        </a>
+                    </div>
+                    
+                    <!-- User Link -->
+                    <div class="user-suggestion">
+                        <p>Звичайний користувач?</p>
+                        <a href="../user/login.php" class="user-link">
+                            <i class="fas fa-user"></i>
+                            <span>Вхід для користувачів</span>
+                        </a>
+                    </div>
                                 
                                 <div class="auth-features">
                                     <div class="feature-item">
-                                        <i class="fas fa-bullseye"></i>
+                                        <i class="fas fa-plus-circle"></i>
                                         <div>
-                                            <h5>Таргетована реклама</h5>
-                                            <p>Досягайте саме тих клієнтів, які вам потрібні</p>
+                                            <h5>Додавайте оголошення</h5>
+                                            <p>Розміщуйте свої товари та послуги безкоштовно</p>
                                         </div>
                                     </div>
                                     
                                     <div class="feature-item">
-                                        <i class="fas fa-analytics"></i>
+                                        <i class="fas fa-chart-line"></i>
                                         <div>
-                                            <h5>Детальна аналітика</h5>
-                                            <p>Відстежуйте ROI та ефективність кампаній</p>
+                                            <h5>Статистика переглядів</h5>
+                                            <p>Відстежуйте популярність ваших оголошень</p>
                                         </div>
                                     </div>
                                     
                                     <div class="feature-item">
-                                        <i class="fas fa-crown"></i>
+                                        <i class="fas fa-shield-alt"></i>
                                         <div>
-                                            <h5>Преміум розміщення</h5>
-                                            <p>Ваша реклама на найкращих позиціях</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="feature-item">
-                                        <i class="fas fa-headset"></i>
-                                        <div>
-                                            <h5>Персональний менеджер</h5>
-                                            <p>Професійна підтримка 24/7</p>
+                                            <h5>Безпека</h5>
+                                            <p>Захищені угоди та перевірка користувачів</p>
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div class="auth-footer">
-                                    <p>Звичайний користувач? <a href="../user/login.php" class="text-light">Увійти як користувач</a></p>
+                                    <p>Партнер? <a href="../partner/login.php" class="text-warning">Увійти як рекламодавець</a></p>
                                 </div>
                             </div>
                         </div>
@@ -116,8 +244,8 @@ include '../../themes/header.php';
                         <div class="col-md-6 auth-form-section">
                             <div class="auth-form-container">
                                 <div class="auth-header">
-                                    <h3>Вхід для партнерів</h3>
-                                    <p>Просувайте ваш бізнес ефективно</p>
+                                    <h3>Вхід для користувачів</h3>
+                                    <p>Розміщуйте оголошення та знаходьте покупців</p>
                                 </div>
                                 
                                 <?php if ($error): ?>
@@ -144,7 +272,7 @@ include '../../themes/header.php';
                                                    class="form-control" 
                                                    id="email" 
                                                    name="email" 
-                                                   placeholder="your@company.com"
+                                                   placeholder="your@email.com"
                                                    value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"
                                                    required>
                                         </div>
@@ -178,7 +306,7 @@ include '../../themes/header.php';
                                         <a href="#" class="forgot-password" onclick="showResetForm()">Забули пароль?</a>
                                     </div>
                                     
-                                    <button type="submit" name="login" class="btn btn-partner btn-lg w-100 mb-3">
+                                    <button type="submit" name="login" class="btn btn-primary btn-lg w-100 mb-3">
                                         <i class="fas fa-sign-in-alt me-2"></i>Увійти
                                     </button>
                                 </form>
@@ -209,7 +337,7 @@ include '../../themes/header.php';
                                                    class="form-control" 
                                                    id="reset_email" 
                                                    name="reset_email" 
-                                                   placeholder="your@company.com"
+                                                   placeholder="your@email.com"
                                                    required>
                                         </div>
                                     </div>
@@ -227,15 +355,6 @@ include '../../themes/header.php';
                                 <div class="auth-register">
                                     <p>Ще не маєте акаунту? <a href="register.php">Зареєструватися</a></p>
                                 </div>
-                                
-                                <div class="partner-benefits">
-                                    <h6><i class="fas fa-gift me-2"></i>Бонуси для нових партнерів:</h6>
-                                    <ul>
-                                        <li>💰 Перша кампанія зі знижкою 30%</li>
-                                        <li>📊 Безкоштовна консультація</li>
-                                        <li>🎯 Налаштування таргетингу</li>
-                                    </ul>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -246,178 +365,343 @@ include '../../themes/header.php';
 </div>
 
 <style>
-.partner-auth-container {
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 25%, #e65100 50%, #bf360c 75%, #d84315 100%);
+.auth-container {
     position: relative;
     min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     overflow: hidden;
 }
 
-.partner-auth-container .auth-background {
-    background: linear-gradient(45deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
+.auth-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
-.partner-auth .auth-info {
-    background: linear-gradient(135deg, #ff6f00 0%, #e65100 50%, #bf360c 100%);
+.auth-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    animation: float 20s ease-in-out infinite;
+}
+
+.auth-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.shape {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 15s ease-in-out infinite;
+}
+
+.shape-1 {
+    width: 300px;
+    height: 300px;
+    top: -150px;
+    right: -150px;
+    animation-delay: -2s;
+}
+
+.shape-2 {
+    width: 200px;
+    height: 200px;
+    bottom: -100px;
+    left: -100px;
+    animation-delay: -8s;
+}
+
+.shape-3 {
+    width: 150px;
+    height: 150px;
+    top: 50%;
+    left: -75px;
+    animation-delay: -15s;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-auth .auth-info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     position: relative;
 }
 
-.partner-auth .auth-info::before {
+.auth-info::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="50" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><polygon points="80,20 85,10 90,20 85,30" fill="rgba(255,255,255,0.05)"/></svg>');
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="60" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
     pointer-events: none;
 }
 
-.partner-auth .auth-brand i {
-    background: linear-gradient(45deg, #ffc107, #ff9800);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
-}
-
-.partner-auth .feature-item i {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
+.auth-info-content {
+    padding: 3rem 2rem;
+    height: 100%;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    margin-right: 1rem;
-    margin-top: 0;
-    min-width: 35px;
+    position: relative;
+    z-index: 1;
 }
 
-.btn-partner {
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 50%, #e65100 100%);
-    border: none;
-    color: white;
+.auth-brand {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.auth-brand i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    opacity: 0.9;
+}
+
+.auth-brand h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.auth-brand p {
+    opacity: 0.8;
+    margin-bottom: 0;
+}
+
+.auth-features {
+    margin-bottom: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.feature-item i {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    margin-top: 0.3rem;
+    opacity: 0.9;
+    min-width: 20px;
+}
+
+.feature-item h5 {
+    font-size: 1rem;
     font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.feature-item p {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-bottom: 0;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: auto;
+}
+
+.auth-footer a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.auth-form-section {
+    background: white;
+}
+
+.auth-form-container {
+    padding: 3rem 2rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h3 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.input-group-text {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+}
+
+.form-control {
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.toggle-password {
+    border-left: none;
+}
+
+.form-check-remember {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgot-password {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    font-weight: 500;
     padding: 0.75rem 1.5rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
 }
 
-.btn-partner:hover {
+.btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.social-divider {
+    text-align: center;
+    position: relative;
+    margin: 1.5rem 0;
+}
+
+.social-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dee2e6;
+}
+
+.social-divider span {
+    background: white;
+    padding: 0 1rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.btn-google {
+    background: #db4437;
+    color: white;
+    border: none;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-google:hover {
+    background: #c23321;
+    transform: translateY(-1px);
     color: white;
 }
 
-.partner-auth .forgot-password {
-    color: #ff9800;
-}
-
-.partner-auth .forgot-password:hover {
-    color: #f57c00;
-}
-
-.partner-auth .auth-register a {
-    color: #ff9800;
+.reset-header h4 {
+    color: #495057;
     font-weight: 600;
 }
 
-.partner-auth .auth-register a:hover {
-    color: #f57c00;
+.reset-header p {
+    color: #6c757d;
+    margin-bottom: 0;
 }
 
-.partner-auth .input-group-text {
-    background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(245, 124, 0, 0.1) 100%);
-    border-color: rgba(255, 152, 0, 0.3);
-    color: #e65100;
-}
-
-.partner-auth .form-control:focus {
-    border-color: #ff9800;
-    box-shadow: 0 0 0 0.2rem rgba(255, 152, 0, 0.25);
-}
-
-.partner-benefits {
-    background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(245, 124, 0, 0.1) 100%);
-    border-radius: 10px;
-    padding: 1rem;
+.auth-register {
+    text-align: center;
     margin-top: 1.5rem;
-    border: 1px solid rgba(255, 152, 0, 0.2);
+    padding-top: 1.5rem;
+    border-top: 1px solid #dee2e6;
 }
 
-.partner-benefits h6 {
-    color: #e65100;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
+.auth-register a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
 }
 
-.partner-benefits ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.auth-register a:hover {
+    text-decoration: underline;
 }
 
-.partner-benefits li {
-    padding: 0.25rem 0;
-    font-size: 0.9rem;
-    color: #5d4037;
-}
-
-.partner-auth-container .shape {
-    background: rgba(255, 193, 7, 0.1);
-}
-
-.partner-auth-container .shape-1 {
-    background: linear-gradient(45deg, rgba(255, 152, 0, 0.1), rgba(245, 124, 0, 0.1));
-}
-
-.partner-auth-container .shape-2 {
-    background: linear-gradient(45deg, rgba(230, 81, 0, 0.1), rgba(191, 54, 12, 0.1));
-}
-
-.partner-auth-container .shape-3 {
-    background: linear-gradient(45deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
-}
-
-/* Анімації для партнерської версії */
-@keyframes goldFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
-    33% { transform: translateY(-20px) rotate(90deg); opacity: 1; }
-    66% { transform: translateY(-40px) rotate(180deg); opacity: 0.8; }
-}
-
-.partner-auth-container .shape {
-    animation: goldFloat 12s ease-in-out infinite;
-}
-
-.partner-auth-container .shape-1 {
-    animation-delay: -2s;
-}
-
-.partner-auth-container .shape-2 {
-    animation-delay: -6s;
-}
-
-.partner-auth-container .shape-3 {
-    animation-delay: -10s;
-}
-
-/* Додаткові елементи для партнерів */
-.partner-auth-container .auth-particles {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="rgba(255,193,7,0.3)"/><circle cx="80" cy="60" r="0.5" fill="rgba(255,152,0,0.4)"/><circle cx="40" cy="80" r="0.8" fill="rgba(245,124,0,0.3)"/></svg>') repeat;
-    animation: goldFloat 25s linear infinite;
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-30px) rotate(120deg); }
+    66% { transform: translateY(-60px) rotate(240deg); }
 }
 
 @media (max-width: 768px) {
-    .partner-benefits {
-        margin-top: 1rem;
-        padding: 0.75rem;
+    .auth-card {
+        margin: 1rem;
     }
     
-    .partner-benefits li {
-        font-size: 0.8rem;
+    .auth-info {
+        display: none;
+    }
+    
+    .auth-form-container {
+        padding: 2rem 1.5rem;
     }
 }
 </style>
@@ -466,7 +750,6 @@ function showResetForm() {
     document.getElementById('resetForm').style.display = 'block';
     document.querySelector('.btn-google').style.display = 'none';
     document.querySelector('.social-divider').style.display = 'none';
-    document.querySelector('.partner-benefits').style.display = 'none';
 }
 
 function showLoginForm() {
@@ -474,7 +757,6 @@ function showLoginForm() {
     document.getElementById('resetForm').style.display = 'none';
     document.querySelector('.btn-google').style.display = 'block';
     document.querySelector('.social-divider').style.display = 'block';
-    document.querySelector('.partner-benefits').style.display = 'block';
 }
 
 function googleLogin() {
@@ -496,7 +778,7 @@ function handleGoogleSignIn(response) {
         },
         body: JSON.stringify({
             credential: response.credential,
-            user_type: 'partner'
+            user_type: 'user'
         })
     })
     .then(response => response.json())
@@ -532,6 +814,151 @@ function showAlert(message, type) {
         alertDiv.remove();
     }, 5000);
 }
+
+// Login specific functions
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const toggle = input.parentElement.querySelector('.password-toggle i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        toggle.classList.remove('fa-eye');
+        toggle.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        toggle.classList.remove('fa-eye-slash');
+        toggle.classList.add('fa-eye');
+    }
+}
+
+function showPasswordReset() {
+    document.getElementById('modernLoginForm').style.display = 'none';
+    document.getElementById('passwordResetForm').style.display = 'block';
+    document.querySelector('.auth-header h1').textContent = 'Відновлення паролю';
+    document.querySelector('.auth-header p').textContent = 'Введіть email для відновлення';
+}
+
+function hidePasswordReset() {
+    document.getElementById('modernLoginForm').style.display = 'block';
+    document.getElementById('passwordResetForm').style.display = 'none';
+    document.querySelector('.auth-header h1').textContent = 'Вхід';
+    document.querySelector('.auth-header p').textContent = 'Увійдіть до свого акаунту';
+}
+
+function googleLogin() {
+    alert('Google вхід буде доступний незабаром!');
+}
 </script>
+
+<style>
+/* Partner Login specific styles */
+.partner-login-container {
+    background: var(--theme-bg);
+}
+
+.partner-login-icon {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.partner-login-card .modern-submit-btn {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.partner-login-card .modern-submit-btn:hover {
+    background: linear-gradient(135deg, #f57c00, #e65100) !important;
+}
+
+.partner-register {
+    border-color: #ff9800 !important;
+    background: rgba(255, 152, 0, 0.1) !important;
+    color: #e65100 !important;
+}
+
+.partner-register:hover {
+    border-color: #f57c00 !important;
+    background: rgba(245, 124, 0, 0.2) !important;
+    color: #f57c00 !important;
+}
+
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.forgot-password-link {
+    color: var(--theme-accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.forgot-password-link:hover {
+    color: var(--theme-text);
+    text-decoration: underline;
+}
+
+.reset-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.reset-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.cancel-btn {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid var(--theme-border);
+    border-radius: 12px;
+    background: var(--theme-bg-secondary);
+    color: var(--theme-text);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    border-color: var(--theme-accent);
+    background: var(--theme-bg);
+}
+
+.register-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--theme-bg-secondary);
+    border: 2px solid var(--theme-border);
+    border-radius: 10px;
+    color: var(--theme-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.register-link:hover {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 576px) {
+    .login-options {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .reset-buttons {
+        flex-direction: column;
+    }
+}
+</style>
 
 <?php include '../../themes/footer.php'; ?>

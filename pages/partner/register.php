@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'email' => $email,
                 'phone' => $phone,
                 'password' => password_hash($password, PASSWORD_DEFAULT),
+                'role' => 'partner',
                 'user_type' => 'partner',
                 'status' => 'pending', // Партнери потребують модерації
                 'newsletter' => $agreeNewsletter,
@@ -648,4 +649,107 @@ function notifyAdminsNewPartner($email, $company) {
         return false;
     }
 }
+
+// Toggle password visibility
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const toggle = input.parentElement.querySelector('.password-toggle i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        toggle.classList.remove('fa-eye');
+        toggle.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        toggle.classList.remove('fa-eye-slash');
+        toggle.classList.add('fa-eye');
+    }
+}
+
+// Google registration (placeholder)
+function googleRegister() {
+    alert('Google реєстрація буде доступна незабаром!');
+}
+</script>
+
+<style>
+/* Partner-specific styles */
+.partner-container {
+    background: var(--theme-bg);
+}
+
+.partner-icon {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.partner-badge {
+    background: rgba(255, 152, 0, 0.1) !important;
+    border-color: rgba(255, 152, 0, 0.3) !important;
+    color: #e65100 !important;
+}
+
+.partner-register-card .modern-submit-btn {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.partner-register-card .modern-submit-btn:hover {
+    background: linear-gradient(135deg, #f57c00, #e65100) !important;
+}
+
+.partner-register-card .terms-link {
+    color: #ff9800 !important;
+}
+
+.partner-register-card .input-wrapper input:focus {
+    border-color: #ff9800 !important;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1) !important;
+}
+
+.partner-register-card .input-wrapper input:focus + .input-icon {
+    color: #ff9800 !important;
+}
+
+.partner-register-card .input-line {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.user-suggestion {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--theme-bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--theme-border);
+}
+
+.user-suggestion p {
+    color: var(--theme-muted);
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.user-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.user-link:hover {
+    background: linear-gradient(135deg, #1976d2, #1565c0);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+</style>
+
+<?php include '../../themes/footer.php'; ?>
 ?>

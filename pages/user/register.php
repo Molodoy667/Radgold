@@ -793,15 +793,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* User Register specific styles */
 .user-register-icon {
-    background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
+    background: var(--current-gradient) !important;
 }
 
 .user-register-card .modern-submit-btn {
-    background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
+    background: var(--current-gradient) !important;
 }
 
 .user-register-card .modern-submit-btn:hover {
-    background: linear-gradient(135deg, #2e7d32, #1b5e20) !important;
+    background: var(--current-gradient) !important;
+    opacity: 0.9;
+}
+
+.user-register-card .input-wrapper input:focus + .input-icon {
+    color: var(--current-gradient);
+}
+
+.user-register-card .input-line {
+    background: var(--current-gradient);
+}
+
+.user-register-card .checkmark {
+    border-color: var(--current-gradient);
+}
+
+.user-register-card .modern-checkbox input:checked + .checkmark {
+    background: var(--current-gradient);
 }
 
 /* Animations */

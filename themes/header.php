@@ -228,7 +228,8 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             left: 0;
             right: 0;
             height: 70px;
-            background: var(--current-gradient);
+            background: var(--theme-bg-secondary);
+            border-bottom: 1px solid var(--theme-border);
             box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
             z-index: 1050;
             transition: all 0.3s ease;
@@ -246,7 +247,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         .gradient-title {
             font-weight: 800;
             font-size: 1.8rem;
-            background: linear-gradient(45deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+            background: var(--current-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -558,7 +559,8 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             left: -400px;
             width: 350px;
             height: 100%;
-            background: var(--current-gradient);
+            background: var(--theme-bg-secondary);
+            border-right: 1px solid var(--theme-border);
             z-index: 1060;
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             overflow-y: auto;
@@ -574,7 +576,8 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--theme-bg);
+            border-bottom: 1px solid var(--theme-border);
             backdrop-filter: blur(10px);
         }
         

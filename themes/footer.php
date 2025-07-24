@@ -354,7 +354,8 @@
     <style>
         /* Footer Gradient Background */
         .footer-gradient {
-            background: var(--current-gradient);
+            background: var(--theme-bg-secondary);
+            border-top: 1px solid var(--theme-border);
             position: relative;
             overflow: hidden;
             margin-top: 100px;

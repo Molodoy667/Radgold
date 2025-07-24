@@ -716,15 +716,24 @@ function googleLogin() {
 
 /* User Login specific styles */
 .user-login-icon {
-    background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
+    background: var(--current-gradient) !important;
 }
 
 .user-login-card .modern-submit-btn {
-    background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
+    background: var(--current-gradient) !important;
 }
 
 .user-login-card .modern-submit-btn:hover {
-    background: linear-gradient(135deg, #2e7d32, #1b5e20) !important;
+    background: var(--current-gradient) !important;
+    opacity: 0.9;
+}
+
+.user-login-card .input-wrapper input:focus + .input-icon {
+    color: var(--current-gradient);
+}
+
+.user-login-card .input-line {
+    background: var(--current-gradient);
 }
 
 /* Animations */

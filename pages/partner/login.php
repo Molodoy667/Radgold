@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../../themes/header.php';
 ?>
 
-<div class="modern-auth-container user-login-container">
+<div class="modern-auth-container partner-login-container">
     <!-- Animated Background -->
     <div class="animated-background">
         <div class="floating-shapes">

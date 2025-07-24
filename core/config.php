@@ -4,7 +4,7 @@
 // Database Configuration
 define('DB_HOST', 'localhost');
 define('DB_USER', 'novado');
-define('DB_PASS', 'Q05021998');
+define('DB_PASS', 'Q05021998@');
 define('DB_NAME', 'iteiyzke_project');
 
 // Site Configuration

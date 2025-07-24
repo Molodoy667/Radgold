@@ -425,21 +425,23 @@
         
         .touch-title {
             flex: 1;
-            color: white;
+            color: var(--footer-text-color, white);
             font-weight: 600;
             font-size: 1.1rem;
             margin: 0;
         }
         
         .touch-arrow {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--footer-text-color, rgba(255, 255, 255, 0.7));
+            opacity: 0.7;
             transition: all 0.3s ease;
             font-size: 1rem;
         }
         
         .touch-block.active .touch-arrow {
             transform: rotate(180deg);
-            color: white;
+            color: var(--footer-text-color, white);
+            opacity: 1;
         }
         
         .touch-content {
@@ -467,7 +469,7 @@
             padding: 12px 15px;
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.1);
-            color: white;
+            color: var(--footer-text-color, white);
             text-decoration: none;
             transition: all 0.3s ease;
             position: relative;
@@ -492,7 +494,7 @@
         .touch-link:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateX(5px);
-            color: white;
+            color: var(--footer-text-color, white);
             text-decoration: none;
         }
         
@@ -819,27 +821,24 @@
         
         /* Brand Title */
         .brand-title {
-            color: white;
+            color: var(--footer-text-color, white);
             font-weight: 800;
             font-size: 2rem;
             margin-bottom: 15px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(45deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
         
         .brand-description {
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--footer-text-color, rgba(255, 255, 255, 0.9));
             font-size: 1.1rem;
             margin-bottom: 30px;
             line-height: 1.6;
+            opacity: 0.85;
         }
         
         /* Section Titles */
         .section-title {
-            color: white;
+            color: var(--footer-text-color, white);
             font-weight: 700;
             font-size: 1.1rem;
             margin-bottom: 20px;

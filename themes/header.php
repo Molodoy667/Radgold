@@ -145,10 +145,11 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             --theme-accent: <?php echo $currentTheme === 'dark' ? '#58a6ff' : '#0969da'; ?>;
             --theme-muted: <?php echo $currentTheme === 'dark' ? '#8b949e' : '#656d76'; ?>;
             
-            /* Header/Menu backgrounds - gradient in light, dark in dark theme */
+            /* Dynamic backgrounds based on theme */
             --header-bg: <?php echo $currentTheme === 'dark' ? '#161b22' : 'var(--current-gradient)'; ?>;
             --menu-bg: <?php echo $currentTheme === 'dark' ? '#161b22' : 'var(--current-gradient)'; ?>;
             --footer-bg: <?php echo $currentTheme === 'dark' ? '#161b22' : 'var(--current-gradient)'; ?>;
+            --footer-text-color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
         }
         
         body {
@@ -250,15 +251,11 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         }
         
         .gradient-title {
-            font-weight: 800;
-            font-size: 1.8rem;
-            background: var(--current-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
         }
         
         .header-actions {
@@ -283,22 +280,52 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         .join-btn {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 25px;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 50px;
             background: var(--current-gradient);
             color: white;
             border: none;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-shimmer {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: all 0.6s ease;
+            z-index: 1;
         }
         
         .join-btn:hover {
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .join-btn:hover .btn-shimmer {
+            left: 100%;
+        }
+
+        .join-btn i {
+            position: relative;
+            z-index: 2;
+        }
+
+        .join-btn span {
+            position: relative;
+            z-index: 2;
         }
         
         /* Join Modal */
@@ -581,8 +608,8 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--theme-bg);
-            border-bottom: 1px solid var(--theme-border);
+            background: var(--menu-bg);
+            border-bottom: 1px solid <?php echo $currentTheme === 'dark' ? 'var(--theme-border)' : 'rgba(255,255,255,0.2)'; ?>;
             backdrop-filter: blur(10px);
         }
         
@@ -590,27 +617,29 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             display: flex;
             align-items: center;
             gap: 10px;
-            color: white;
+            color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
             font-weight: 700;
         }
         
         .menu-close-btn {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--current-gradient);
             border: none;
             color: white;
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
         .menu-close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
+            background: var(--current-gradient);
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
         
         /* Menu Sections */
@@ -623,7 +652,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             display: flex;
             align-items: center;
             gap: 10px;
-            color: white;
+            color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
             font-weight: 600;
             font-size: 1rem;
             margin-bottom: 15px;
@@ -648,7 +677,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 1.2rem;
-            color: white;
+            color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
         }
         
         .theme-option:hover {
@@ -1296,8 +1325,9 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             <div class="header-actions">
                 <!-- Join Button -->
                 <button class="join-btn" onclick="openJoinModal()">
-                    <i class="fas fa-plus"></i>
+                    <i class="fas fa-rocket"></i>
                     <span><?php echo safeTranslate('join', 'Приєднатись'); ?></span>
+                    <div class="btn-shimmer"></div>
                 </button>
                 
                 <!-- User Info (if logged in) -->

@@ -430,25 +430,43 @@ function installSite() {
     $connection->select_db($dbName);
     logInstallStep('install', 'База даних створена', 'success');
     
-    // Імпорт SQL
-    logInstallStep('install', 'Імпортуємо структуру БД...', 'info');
-    $sqlContent = file_get_contents('database.sql');
-    $sqlContent = str_replace('adboard_site', $dbName, $sqlContent);
-    
-    $queries = explode(';', $sqlContent);
-    $executed = 0;
-    
-    foreach ($queries as $query) {
-        $query = trim($query);
-        if (!empty($query) && !preg_match('/^--|^\/\*/', $query)) {
-            if (!$connection->query($query)) {
-                throw new Exception('SQL помилка: ' . $connection->error);
+            // Імпорт SQL файлів
+        $sqlFiles = [
+            'database_fixed.sql' => 'Основна структура БД',
+            'initial_data.sql' => 'Початкові дані'
+        ];
+        
+        foreach ($sqlFiles as $sqlFile => $description) {
+            if (file_exists($sqlFile)) {
+                logInstallStep('install', "Імпортуємо $description...", 'info');
+                $sqlContent = file_get_contents($sqlFile);
+                
+                // Замінюємо назву БД якщо потрібно
+                if (strpos($sqlContent, 'adboard_site') !== false) {
+                    $sqlContent = str_replace('adboard_site', $dbName, $sqlContent);
+                }
+                
+                // Виконуємо багатозапитний SQL
+                if ($connection->multi_query($sqlContent)) {
+                    do {
+                        // Очищаємо результати
+                        if ($result = $connection->store_result()) {
+                            $result->free();
+                        }
+                    } while ($connection->next_result());
+                    
+                    if ($connection->error) {
+                        throw new Exception("Помилка в $sqlFile: " . $connection->error);
+                    }
+                    
+                    logInstallStep('install', "$description імпортовано успішно", 'success');
+                } else {
+                    throw new Exception("Помилка виконання $sqlFile: " . $connection->error);
+                }
+            } else {
+                logInstallStep('install', "Файл $sqlFile не знайдено, пропускаємо", 'warning');
             }
-            $executed++;
         }
-    }
-    
-    logInstallStep('install', "Виконано $executed SQL запитів", 'success');
     
     // Налаштування сайту
     logInstallStep('install', 'Налаштовуємо сайт...', 'info');

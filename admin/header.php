@@ -209,9 +209,9 @@ $gradients = generateGradients();
             </div>
             
             <div class="nav-item">
-                <a href="<?php echo SITE_URL; ?>/admin/settings" class="nav-link">
+                <a href="settings.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'settings.php' ? 'active' : ''; ?>">
                     <i class="fas fa-sliders-h"></i>
-                    <span>Загальні</span>
+                    <span>Налаштування системи</span>
                 </a>
             </div>
             
@@ -303,9 +303,9 @@ $gradients = generateGradients();
             </div>
             
             <div class="nav-item">
-                <a href="<?php echo SITE_URL; ?>/admin/backups" class="nav-link">
+                <a href="backup.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'backup.php' ? 'active' : ''; ?>">
                     <i class="fas fa-download"></i>
-                    <span>Бекапи</span>
+                    <span>Резервні копії</span>
                 </a>
             </div>
             

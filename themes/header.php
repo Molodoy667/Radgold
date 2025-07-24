@@ -228,58 +228,82 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             left: 0;
             right: 0;
             height: 70px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid var(--theme-border);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            background: var(--current-gradient);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
             z-index: 1050;
             transition: all 0.3s ease;
         }
         
-        .dark-theme .top-header {
-            background: rgba(13, 17, 23, 0.95);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .header-brand {
+        .header-content {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-left: 80px;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 20px;
+            margin-left: 70px; /* Space for touch menu button */
         }
         
-        .header-brand img {
-            border-radius: 50%;
-        }
-        
-        .brand-text {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--theme-text);
+        .gradient-title {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
         
         .header-actions {
             display: flex;
             align-items: center;
+            gap: 15px;
         }
         
-        .user-info, .login-btn {
+        .user-info {
             display: flex;
             align-items: center;
             gap: 8px;
             padding: 8px 16px;
             border-radius: 25px;
-            background: var(--theme-bg-secondary);
-            color: var(--theme-text);
-            text-decoration: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
             font-weight: 500;
-            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
         
-        .login-btn:hover {
-            background: var(--current-gradient);
-            color: white;
-            transform: translateY(-2px);
+        /* Language Circles */
+        .language-circles {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .lang-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            font-size: 1rem;
+        }
+        
+        .lang-circle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .lang-circle.active {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.15);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
         }
         
         /* Touch Menu */
@@ -755,13 +779,29 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
                 left: -100%;
             }
             
-            .header-brand {
-                margin-left: 80px;
+            .header-content {
+                margin-left: 60px;
+                padding: 0 15px;
+            }
+            
+            .gradient-title {
+                font-size: 1.4rem;
+                letter-spacing: 0.5px;
+            }
+            
+            .language-circles {
+                gap: 6px;
+            }
+            
+            .lang-circle {
+                width: 30px;
+                height: 30px;
                 font-size: 0.9rem;
             }
             
-            .header-brand .brand-text {
-                display: none;
+            .user-info {
+                padding: 6px 12px;
+                font-size: 0.85rem;
             }
             
             .gradients-grid {
@@ -791,8 +831,27 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
                 margin-top: 60px;
             }
             
-            .header-brand {
-                margin-left: 70px;
+            .header-content {
+                margin-left: 55px;
+                padding: 0 10px;
+            }
+            
+            .gradient-title {
+                font-size: 1.2rem;
+            }
+            
+            .language-circles {
+                gap: 4px;
+            }
+            
+            .lang-circle {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .user-info {
+                display: none; /* Приховуємо на дуже маленьких екранах */
             }
         }
         
@@ -894,25 +953,31 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
 
     <!-- Top Header -->
     <header class="top-header">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="header-brand">
-                    <img src="<?php echo $metaTags['logo']; ?>" alt="<?php echo getSiteName(); ?>" height="35">
-                    <span class="brand-text"><?php echo getSiteName(); ?></span>
+        <div class="header-content">
+            <div class="gradient-title">
+                <?php echo getSiteName(); ?>
+            </div>
+            <div class="header-actions">
+                <!-- Language Circles -->
+                <div class="language-circles">
+                    <div class="lang-circle <?php echo $currentLang === 'uk' ? 'active' : ''; ?>" data-lang="uk" title="Українська">
+                        🇺🇦
+                    </div>
+                    <div class="lang-circle <?php echo $currentLang === 'ru' ? 'active' : ''; ?>" data-lang="ru" title="Русский">
+                        🇷🇺
+                    </div>
+                    <div class="lang-circle <?php echo $currentLang === 'en' ? 'active' : ''; ?>" data-lang="en" title="English">
+                        🇺🇸
+                    </div>
                 </div>
-                <div class="header-actions">
-                    <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>
-                        <div class="user-info">
-                            <i class="fas fa-user-circle"></i>
-                            <span><?php echo htmlspecialchars($_SESSION['user_name'] ?? $_SESSION['username'] ?? 'User'); ?></span>
-                        </div>
-                    <?php else: ?>
-                        <a href="<?php echo getSiteUrl('pages/login.php'); ?>" class="login-btn">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span><?php echo safeTranslate('login', 'Вхід'); ?></span>
-                        </a>
-                    <?php endif; ?>
-                </div>
+                
+                <!-- User Info (if logged in) -->
+                <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>
+                    <div class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span><?php echo htmlspecialchars($_SESSION['user_name'] ?? $_SESSION['username'] ?? 'User'); ?></span>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </header>
@@ -1072,7 +1137,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
 <script>
 // Language change function
 function changeLanguage(lang) {
-    const loading = showLoadingIndicator();
+    const loading = showLoadingIndicator('Зміна мови...');
     
     fetch('<?php echo getSiteUrl('change_language.php'); ?>', {
         method: 'POST',
@@ -1085,11 +1150,14 @@ function changeLanguage(lang) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Update loading text
+            loading.querySelector('.loading-text').textContent = 'Оновлення...';
+            
             // Smooth transition before reload
             document.body.style.opacity = '0.7';
             setTimeout(() => {
                 location.reload();
-            }, 300);
+            }, 800);
         } else {
             loading.remove();
             console.error('Language change error:', data.message);
@@ -1217,7 +1285,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Language options
+    // Language options (in touch menu)
     const languageOptions = document.querySelectorAll('.language-option');
     languageOptions.forEach(option => {
         option.addEventListener('click', function() {
@@ -1225,6 +1293,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update active state immediately
             languageOptions.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            
+            changeLanguage(lang);
+        });
+    });
+    
+    // Language circles (in header)
+    const langCircles = document.querySelectorAll('.lang-circle');
+    langCircles.forEach(circle => {
+        circle.addEventListener('click', function() {
+            const lang = this.dataset.lang;
+            
+            // Update active state immediately
+            langCircles.forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
             
             changeLanguage(lang);
@@ -1245,7 +1327,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Change theme
 function changeTheme(theme) {
-    const loading = showLoadingIndicator();
+    const loading = showLoadingIndicator('Зміна теми...');
     
     fetch('<?php echo getSiteUrl('ajax/change_theme.php'); ?>', {
         method: 'POST',
@@ -1257,20 +1339,24 @@ function changeTheme(theme) {
     })
     .then(response => response.json())
     .then(data => {
-        loading.remove();
         if (data.success) {
-            // Миттєво застосовуємо тему без перезавантаження
-            applyTheme(theme);
-            console.log('Theme changed to:', theme);
+            // Update loading text
+            loading.querySelector('.loading-text').textContent = 'Застосування...';
+            
+            // Apply theme immediately after short delay for visual feedback
+            setTimeout(() => {
+                applyTheme(theme);
+                loading.remove();
+                console.log('Theme changed to:', theme);
+            }, 400);
         } else {
+            loading.remove();
             console.error('Theme change failed:', data.message);
-            alert('Помилка зміни теми: ' + data.message);
         }
     })
     .catch(error => {
         loading.remove();
         console.error('Error changing theme:', error);
-        alert('Помилка зміни теми');
     });
 }
 
@@ -1302,7 +1388,7 @@ function applyTheme(theme) {
 
 // Change gradient
 function changeGradient(gradient) {
-    const loading = showLoadingIndicator();
+    const loading = showLoadingIndicator('Зміна градієнта...');
     
     // Градієнти (30 штук)
     const gradients = {
@@ -1348,20 +1434,24 @@ function changeGradient(gradient) {
     })
     .then(response => response.json())
     .then(data => {
-        loading.remove();
         if (data.success) {
-            // Миттєво застосовуємо градієнт без перезавантаження
-            applyGradient(gradient, gradients[gradient]);
-            console.log('Gradient changed to:', gradient);
+            // Update loading text
+            loading.querySelector('.loading-text').textContent = 'Застосування...';
+            
+            // Apply gradient immediately after short delay for visual feedback
+            setTimeout(() => {
+                applyGradient(gradient, gradients[gradient]);
+                loading.remove();
+                console.log('Gradient changed to:', gradient);
+            }, 400);
         } else {
+            loading.remove();
             console.error('Gradient change failed:', data.message);
-            alert('Помилка зміни градієнта: ' + data.message);
         }
     })
     .catch(error => {
         loading.remove();
         console.error('Error changing gradient:', error);
-        alert('Помилка зміни градієнта');
     });
 }
 
@@ -1369,6 +1459,21 @@ function changeGradient(gradient) {
 function applyGradient(gradientKey, gradientValue) {
     document.documentElement.setAttribute('data-gradient', gradientKey);
     document.documentElement.style.setProperty('--current-gradient', gradientValue);
+    
+    // Update touch menu background
+    const touchMenu = document.getElementById('touchMenu');
+    const touchMenuBtn = document.getElementById('touchMenuBtn');
+    const topHeader = document.querySelector('.top-header');
+    
+    if (touchMenu) {
+        touchMenu.style.background = gradientValue;
+    }
+    if (touchMenuBtn) {
+        touchMenuBtn.style.background = gradientValue;
+    }
+    if (topHeader) {
+        topHeader.style.background = gradientValue;
+    }
 }
 
 // Set active nav link and add scroll effects
@@ -1437,22 +1542,57 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Add loading indicator for theme changes
-function showLoadingIndicator() {
+function showLoadingIndicator(message = '') {
     const loading = document.createElement('div');
     loading.className = 'loading-indicator';
-    loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    loading.innerHTML = `
+        <div class="spinner"></div>
+        <div class="loading-text">${message}</div>
+    `;
     loading.style.cssText = `
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
         z-index: 9999;
-        font-size: 24px;
+        text-align: center;
+        min-width: 150px;
     `;
+    
+    // Add spinner styles if not already present
+    if (!document.getElementById('spinner-styles')) {
+        const style = document.createElement('style');
+        style.id = 'spinner-styles';
+        style.textContent = `
+            .loading-indicator .spinner {
+                width: 40px;
+                height: 40px;
+                border: 4px solid #e3e3e3;
+                border-top: 4px solid var(--current-gradient, #007bff);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 15px;
+            }
+            
+            .loading-indicator .loading-text {
+                font-weight: 600;
+                color: var(--theme-text, #333);
+                font-size: 14px;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
     document.body.appendChild(loading);
     return loading;
 }

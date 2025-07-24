@@ -375,18 +375,19 @@
         }
         
         .touch-block {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--current-gradient);
             border-radius: 15px;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             overflow: hidden;
             transition: all 0.3s ease;
         }
         
         .touch-block:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--current-gradient);
             transform: translateY(-3px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            filter: brightness(1.1);
         }
         
         .touch-header {
@@ -448,7 +449,7 @@
             max-height: 0;
             overflow: hidden;
             transition: all 0.4s ease;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
         
         .touch-block.active .touch-content {
@@ -468,12 +469,14 @@
             gap: 12px;
             padding: 12px 15px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--footer-text-color, white);
+            background: var(--current-gradient);
+            color: white;
             text-decoration: none;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 8px;
         }
         
         .touch-link::before {
@@ -492,10 +495,12 @@
         }
         
         .touch-link:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-            color: var(--footer-text-color, white);
+            background: var(--current-gradient);
+            transform: translateX(5px) scale(1.02);
+            color: white;
             text-decoration: none;
+            filter: brightness(1.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         
         .touch-link i {
@@ -923,8 +928,9 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--current-gradient);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
         }
         
         .social-link::before {
@@ -997,7 +1003,7 @@
             padding: 15px 20px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 25px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--current-gradient);
             color: white;
             font-size: 0.95rem;
             transition: all 0.3s ease;
@@ -1005,14 +1011,15 @@
         }
         
         .newsletter-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.8);
         }
         
         .newsletter-input:focus {
             outline: none;
-            border-color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.15);
+            border-color: white;
+            background: var(--current-gradient);
             transform: scale(1.02);
+            filter: brightness(1.1);
         }
         
         .input-decoration {
@@ -1043,7 +1050,7 @@
             padding: 15px 25px;
             border: none;
             border-radius: 25px;
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--current-gradient);
             color: white;
             font-weight: 600;
             font-size: 1rem;
@@ -1052,12 +1059,14 @@
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
         }
         
         .newsletter-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--current-gradient);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            filter: brightness(1.1);
         }
         
         .btn-text, .btn-icon {

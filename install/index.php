@@ -270,14 +270,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 8:
-            try {
-                installSite();
-                header('Location: ?step=9');
-                exit();
-            } catch (Exception $e) {
-                $error = 'Помилка установки: ' . $e->getMessage();
-                logInstallStep('install', 'Помилка: ' . $error, 'error');
-            }
+            // Крок 8 обробляється через AJAX в ajax_step8.php
+            // Тут нічого робити не потрібно, просто показуємо інтерфейс
             break;
     }
 }
@@ -413,71 +407,7 @@ function getConnectionErrorSuggestion($errorCode) {
     }
 }
 
-function installSite() {
-    // Використовуємо step_8.php який має правильну логіку
-    $_POST['step'] = 8;
-    ob_start();
-    include 'steps/step_8.php';
-    $output = ob_get_clean();
-    
-    // Якщо в step_8.php є помилка, вона буде виброшена як Exception
-    logInstallStep('install', 'Установка завершена через step_8.php', 'success');
-    
-    // Створення конфігурації
-    logInstallStep('install', 'Створюємо конфігурацію...', 'info');
-    
-    $configContent = "<?php
-define('DB_HOST', '{$dbConfig['host']}');
-define('DB_USER', '{$dbConfig['user']}');
-define('DB_PASS', '{$dbConfig['pass']}');
-define('DB_NAME', '{$dbConfig['name']}');
-
-define('SITE_URL', '{$siteConfig['site_url']}');
-define('SITE_NAME', '{$siteConfig['site_name']}');
-define('SITE_DESCRIPTION', '{$siteConfig['site_description']}');
-define('SITE_KEYWORDS', '{$siteConfig['site_keywords']}');
-define('CONTACT_EMAIL', '{$siteConfig['contact_email']}');
-define('SITE_TIMEZONE', '{$siteConfig['timezone']}');
-define('SITE_LANGUAGE', '{$siteConfig['language']}');
-
-define('SECRET_KEY', '" . bin2hex(random_bytes(32)) . "');
-define('SESSION_NAME', 'adboard_session');
-define('UPLOAD_PATH', 'images/uploads/');
-define('MAX_FILE_SIZE', 5242880);
-define('ITEMS_PER_PAGE', 12);
-define('DEBUG_MODE', false);
-define('LOG_ERRORS', true);
-define('LOG_FILE', 'logs/error.log');
-
-spl_autoload_register(function (\$class) {
-    \$file = __DIR__ . '/classes/' . \$class . '.php';
-    if (file_exists(\$file)) {
-        require_once \$file;
-    }
-});
-
-if (session_status() == PHP_SESSION_NONE) {
-    session_name(SESSION_NAME);
-    session_start();
-}
-
-if (!file_exists(__DIR__ . '/.installed')) {
-    if (basename(\$_SERVER['PHP_SELF']) !== 'index.php' || strpos(\$_SERVER['REQUEST_URI'], '/install/') === false) {
-        header('Location: install/');
-        exit();
-    }
-}
-?>";
-    
-    if (!file_put_contents('../core/config.php', $configContent)) {
-        throw new Exception('Не вдалося створити файл конфігурації');
-    }
-    
-    file_put_contents('../.installed', date('Y-m-d H:i:s'));
-    
-    logInstallStep('install', 'Установка завершена успішно!', 'success');
-    $connection->close();
-}
+// Функція installSite() видалена - її логіка дублювалась з ajax_step8.php
 
 // Допоміжні функції
 function checkSystemRequirements() {
@@ -593,9 +523,9 @@ function generateGradients() {
                                 2 => 'Перевірка',
                                 3 => 'База даних',
                                 4 => 'Сайт',
-                                5 => 'Тема',
-                                6 => 'Адмін',
-                                7 => 'Додатково',
+                                5 => 'Додатково',
+                                6 => 'Тема',
+                                7 => 'Адмін',
                                 8 => 'Установка',
                                 9 => 'Завершення'
                             ];

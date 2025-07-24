@@ -128,7 +128,7 @@
                 </div>
                 
                 <div class="col-md-6">
-                    <a href="../admin/login.php" class="btn btn-success btn-lg w-100">
+                    <a href="../admin/index.php" class="btn btn-success btn-lg w-100">
                         <i class="fas fa-shield-alt me-2"></i>
                         Перейти в адмін-панель
                     </a>

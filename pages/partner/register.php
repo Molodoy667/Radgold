@@ -65,39 +65,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../../themes/header.php';
 ?>
 
-<div class="auth-container partner-register-container">
-    <div class="auth-background">
-        <div class="auth-particles"></div>
-        <div class="auth-shapes">
+<div class="modern-auth-container partner-container">
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="floating-shapes">
             <div class="shape shape-1"></div>
             <div class="shape shape-2"></div>
             <div class="shape shape-3"></div>
             <div class="shape shape-4"></div>
             <div class="shape shape-5"></div>
         </div>
+        <div class="gradient-orbs">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
     </div>
     
     <div class="container">
         <div class="row justify-content-center align-items-center min-vh-100 py-5">
-            <div class="col-lg-11 col-xl-10">
-                <div class="auth-card partner-auth register-card">
-                    <div class="row g-0">
-                        <!-- Ліва частина з інформацією -->
-                        <div class="col-lg-5 auth-info">
-                            <div class="auth-info-content">
-                                <div class="auth-brand">
-                                    <i class="fas fa-crown"></i>
-                                    <h2>Станьте партнером AdBoard Pro</h2>
-                                    <p>Розширте свій бізнес з нами</p>
-                                </div>
-                                
-                                <div class="auth-features">
-                                    <div class="feature-item">
-                                        <i class="fas fa-rocket"></i>
-                                        <div>
-                                            <h5>Швидке зростання</h5>
-                                            <p>Збільште продажі до 300% за перший місяць</p>
-                                        </div>
+            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                <div class="modern-auth-card partner-register-card">
+                    <!-- Header -->
+                    <div class="auth-header">
+                        <div class="header-icon partner-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h1>Партнерський акаунт</h1>
+                        <p>Приєднуйтесь до нашої партнерської програми</p>
+                    </div>
+                    
+                    <!-- Features Preview -->
+                    <div class="features-preview">
+                        <div class="feature-badge partner-badge">
+                            <i class="fas fa-crown"></i>
+                            <span>VIP партнер</span>
+                        </div>
+                        <div class="feature-badge partner-badge">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Аналітика</span>
+                        </div>
+                        <div class="feature-badge partner-badge">
+                            <i class="fas fa-headset"></i>
+                            <span>Підтримка 24/7</span>
+                        </div>
+                    </div>
                                     </div>
                                     
                                     <div class="feature-item">

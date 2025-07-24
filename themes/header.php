@@ -1548,13 +1548,18 @@ function loadSavedSettings() {
     const savedTheme = localStorage.getItem('user_theme');
     const savedGradient = localStorage.getItem('user_gradient');
     
-    if (savedTheme) {
+    console.log('Loading saved settings:', { savedTheme, savedGradient });
+    
+    if (savedTheme && savedTheme !== '<?php echo $currentTheme; ?>') {
+        console.log('Applying saved theme:', savedTheme);
         applyTheme(savedTheme);
         // Update active theme button
-        const themeOptions = document.querySelectorAll('.theme-option');
-        themeOptions.forEach(opt => {
-            opt.classList.toggle('active', opt.dataset.theme === savedTheme);
-        });
+        setTimeout(() => {
+            const themeOptions = document.querySelectorAll('.theme-option');
+            themeOptions.forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.theme === savedTheme);
+            });
+        }, 100);
     }
     
     if (savedGradient) {
@@ -1599,6 +1604,16 @@ function loadSavedSettings() {
         });
     }
 }
+
+// Early theme initialization
+(function() {
+    const savedTheme = localStorage.getItem('user_theme');
+    if (savedTheme) {
+        console.log('Early theme load:', savedTheme);
+        document.body.className = savedTheme + '-theme';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+})();
 
 // Touch Menu Functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -1825,6 +1840,9 @@ function changeTheme(theme) {
 
 // Apply theme immediately
 function applyTheme(theme) {
+    console.log('Applying theme:', theme);
+    
+    // Update body class
     document.body.className = theme + '-theme';
     document.documentElement.setAttribute('data-theme', theme);
     
@@ -1847,6 +1865,14 @@ function applyTheme(theme) {
         root.style.setProperty('--theme-accent', '#0969da');
         root.style.setProperty('--theme-muted', '#656d76');
     }
+    
+    // Update active theme button immediately
+    const themeOptions = document.querySelectorAll('.theme-option');
+    themeOptions.forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.theme === theme);
+    });
+    
+    console.log('Theme applied successfully:', theme);
 }
 
 // Change gradient

@@ -236,10 +236,7 @@ if (session_status() == PHP_SESSION_NONE) {
         // 4. Імпорт структури БД
         $sqlFiles = [
             'database.sql',
-            'ads_database.sql',
-            'admin_tables.sql',
-            'translations.sql',
-            'user_groups.sql'
+            'initial_data.sql'
         ];
         
                         foreach ($sqlFiles as $sqlFile) {

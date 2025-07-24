@@ -10,7 +10,7 @@ for ($i = 1; $i <= 9; $i++) {
 }
 
 echo "\n2. Перевірка SQL файлів:\n";
-$sqlFiles = ['database.sql', 'ads_database.sql', 'admin_tables.sql'];
+$sqlFiles = ['database.sql', 'initial_data.sql'];
 foreach ($sqlFiles as $file) {
     $path = "install/$file";
     if (file_exists($path)) {

@@ -174,32 +174,42 @@ if (session_status() == PHP_SESSION_NONE) {
             throw new Exception('Не вдалося вибрати базу даних: ' . $mysqli->error);
         }
         
-        // 4. Імпорт структури БД
+        // 4. Імпорт структури та початкових даних БД
         $sqlFiles = [
-            'database.sql',
-            'ads_database.sql',
-            'admin_tables.sql'
+            'database.sql' => 'Основна структура БД',
+            'initial_data.sql' => 'Початкові дані'
         ];
         
-        foreach ($sqlFiles as $sqlFile) {
+        foreach ($sqlFiles as $sqlFile => $description) {
             $fullPath = __DIR__ . '/../' . $sqlFile;
             if (file_exists($fullPath)) {
                 $sql = file_get_contents($fullPath);
                 if ($sql) {
-                    // Розділяємо на окремі запити
-                    $queries = explode(';', $sql);
-                    foreach ($queries as $query) {
-                        $query = trim($query);
-                        if (!empty($query)) {
-                            if (!$mysqli->query($query)) {
-                                // Ігноруємо помилки створення БД (може вже існувати)
-                                if (strpos($mysqli->error, 'database exists') === false && 
-                                    strpos($mysqli->error, 'table exists') === false) {
-                                    throw new Exception("Помилка в {$sqlFile}: " . $mysqli->error);
-                                }
-                            }
-                        }
+                    // Замінюємо назву БД якщо потрібно
+                    if (strpos($sql, 'adboard_site') !== false) {
+                        $sql = str_replace('adboard_site', $dbConfig['name'], $sql);
                     }
+                    
+                    // Виконуємо багатозапитний SQL
+                    if ($mysqli->multi_query($sql)) {
+                        do {
+                            // Очищаємо результати
+                            if ($result = $mysqli->store_result()) {
+                                $result->free();
+                            }
+                        } while ($mysqli->next_result());
+                        
+                        if ($mysqli->error) {
+                            throw new Exception("Помилка в $sqlFile: " . $mysqli->error);
+                        }
+                    } else {
+                        throw new Exception("Помилка виконання $sqlFile: " . $mysqli->error);
+                    }
+                }
+            } else {
+                // Файл initial_data.sql не обов'язковий
+                if ($sqlFile !== 'initial_data.sql') {
+                    throw new Exception("SQL файл не знайдено: $fullPath");
                 }
             }
         }
@@ -244,37 +254,56 @@ if (session_status() == PHP_SESSION_NONE) {
         
         // 6. Додаємо початкові налаштування сайту
         $settings = [
-            ['site_name', $siteConfig['site_name']],
-            ['site_url', rtrim($siteConfig['site_url'], '/')],
-            ['site_email', $siteConfig['site_email'] ?? ''],
-            ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень'],
-            ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev'],
-            ['language', $additionalConfig['default_language'] ?? 'uk'],
-            ['available_languages', '["uk","ru","en"]'],
-            ['current_theme', $themeConfig['default_theme'] ?? 'light'],
-            ['current_gradient', $themeConfig['default_gradient'] ?? 'gradient-1'],
-            ['enable_animations', isset($additionalConfig['enable_animations']) ? '1' : '0'],
-            ['enable_particles', isset($additionalConfig['enable_particles']) ? '1' : '0'],
-            ['smooth_scroll', isset($additionalConfig['smooth_scroll']) ? '1' : '0'],
-            ['enable_tooltips', isset($additionalConfig['enable_tooltips']) ? '1' : '0'],
-            ['max_ad_duration_days', '30'],
-            ['ads_per_page', '12'],
-            ['auto_approve_ads', '0'],
-            ['maintenance_mode', '0']
+            // Основні налаштування
+            ['site_name', $siteConfig['site_name'], 'string', 'general', 'Назва сайту'],
+            ['site_url', rtrim($siteConfig['site_url'], '/'), 'url', 'general', 'URL сайту'],
+            ['admin_email', $adminConfig['admin_email'], 'email', 'general', 'Email адміністратора'],
+            ['contact_email', $siteConfig['contact_email'] ?? $adminConfig['admin_email'], 'email', 'general', 'Email для контактів'],
+            ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень', 'text', 'general', 'Опис сайту'],
+            ['site_keywords', $siteConfig['site_keywords'] ?? 'оголошення, купити, продати, послуги, реклама', 'text', 'seo', 'Ключові слова'],
+            ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev', 'string', 'general', 'Часовий пояс'],
+            ['language', $additionalConfig['default_language'] ?? 'uk', 'string', 'general', 'Мова за замовчуванням'],
+            ['currency', 'UAH', 'string', 'general', 'Валюта'],
+            
+            // Тема та дизайн
+            ['current_theme', $themeConfig['default_theme'] ?? 'light', 'string', 'theme', 'Поточна тема'],
+            ['current_gradient', $themeConfig['default_gradient'] ?? 'gradient-1', 'string', 'theme', 'Поточний градієнт'],
+            ['enable_animations', $additionalConfig['enable_animations'] ?? '1', 'bool', 'theme', 'Увімкнути анімації'],
+            ['enable_particles', $additionalConfig['enable_particles'] ?? '0', 'bool', 'theme', 'Частинки на фоні'],
+            ['smooth_scroll', $additionalConfig['smooth_scroll'] ?? '1', 'bool', 'theme', 'Плавна прокрутка'],
+            ['enable_tooltips', $additionalConfig['enable_tooltips'] ?? '1', 'bool', 'theme', 'Підказки'],
+            ['logo_url', 'images/logo.svg', 'string', 'theme', 'URL логотипу'],
+            ['favicon_url', 'images/favicon.ico', 'string', 'theme', 'URL фавікону'],
+            
+            // Налаштування оголошень
+            ['max_ad_duration_days', '30', 'int', 'ads', 'Максимальна тривалість оголошення (днів)'],
+            ['max_images_per_ad', '10', 'int', 'ads', 'Максимум зображень на оголошення'],
+            ['ads_per_page', '12', 'int', 'ads', 'Оголошень на сторінку'],
+            ['auto_approve_ads', '0', 'bool', 'ads', 'Автоматичне схвалення оголошень'],
+            ['featured_ads_count', '6', 'int', 'ads', 'Кількість рекомендованих оголошень'],
+            ['enable_geolocation', '1', 'bool', 'ads', 'Увімкнути геолокацію'],
+            
+            // Система
+            ['maintenance_mode', '0', 'bool', 'system', 'Режим обслуговування'],
+            ['debug_mode', '0', 'bool', 'system', 'Режим налагодження'],
+            ['log_errors', '1', 'bool', 'system', 'Логування помилок'],
+            ['backup_enabled', '1', 'bool', 'system', 'Увімкнути backup'],
+            ['backup_frequency', 'daily', 'string', 'system', 'Частота backup'],
+            ['backup_retention_days', '30', 'int', 'system', 'Зберігати backup (днів)']
         ];
         
         // Перевіряємо чи існує таблиця site_settings
         $result = $mysqli->query("SHOW TABLES LIKE 'site_settings'");
         if ($result->num_rows > 0) {
             $settingsStmt = $mysqli->prepare("
-                INSERT INTO site_settings (setting_key, value) 
-                VALUES (?, ?) 
-                ON DUPLICATE KEY UPDATE value = VALUES(value)
+                INSERT INTO site_settings (setting_key, setting_value, setting_type, setting_group, description) 
+                VALUES (?, ?, ?, ?, ?) 
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
             ");
             
             if ($settingsStmt) {
                 foreach ($settings as $setting) {
-                    $settingsStmt->bind_param("ss", $setting[0], $setting[1]);
+                    $settingsStmt->bind_param("sssss", $setting[0], $setting[1], $setting[2], $setting[3], $setting[4]);
                     $settingsStmt->execute();
                 }
                 $settingsStmt->close();

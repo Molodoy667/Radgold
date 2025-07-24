@@ -35,7 +35,7 @@ try {
     $currentGradient = 'gradient-1';
 }
 
-// Отримуємо всі градієнти
+// Отримуємо всі градієнти (30 штук)
 $gradients = [
     'gradient-1' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     'gradient-2' => 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
@@ -46,7 +46,27 @@ $gradients = [
     'gradient-7' => 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
     'gradient-8' => 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
     'gradient-9' => 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
-    'gradient-10' => 'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)'
+    'gradient-10' => 'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
+    'gradient-11' => 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+    'gradient-12' => 'linear-gradient(135deg, #0abde3 0%, #006ba6 100%)',
+    'gradient-13' => 'linear-gradient(135deg, #ff9ff3 0%, #f368e0 100%)',
+    'gradient-14' => 'linear-gradient(135deg, #54a0ff 0%, #2e86de 100%)',
+    'gradient-15' => 'linear-gradient(135deg, #5f27cd 0%, #341f97 100%)',
+    'gradient-16' => 'linear-gradient(135deg, #00d2d3 0%, #54a0ff 100%)',
+    'gradient-17' => 'linear-gradient(135deg, #ff9ff3 0%, #ff6b9d 100%)',
+    'gradient-18' => 'linear-gradient(135deg, #c44569 0%, #f8b500 100%)',
+    'gradient-19' => 'linear-gradient(135deg, #40407a 0%, #706fd3 100%)',
+    'gradient-20' => 'linear-gradient(135deg, #33d9b2 0%, #218c74 100%)',
+    'gradient-21' => 'linear-gradient(135deg, #ff5722 0%, #ff9800 100%)',
+    'gradient-22' => 'linear-gradient(135deg, #e91e63 0%, #9c27b0 100%)',
+    'gradient-23' => 'linear-gradient(135deg, #2196f3 0%, #21cbf3 100%)',
+    'gradient-24' => 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)',
+    'gradient-25' => 'linear-gradient(135deg, #ff4081 0%, #ff6ec7 100%)',
+    'gradient-26' => 'linear-gradient(135deg, #673ab7 0%, #9c27b0 100%)',
+    'gradient-27' => 'linear-gradient(135deg, #009688 0%, #4caf50 100%)',
+    'gradient-28' => 'linear-gradient(135deg, #795548 0%, #8d6e63 100%)',
+    'gradient-29' => 'linear-gradient(135deg, #607d8b 0%, #90a4ae 100%)',
+    'gradient-30' => 'linear-gradient(135deg, #37474f 0%, #263238 100%)'
 ];
 
 // Helper functions
@@ -132,116 +152,383 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             transition: all 0.3s ease;
         }
         
-        /* Красивий Navbar з покращеними анімаціями */
-        .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
+        /* Touch Menu Button */
+        .touch-menu-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--current-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1100;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .touch-menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+        }
+        
+        .touch-menu-btn .menu-icon {
+            width: 20px;
+            height: 15px;
+            position: relative;
+        }
+        
+        .touch-menu-btn .menu-icon span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: white;
+            border-radius: 1px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: 0.25s ease-in-out;
+        }
+        
+        .touch-menu-btn .menu-icon span:nth-child(1) {
+            top: 0px;
+        }
+        
+        .touch-menu-btn .menu-icon span:nth-child(2) {
+            top: 6px;
+        }
+        
+        .touch-menu-btn .menu-icon span:nth-child(3) {
+            top: 12px;
+        }
+        
+        .touch-menu-btn.open .menu-icon span:nth-child(1) {
+            top: 6px;
+            transform: rotate(135deg);
+        }
+        
+        .touch-menu-btn.open .menu-icon span:nth-child(2) {
+            opacity: 0;
+            left: -60px;
+        }
+        
+        .touch-menu-btn.open .menu-icon span:nth-child(3) {
+            top: 6px;
+            transform: rotate(-135deg);
+        }
+        
+        /* Top Header */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px) saturate(180%);
             border-bottom: 1px solid var(--theme-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .dark-theme .navbar {
-            background: rgba(13, 17, 23, 0.95) !important;
-            border-bottom: 1px solid var(--theme-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Анімація появи navbar при скролі */
-        .navbar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--current-gradient);
-            opacity: 0;
-            transition: all 0.6s ease;
-            z-index: -1;
-        }
-        
-        .navbar:hover::before {
-            left: 0;
-            opacity: 0.05;
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.6rem;
-            color: var(--theme-text) !important;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-            z-index: 10;
-        }
-        
-        .navbar-brand:hover {
-            transform: scale(1.08) rotate(2deg);
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .navbar-brand img {
-            border-radius: 50%;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            filter: brightness(1);
-        }
-        
-        .navbar-brand:hover img {
-            transform: rotate(-5deg) scale(1.1);
-            filter: brightness(1.2) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-        }
-        
-        .navbar-nav .nav-link {
-            color: var(--theme-text) !important;
-            font-weight: 500;
-            padding: 0.6rem 1.2rem !important;
-            border-radius: 12px;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-            margin: 0 2px;
-            overflow: hidden;
-        }
-        
-        /* Красивий hover ефект з градієнтом */
-        .navbar-nav .nav-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--current-gradient);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            z-index: -1;
-            border-radius: 12px;
-        }
-        
-        .navbar-nav .nav-link:hover::before {
-            left: 0;
-        }
-        
-        .navbar-nav .nav-link:hover {
-            color: white !important;
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .navbar-nav .nav-link.active {
-            background: var(--current-gradient);
-            color: white !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: scale(1.02);
-        }
-        
-        .navbar-nav .nav-link i {
-            margin-right: 8px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1050;
             transition: all 0.3s ease;
         }
         
-        .navbar-nav .nav-link:hover i {
-            transform: rotate(10deg) scale(1.2);
+        .dark-theme .top-header {
+            background: rgba(13, 17, 23, 0.95);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 80px;
+        }
+        
+        .header-brand img {
+            border-radius: 50%;
+        }
+        
+        .brand-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--theme-text);
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info, .login-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 25px;
+            background: var(--theme-bg-secondary);
+            color: var(--theme-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background: var(--current-gradient);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Touch Menu */
+        .touch-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1040;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .touch-menu-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .touch-menu {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 350px;
+            height: 100%;
+            background: var(--current-gradient);
+            z-index: 1060;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-y: auto;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .touch-menu.show {
+            left: 0;
+        }
+        
+        .touch-menu-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .menu-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .menu-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        /* Menu Sections */
+        .menu-section {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        /* Theme Switcher */
+        .theme-switcher {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .theme-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .theme-option:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .theme-option.active {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.15);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Gradients Grid */
+        .gradients-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .gradient-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .gradient-circle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gradient-circle.active {
+            border-color: white;
+            transform: scale(1.3);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .language-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .language-option.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .language-option .flag {
+            font-size: 1.2rem;
+        }
+        
+        .language-option .lang-name {
+            font-weight: 500;
+        }
+        
+        /* Navigation Menu */
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(8px);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-item.logout:hover {
+            background: rgba(255, 100, 100, 0.3);
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 10px 0;
+        }
+        
+        /* Адаптивні стилі */
+        .main-content {
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+            padding: 0;
         }
         
         /* Dropdown стилі з покращеними анімаціями */
@@ -461,139 +748,70 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             background-clip: text;
         }
         
-        /* Адаптивні стилі для всіх екранів */
-        .main-content {
-            min-height: calc(100vh - 80px);
-            padding: 0;
-        }
-        
-        .container-fluid, .container {
-            padding-left: 15px;
-            padding-right: 15px;
-        }
-        
-        /* Responsive для tablet */
-        @media (max-width: 992px) {
-            .navbar-nav .nav-link {
-                padding: 0.5rem 0.8rem !important;
-                margin: 2px 0;
-            }
-            
-            .navbar-brand {
-                font-size: 1.4rem;
-            }
-        }
-        
-        /* Responsive для mobile */
+        /* Mobile responsiveness */
         @media (max-width: 768px) {
-            .navbar-brand {
-                font-size: 1.2rem;
-            }
-            
-            .navbar-collapse {
-                background: var(--theme-bg-tertiary);
-                border: 1px solid var(--theme-border);
-                border-radius: 15px;
-                margin-top: 15px;
-                padding: 15px;
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            }
-            
-            .navbar-nav .nav-link {
-                margin: 8px 0;
-                text-align: center;
-                padding: 12px 20px !important;
-                border-radius: 10px;
-                display: block;
-            }
-            
-            .sidebar {
+            .touch-menu {
                 width: 100%;
-                right: -100%;
+                left: -100%;
             }
             
-            .container-fluid, .container {
-                padding-left: 10px;
-                padding-right: 10px;
+            .header-brand {
+                margin-left: 80px;
+                font-size: 0.9rem;
             }
             
-            /* Покращена адаптивність для контенту */
-            .row {
-                margin-left: -5px;
-                margin-right: -5px;
+            .header-brand .brand-text {
+                display: none;
             }
             
-            .row > * {
-                padding-left: 5px;
-                padding-right: 5px;
+            .gradients-grid {
+                grid-template-columns: repeat(5, 1fr);
+                max-height: 150px;
             }
             
-            /* Hero section мобільна оптимізація */
-            .hero-section .row {
-                margin-left: 0;
-                margin-right: 0;
-            }
-            
-            .hero-section .col-lg-6 {
-                padding-left: 15px;
-                padding-right: 15px;
-            }
-            
-            /* Cards мобільна оптимізація */
-            .card {
-                margin-bottom: 15px;
-            }
-            
-            .card-body {
-                padding: 15px !important;
-            }
-            
-            /* Buttons мобільна оптимізація */
-            .btn-lg {
-                padding: 12px 20px;
-                font-size: 16px;
-                width: 100%;
-                margin-bottom: 10px;
-            }
-            
-            /* Font sizes для мобільних */
-            .display-4 {
-                font-size: 1.8rem !important;
-            }
-            
-            .display-5 {
-                font-size: 1.5rem !important;
-            }
-            
-            .lead {
-                font-size: 1rem !important;
+            .gradient-circle {
+                width: 30px;
+                height: 30px;
             }
         }
         
-        /* Дуже маленькі екрани */
-        @media (max-width: 576px) {
-            .container-fluid, .container {
-                padding-left: 5px;
-                padding-right: 5px;
+        @media (max-width: 480px) {
+            .touch-menu-btn {
+                top: 15px;
+                left: 15px;
+                width: 45px;
+                height: 45px;
             }
             
-            .navbar-brand {
-                font-size: 1rem;
+            .top-header {
+                height: 60px;
             }
             
-            .btn {
-                font-size: 14px;
-                padding: 10px 15px;
+            .main-content {
+                margin-top: 60px;
             }
             
-            .card-body {
-                padding: 10px !important;
+            .header-brand {
+                margin-left: 70px;
             }
-            
-            .hero-section {
-                padding-top: 20px !important;
-                padding-bottom: 20px !important;
-            }
+        }
+        
+        /* Scroll styles for touch menu */
+        .touch-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .touch-menu::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .touch-menu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        
+        .touch-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
         
         /* Анімації */
@@ -665,192 +883,181 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
 </head>
 <body class="<?php echo $currentTheme; ?>-theme">
     
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container">
-            <!-- Brand -->
-            <a class="navbar-brand d-flex align-items-center" href="<?php echo getSiteUrl(); ?>">
-                <img src="<?php echo $metaTags['logo']; ?>" alt="<?php echo getSiteName(); ?>" height="40" class="me-2">
-                <span><?php echo getSiteName(); ?></span>
-            </a>
-            
-            <!-- Mobile Toggle -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <!-- Navigation Links -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo getSiteUrl(); ?>">
-                            <i class="fas fa-home"></i><?php echo safeTranslate('home', 'Головна'); ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo getSiteUrl('ads'); ?>">
-                            <i class="fas fa-bullhorn"></i><?php echo safeTranslate('ads', 'Оголошення'); ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo getSiteUrl('categories'); ?>">
-                            <i class="fas fa-th-large"></i><?php echo safeTranslate('categories', 'Категорії'); ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo getSiteUrl('services'); ?>">
-                            <i class="fas fa-cogs"></i><?php echo safeTranslate('services', 'Послуги'); ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo getSiteUrl('about'); ?>">
-                            <i class="fas fa-info-circle"></i><?php echo safeTranslate('about', 'Про нас'); ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo getSiteUrl('contact'); ?>">
-                            <i class="fas fa-envelope"></i><?php echo safeTranslate('contact', 'Контакти'); ?>
-                        </a>
-                    </li>
-                </ul>
-                
-                <!-- User Menu -->
-                <ul class="navbar-nav align-items-center">
+    <!-- Touch Menu Button -->
+    <div class="touch-menu-btn" id="touchMenuBtn">
+        <div class="menu-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="header-brand">
+                    <img src="<?php echo $metaTags['logo']; ?>" alt="<?php echo getSiteName(); ?>" height="35">
+                    <span class="brand-text"><?php echo getSiteName(); ?></span>
+                </div>
+                <div class="header-actions">
                     <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>
-                        <!-- User Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user"></i>
-                                <?php echo htmlspecialchars($_SESSION['user_name'] ?? $_SESSION['username'] ?? 'User'); ?>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" href="<?php echo getSiteUrl('profile'); ?>">
-                                        <i class="fas fa-user me-2"></i><?php echo safeTranslate('profile', 'Профіль'); ?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="<?php echo getSiteUrl('my-ads'); ?>">
-                                        <i class="fas fa-list me-2"></i><?php echo safeTranslate('my_ads', 'Мої оголошення'); ?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="<?php echo getSiteUrl('messages'); ?>">
-                                        <i class="fas fa-comments me-2"></i><?php echo safeTranslate('messages', 'Повідомлення'); ?>
-                                    </a>
-                                </li>
-                                <?php if (function_exists('isAdmin') && isAdmin()): ?>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item" href="<?php echo getSiteUrl('admin'); ?>">
-                                            <i class="fas fa-cog me-2"></i><?php echo safeTranslate('admin_panel', 'Адміністрування'); ?>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="<?php echo getSiteUrl('logout'); ?>">
-                                        <i class="fas fa-sign-out-alt me-2"></i><?php echo safeTranslate('logout', 'Вихід'); ?>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                        <div class="user-info">
+                            <i class="fas fa-user-circle"></i>
+                            <span><?php echo htmlspecialchars($_SESSION['user_name'] ?? $_SESSION['username'] ?? 'User'); ?></span>
+                        </div>
                     <?php else: ?>
-                        <!-- Login/Register -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?php echo getSiteUrl('pages/login.php'); ?>">
-                                <i class="fas fa-sign-in-alt"></i><?php echo safeTranslate('login', 'Вхід'); ?>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?php echo getSiteUrl('pages/register.php'); ?>">
-                                <i class="fas fa-user-plus"></i><?php echo safeTranslate('register', 'Реєстрація'); ?>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    
-                    <!-- Language Selector -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-globe"></i>
-                            <?php 
-                            $langFlags = ['uk' => '🇺🇦', 'ru' => '🇷🇺', 'en' => '🇺🇸'];
-                            $langNames = ['uk' => 'UA', 'ru' => 'RU', 'en' => 'EN'];
-                            echo ($langFlags[$currentLang] ?? '🌐') . ' ' . ($langNames[$currentLang] ?? 'Language');
-                            ?>
+                        <a href="<?php echo getSiteUrl('pages/login.php'); ?>" class="login-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span><?php echo safeTranslate('login', 'Вхід'); ?></span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item <?php echo $currentLang === 'uk' ? 'active' : ''; ?>" href="#" onclick="changeLanguage('uk')">
-                                    🇺🇦 Українська
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item <?php echo $currentLang === 'ru' ? 'active' : ''; ?>" href="#" onclick="changeLanguage('ru')">
-                                    🇷🇺 Русский
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item <?php echo $currentLang === 'en' ? 'active' : ''; ?>" href="#" onclick="changeLanguage('en')">
-                                    🇺🇸 English
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    
-                    <!-- Theme Toggle -->
-                    <li class="nav-item">
-                        <button class="btn theme-toggle-btn ms-2" id="themeToggle" title="<?php echo safeTranslate('theme_settings', 'Налаштування теми'); ?>">
-                            <i class="fas fa-palette"></i>
-                        </button>
-                    </li>
-                </ul>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- Theme Settings Sidebar -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <div class="sidebar" id="themeSidebar">
-        <div class="sidebar-header">
-            <h5><i class="fas fa-palette me-2"></i><?php echo safeTranslate('theme_settings', 'Налаштування теми'); ?></h5>
-            <button class="btn-close" id="closeSidebar" aria-label="Close"></button>
+    <!-- Touch Menu Overlay -->
+    <div class="touch-menu-overlay" id="touchMenuOverlay"></div>
+    
+    <!-- Touch Menu -->
+    <div class="touch-menu" id="touchMenu">
+        <!-- Menu Header -->
+        <div class="touch-menu-header">
+            <div class="menu-brand">
+                <img src="<?php echo $metaTags['logo']; ?>" alt="<?php echo getSiteName(); ?>" height="30">
+                <span><?php echo getSiteName(); ?></span>
+            </div>
+            <button class="menu-close-btn" id="menuCloseBtn">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
         
-        <div class="sidebar-content">
-            <!-- Theme Toggle -->
-            <div class="theme-section">
-                <h6><i class="fas fa-moon me-2"></i><?php echo safeTranslate('theme', 'Тема оформлення'); ?></h6>
-                <div class="theme-toggle">
-                    <input type="radio" name="theme" id="lightTheme" value="light" <?php echo $currentTheme === 'light' ? 'checked' : ''; ?>>
-                    <label for="lightTheme">
-                        <i class="fas fa-sun mb-2"></i>
-                        <div><?php echo safeTranslate('light_theme', 'Світла'); ?></div>
-                    </label>
-                    
-                    <input type="radio" name="theme" id="darkTheme" value="dark" <?php echo $currentTheme === 'dark' ? 'checked' : ''; ?>>
-                    <label for="darkTheme">
-                        <i class="fas fa-moon mb-2"></i>
-                        <div><?php echo safeTranslate('dark_theme', 'Темна'); ?></div>
-                    </label>
+        <!-- Theme Toggle -->
+        <div class="menu-section">
+            <div class="section-title">
+                <i class="fas fa-palette"></i>
+                <span><?php echo safeTranslate('theme', 'Тема'); ?></span>
+            </div>
+            <div class="theme-switcher">
+                <div class="theme-option <?php echo $currentTheme === 'light' ? 'active' : ''; ?>" data-theme="light">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <div class="theme-option <?php echo $currentTheme === 'dark' ? 'active' : ''; ?>" data-theme="dark">
+                    <i class="fas fa-moon"></i>
                 </div>
             </div>
-            
-            <!-- Gradient Selection -->
-            <div class="theme-section">
-                <h6><i class="fas fa-brush me-2"></i><?php echo safeTranslate('gradient', 'Градієнт оформлення'); ?></h6>
-                <div class="gradient-grid">
-                    <?php foreach ($gradients as $key => $gradient): ?>
-                        <div class="gradient-option <?php echo $currentGradient === $key ? 'active' : ''; ?>" 
-                             data-gradient="<?php echo $key; ?>" 
-                             style="background: <?php echo $gradient; ?>"
-                             title="<?php echo ucfirst(str_replace('-', ' ', $key)); ?>">
-                            <?php if ($currentGradient === $key): ?>
-                                <i class="fas fa-check"></i>
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
+        </div>
+        
+        <!-- Gradients -->
+        <div class="menu-section">
+            <div class="section-title">
+                <i class="fas fa-brush"></i>
+                <span><?php echo safeTranslate('gradient', 'Градієнти'); ?></span>
+            </div>
+            <div class="gradients-grid">
+                <?php foreach ($gradients as $key => $gradient): ?>
+                    <div class="gradient-circle <?php echo $currentGradient === $key ? 'active' : ''; ?>" 
+                         data-gradient="<?php echo $key; ?>" 
+                         style="background: <?php echo $gradient; ?>"
+                         title="<?php echo ucfirst(str_replace('-', ' ', $key)); ?>">
+                        <?php if ($currentGradient === $key): ?>
+                            <i class="fas fa-check"></i>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        
+        <!-- Language Selection -->
+        <div class="menu-section">
+            <div class="section-title">
+                <i class="fas fa-globe"></i>
+                <span><?php echo safeTranslate('language', 'Мова'); ?></span>
+            </div>
+            <div class="language-selector">
+                <div class="language-option <?php echo $currentLang === 'uk' ? 'active' : ''; ?>" data-lang="uk">
+                    <span class="flag">🇺🇦</span>
+                    <span class="lang-name">Українська</span>
                 </div>
+                <div class="language-option <?php echo $currentLang === 'ru' ? 'active' : ''; ?>" data-lang="ru">
+                    <span class="flag">🇷🇺</span>
+                    <span class="lang-name">Русский</span>
+                </div>
+                <div class="language-option <?php echo $currentLang === 'en' ? 'active' : ''; ?>" data-lang="en">
+                    <span class="flag">🇺🇸</span>
+                    <span class="lang-name">English</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Menu -->
+        <div class="menu-section">
+            <div class="section-title">
+                <i class="fas fa-bars"></i>
+                <span><?php echo safeTranslate('menu', 'Меню'); ?></span>
+            </div>
+            <div class="nav-menu">
+                <a href="<?php echo getSiteUrl(); ?>" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span><?php echo safeTranslate('home', 'Головна'); ?></span>
+                </a>
+                <a href="<?php echo getSiteUrl('ads'); ?>" class="nav-item">
+                    <i class="fas fa-bullhorn"></i>
+                    <span><?php echo safeTranslate('ads', 'Оголошення'); ?></span>
+                </a>
+                <a href="<?php echo getSiteUrl('categories'); ?>" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span><?php echo safeTranslate('categories', 'Категорії'); ?></span>
+                </a>
+                <a href="<?php echo getSiteUrl('services'); ?>" class="nav-item">
+                    <i class="fas fa-cogs"></i>
+                    <span><?php echo safeTranslate('services', 'Послуги'); ?></span>
+                </a>
+                <a href="<?php echo getSiteUrl('about'); ?>" class="nav-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span><?php echo safeTranslate('about', 'Про нас'); ?></span>
+                </a>
+                <a href="<?php echo getSiteUrl('contact'); ?>" class="nav-item">
+                    <i class="fas fa-envelope"></i>
+                    <span><?php echo safeTranslate('contact', 'Контакти'); ?></span>
+                </a>
+                
+                <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>
+                    <div class="nav-divider"></div>
+                    <a href="<?php echo getSiteUrl('profile'); ?>" class="nav-item">
+                        <i class="fas fa-user"></i>
+                        <span><?php echo safeTranslate('profile', 'Профіль'); ?></span>
+                    </a>
+                    <a href="<?php echo getSiteUrl('my-ads'); ?>" class="nav-item">
+                        <i class="fas fa-list"></i>
+                        <span><?php echo safeTranslate('my_ads', 'Мої оголошення'); ?></span>
+                    </a>
+                    <a href="<?php echo getSiteUrl('messages'); ?>" class="nav-item">
+                        <i class="fas fa-comments"></i>
+                        <span><?php echo safeTranslate('messages', 'Повідомлення'); ?></span>
+                    </a>
+                    <?php if (function_exists('isAdmin') && isAdmin()): ?>
+                        <a href="<?php echo getSiteUrl('admin'); ?>" class="nav-item">
+                            <i class="fas fa-cog"></i>
+                            <span><?php echo safeTranslate('admin_panel', 'Адміністрування'); ?></span>
+                        </a>
+                    <?php endif; ?>
+                    <a href="<?php echo getSiteUrl('logout'); ?>" class="nav-item logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span><?php echo safeTranslate('logout', 'Вихід'); ?></span>
+                    </a>
+                <?php else: ?>
+                    <div class="nav-divider"></div>
+                    <a href="<?php echo getSiteUrl('pages/login.php'); ?>" class="nav-item">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span><?php echo safeTranslate('login', 'Вхід'); ?></span>
+                    </a>
+                    <a href="<?php echo getSiteUrl('pages/register.php'); ?>" class="nav-item">
+                        <i class="fas fa-user-plus"></i>
+                        <span><?php echo safeTranslate('register', 'Реєстрація'); ?></span>
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -894,12 +1101,12 @@ function changeLanguage(lang) {
     });
 }
 
-// Theme functionality
+// Touch Menu Functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const themeToggle = document.getElementById('themeToggle');
-    const sidebar = document.getElementById('themeSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const closeSidebar = document.getElementById('closeSidebar');
+    const touchMenuBtn = document.getElementById('touchMenuBtn');
+    const touchMenu = document.getElementById('touchMenu');
+    const touchMenuOverlay = document.getElementById('touchMenuOverlay');
+    const menuCloseBtn = document.getElementById('menuCloseBtn');
     
     // Застосовуємо поточну тему до body
     const currentTheme = '<?php echo $currentTheme; ?>';
@@ -907,65 +1114,132 @@ document.addEventListener('DOMContentLoaded', function() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     document.documentElement.setAttribute('data-gradient', '<?php echo $currentGradient; ?>');
     
-    // Open sidebar
-    if (themeToggle) {
-        themeToggle.addEventListener('click', function(e) {
+    // Touch/Swipe support
+    let startX = 0;
+    let isMenuOpen = false;
+    
+    // Open menu function
+    function openMenu() {
+        touchMenu.classList.add('show');
+        touchMenuOverlay.classList.add('show');
+        touchMenuBtn.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        isMenuOpen = true;
+    }
+    
+    // Close menu function
+    function closeMenu() {
+        touchMenu.classList.remove('show');
+        touchMenuOverlay.classList.remove('show');
+        touchMenuBtn.classList.remove('open');
+        document.body.style.overflow = '';
+        isMenuOpen = false;
+    }
+    
+    // Menu button click
+    if (touchMenuBtn) {
+        touchMenuBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            sidebar.classList.add('show');
-            overlay.classList.add('show');
-            document.body.style.overflow = 'hidden';
+            if (isMenuOpen) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
         });
     }
     
-    // Close sidebar
-    function closeSidebarFunc() {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        document.body.style.overflow = '';
+    // Close button click
+    if (menuCloseBtn) {
+        menuCloseBtn.addEventListener('click', closeMenu);
     }
     
-    if (closeSidebar) {
-        closeSidebar.addEventListener('click', closeSidebarFunc);
-    }
-    if (overlay) {
-        overlay.addEventListener('click', closeSidebarFunc);
+    // Overlay click
+    if (touchMenuOverlay) {
+        touchMenuOverlay.addEventListener('click', closeMenu);
     }
     
-    // ESC key to close sidebar
+    // ESC key to close menu
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && sidebar.classList.contains('show')) {
-            closeSidebarFunc();
+        if (e.key === 'Escape' && isMenuOpen) {
+            closeMenu();
         }
     });
     
-    // Close sidebar when clicking outside navbar
-    document.addEventListener('click', function(e) {
-        if (!sidebar.contains(e.target) && !themeToggle.contains(e.target) && sidebar.classList.contains('show')) {
-            closeSidebarFunc();
+    // Swipe to open/close
+    document.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+    });
+    
+    document.addEventListener('touchend', function(e) {
+        const endX = e.changedTouches[0].clientX;
+        const diffX = endX - startX;
+        
+        // Swipe right to open (from left edge)
+        if (startX < 50 && diffX > 100 && !isMenuOpen) {
+            openMenu();
+        }
+        // Swipe left to close
+        else if (diffX < -100 && isMenuOpen) {
+            closeMenu();
         }
     });
     
-    // Theme toggle
-    const themeInputs = document.querySelectorAll('input[name="theme"]');
-    themeInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            changeTheme(this.value);
+    // Theme options
+    const themeOptions = document.querySelectorAll('.theme-option');
+    themeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const theme = this.dataset.theme;
+            
+            // Update active state immediately
+            themeOptions.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            
+            changeTheme(theme);
         });
     });
     
     // Gradient selection
-    const gradientOptions = document.querySelectorAll('.gradient-option');
-    gradientOptions.forEach(option => {
-        option.addEventListener('click', function() {
+    const gradientCircles = document.querySelectorAll('.gradient-circle');
+    gradientCircles.forEach(circle => {
+        circle.addEventListener('click', function() {
             const gradient = this.dataset.gradient;
             
             // Update active state immediately
-            gradientOptions.forEach(opt => opt.classList.remove('active'));
+            gradientCircles.forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
+            
+            // Update menu background immediately for real-time preview
+            touchMenu.style.background = this.style.background;
+            touchMenuBtn.style.background = this.style.background;
             
             changeGradient(gradient);
         });
+    });
+    
+    // Language options
+    const languageOptions = document.querySelectorAll('.language-option');
+    languageOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const lang = this.dataset.lang;
+            
+            // Update active state immediately
+            languageOptions.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            
+            changeLanguage(lang);
+        });
+    });
+    
+    // Set active nav item
+    const currentPage = window.location.pathname;
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    navItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if (href && (href === currentPage || (currentPage === '/' && href.includes('<?php echo getSiteUrl(); ?>')))) {
+            item.classList.add('active');
+        }
     });
 });
 
@@ -1030,7 +1304,7 @@ function applyTheme(theme) {
 function changeGradient(gradient) {
     const loading = showLoadingIndicator();
     
-    // Градієнти
+    // Градієнти (30 штук)
     const gradients = {
         'gradient-1': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         'gradient-2': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
@@ -1041,7 +1315,27 @@ function changeGradient(gradient) {
         'gradient-7': 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
         'gradient-8': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
         'gradient-9': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
-        'gradient-10': 'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)'
+        'gradient-10': 'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
+        'gradient-11': 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+        'gradient-12': 'linear-gradient(135deg, #0abde3 0%, #006ba6 100%)',
+        'gradient-13': 'linear-gradient(135deg, #ff9ff3 0%, #f368e0 100%)',
+        'gradient-14': 'linear-gradient(135deg, #54a0ff 0%, #2e86de 100%)',
+        'gradient-15': 'linear-gradient(135deg, #5f27cd 0%, #341f97 100%)',
+        'gradient-16': 'linear-gradient(135deg, #00d2d3 0%, #54a0ff 100%)',
+        'gradient-17': 'linear-gradient(135deg, #ff9ff3 0%, #ff6b9d 100%)',
+        'gradient-18': 'linear-gradient(135deg, #c44569 0%, #f8b500 100%)',
+        'gradient-19': 'linear-gradient(135deg, #40407a 0%, #706fd3 100%)',
+        'gradient-20': 'linear-gradient(135deg, #33d9b2 0%, #218c74 100%)',
+        'gradient-21': 'linear-gradient(135deg, #ff5722 0%, #ff9800 100%)',
+        'gradient-22': 'linear-gradient(135deg, #e91e63 0%, #9c27b0 100%)',
+        'gradient-23': 'linear-gradient(135deg, #2196f3 0%, #21cbf3 100%)',
+        'gradient-24': 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)',
+        'gradient-25': 'linear-gradient(135deg, #ff4081 0%, #ff6ec7 100%)',
+        'gradient-26': 'linear-gradient(135deg, #673ab7 0%, #9c27b0 100%)',
+        'gradient-27': 'linear-gradient(135deg, #009688 0%, #4caf50 100%)',
+        'gradient-28': 'linear-gradient(135deg, #795548 0%, #8d6e63 100%)',
+        'gradient-29': 'linear-gradient(135deg, #607d8b 0%, #90a4ae 100%)',
+        'gradient-30': 'linear-gradient(135deg, #37474f 0%, #263238 100%)'
     };
     
     fetch('<?php echo getSiteUrl('ajax/change_theme.php'); ?>', {

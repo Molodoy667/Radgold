@@ -613,4 +613,21 @@ document.querySelectorAll('code').forEach(code => {
         window.getSelection().addRange(range);
     });
 });
+
+// Очистити дані сесії після завершення
+setTimeout(() => {
+    fetch('../../install/index.php?action=clear_session', {
+        method: 'POST'
+    });
+}, 10000); // Очищаємо через 10 секунд після завантаження сторінки
 </script>
+
+<?php
+// Очищаємо дані інсталяції якщо встановлення завершено
+if (isset($_SESSION['install_data']['installation_completed'])) {
+    // Очищаємо тільки через деякий час після показу сторінки
+    if (!isset($_SESSION['clear_install_data_time'])) {
+        $_SESSION['clear_install_data_time'] = time() + 30; // через 30 секунд
+    }
+}
+?>

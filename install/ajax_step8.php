@@ -376,8 +376,8 @@ if (session_status() == PHP_SESSION_NONE) {
         
         $mysqli->close();
         
-        // Очищаємо дані сесії установки
-        unset($_SESSION['install_data']);
+        // Зберігаємо дані для показу в step_9, але позначаємо інсталяцію як завершену
+        $_SESSION['install_data']['installation_completed'] = true;
         
         // Повертаємо успішний результат
         $response = [

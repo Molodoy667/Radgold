@@ -6,6 +6,18 @@ if (!defined('DEBUG_MODE')) {
     define('DEBUG_MODE', false);
 }
 
+// Дебаг: Перевіряємо які дані є в сесії
+if (isset($_SESSION['install_data'])) {
+    error_log("Step 8 Debug - Session data exists");
+    error_log("Step 8 Debug - DB Config: " . print_r($_SESSION['install_data']['db_config'] ?? [], true));
+    error_log("Step 8 Debug - Admin Config: " . print_r($_SESSION['install_data']['admin'] ?? [], true));
+    error_log("Step 8 Debug - Site Config: " . print_r($_SESSION['install_data']['site'] ?? [], true));
+    error_log("Step 8 Debug - Theme Config: " . print_r($_SESSION['install_data']['theme'] ?? [], true));
+    error_log("Step 8 Debug - Additional Config: " . print_r($_SESSION['install_data']['additional'] ?? [], true));
+} else {
+    error_log("Step 8 Debug - NO SESSION DATA FOUND!");
+}
+
 // Обробка AJAX POST запиту для фактичної установки
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'install') {
     // Очищаємо будь-який попередній вивід

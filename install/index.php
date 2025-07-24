@@ -101,6 +101,13 @@ if (!isset($_SESSION['install_data'])) {
     ];
 }
 
+// Обробка спеціальних дій
+if (isset($_GET['action']) && $_GET['action'] === 'clear_session') {
+    unset($_SESSION['install_data']);
+    echo json_encode(['success' => true, 'message' => 'Дані сесії очищено']);
+    exit();
+}
+
 // Обробка POST запитів
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($step) {
@@ -166,6 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 4:
             // Налаштування сайту
+            error_log("Step 4 POST data: " . print_r($_POST, true));
             $siteData = [
                 'site_name' => trim($_POST['site_name'] ?? ''),
                 'site_url' => trim($_POST['site_url'] ?? ''),
@@ -205,6 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 6:
             // Налаштування теми
+            error_log("Step 6 POST data: " . print_r($_POST, true));
             $themeData = [
                 'default_theme' => $_POST['default_theme'] ?? 'light',
                 'default_gradient' => $_POST['default_gradient'] ?? 'gradient-1'
@@ -218,6 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 7:
             // Реєстрація адміністратора
+            error_log("Step 7 POST data: " . print_r($_POST, true));
             $adminData = [
                 'admin_login' => trim($_POST['admin_login'] ?? ''),
                 'admin_email' => trim($_POST['admin_email'] ?? ''),

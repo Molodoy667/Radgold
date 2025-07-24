@@ -361,15 +361,17 @@ function logout() {
 function getMetaTags() {
     try {
         $db = Database::getInstance();
-        
-        // Отримуємо налаштування з правильної структури site_settings
         $settings = [];
-        $keys = ['site_name', 'site_description', 'site_keywords', 'favicon_url', 'logo_url'];
         
-        foreach ($keys as $key) {
-            $result = $db->query("SELECT setting_value FROM site_settings WHERE setting_key = ?", [$key]);
-            if ($result && $row = $result->fetch_assoc()) {
-                $settings[$key] = $row['setting_value'];
+        // Використовуємо простий запит без параметрів для кращої сумісності
+        $keys = ['site_name', 'site_description', 'site_keywords', 'favicon_url', 'logo_url'];
+        $keysList = "'" . implode("','", $keys) . "'";
+        
+        $result = $db->directQuery("SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ($keysList)");
+        
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $settings[$row['setting_key']] = $row['setting_value'];
             }
         }
         
@@ -382,10 +384,11 @@ function getMetaTags() {
             'logo' => $settings['logo_url'] ?? 'images/default_logo.svg'
         ];
     } catch (Exception $e) {
+        error_log("Error in getMetaTags: " . $e->getMessage());
         return [
-            'title' => SITE_NAME,
-            'description' => SITE_DESCRIPTION,
-            'keywords' => SITE_KEYWORDS ?? 'реклама, оголошення',
+            'title' => defined('SITE_NAME') ? SITE_NAME : 'AdBoard Pro',
+            'description' => defined('SITE_DESCRIPTION') ? SITE_DESCRIPTION : 'Сучасна дошка оголошень',
+            'keywords' => 'оголошення, купити, продати',
             'author' => 'AdBoard Pro',
             'favicon' => 'images/favicon.svg',
             'logo' => 'images/default_logo.svg'

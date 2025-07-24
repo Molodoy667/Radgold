@@ -273,37 +273,25 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             backdrop-filter: blur(10px);
         }
         
-        /* Language Circles */
-        .language-circles {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .lang-circle {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
+        /* Join Button in Header */
+        .join-btn {
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: var(--current-gradient);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 2px solid transparent;
-            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
-        .lang-circle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-        
-        .lang-circle.active {
-            background: rgba(255, 255, 255, 0.4);
-            border-color: rgba(255, 255, 255, 0.6);
-            transform: scale(1.15);
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        .join-btn:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
         
         /* Touch Menu */
@@ -463,41 +451,84 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
         
-        /* Language Selector */
-        .language-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        /* Join Button in Menu */
+        .join-section {
+            text-align: center;
+            padding: 30px 20px 20px;
         }
         
-        .language-option {
+        .menu-join-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .menu-join-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .join-btn-decoration {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .menu-join-btn:hover .join-btn-decoration {
+            left: 100%;
+        }
+        
+        /* Language Circles in Menu */
+        .language-circles-menu {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .lang-circle-menu {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
+            justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            color: white;
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            font-size: 1.3rem;
         }
         
-        .language-option:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-        }
-        
-        .language-option.active {
+        .lang-circle-menu:hover {
             background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
         }
         
-        .language-option .flag {
-            font-size: 1.2rem;
-        }
-        
-        .language-option .lang-name {
-            font-weight: 500;
+        .lang-circle-menu.active {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
         }
         
         /* Navigation Menu */
@@ -789,19 +820,25 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
                 letter-spacing: 0.5px;
             }
             
-            .language-circles {
-                gap: 6px;
-            }
-            
-            .lang-circle {
-                width: 30px;
-                height: 30px;
+            .join-btn {
+                padding: 8px 16px;
                 font-size: 0.9rem;
             }
             
             .user-info {
                 padding: 6px 12px;
                 font-size: 0.85rem;
+            }
+            
+            .menu-join-btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+            
+            .lang-circle-menu {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
             }
             
             .gradients-grid {
@@ -840,14 +877,24 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
                 font-size: 1.2rem;
             }
             
-            .language-circles {
-                gap: 4px;
+            .join-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
             }
             
-            .lang-circle {
-                width: 28px;
-                height: 28px;
-                font-size: 0.8rem;
+            .join-btn span {
+                display: none; /* Приховуємо текст, показуємо тільки іконку */
+            }
+            
+            .menu-join-btn {
+                padding: 10px 20px;
+                font-size: 0.95rem;
+            }
+            
+            .lang-circle-menu {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
             }
             
             .user-info {
@@ -958,18 +1005,11 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
                 <?php echo getSiteName(); ?>
             </div>
             <div class="header-actions">
-                <!-- Language Circles -->
-                <div class="language-circles">
-                    <div class="lang-circle <?php echo $currentLang === 'uk' ? 'active' : ''; ?>" data-lang="uk" title="Українська">
-                        🇺🇦
-                    </div>
-                    <div class="lang-circle <?php echo $currentLang === 'ru' ? 'active' : ''; ?>" data-lang="ru" title="Русский">
-                        🇷🇺
-                    </div>
-                    <div class="lang-circle <?php echo $currentLang === 'en' ? 'active' : ''; ?>" data-lang="en" title="English">
-                        🇺🇸
-                    </div>
-                </div>
+                <!-- Join Button -->
+                <a href="<?php echo getSiteUrl('pages/register.php'); ?>" class="join-btn">
+                    <i class="fas fa-plus"></i>
+                    <span><?php echo safeTranslate('join', 'Приєднатись'); ?></span>
+                </a>
                 
                 <!-- User Info (if logged in) -->
                 <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>
@@ -1034,27 +1074,16 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             </div>
         </div>
         
-        <!-- Language Selection -->
-        <div class="menu-section">
-            <div class="section-title">
-                <i class="fas fa-globe"></i>
-                <span><?php echo safeTranslate('language', 'Мова'); ?></span>
-            </div>
-            <div class="language-selector">
-                <div class="language-option <?php echo $currentLang === 'uk' ? 'active' : ''; ?>" data-lang="uk">
-                    <span class="flag">🇺🇦</span>
-                    <span class="lang-name">Українська</span>
-                </div>
-                <div class="language-option <?php echo $currentLang === 'ru' ? 'active' : ''; ?>" data-lang="ru">
-                    <span class="flag">🇷🇺</span>
-                    <span class="lang-name">Русский</span>
-                </div>
-                <div class="language-option <?php echo $currentLang === 'en' ? 'active' : ''; ?>" data-lang="en">
-                    <span class="flag">🇺🇸</span>
-                    <span class="lang-name">English</span>
-                </div>
-            </div>
+        <!-- Join Button -->
+        <?php if (!function_exists('isLoggedIn') || !isLoggedIn()): ?>
+        <div class="menu-section join-section">
+            <a href="<?php echo getSiteUrl('pages/register.php'); ?>" class="menu-join-btn">
+                <i class="fas fa-plus"></i>
+                <span><?php echo safeTranslate('join', 'Приєднатись'); ?></span>
+                <div class="join-btn-decoration"></div>
+            </a>
         </div>
+        <?php endif; ?>
         
         <!-- Navigation Menu -->
         <div class="menu-section">
@@ -1112,17 +1141,26 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
                         <i class="fas fa-sign-out-alt"></i>
                         <span><?php echo safeTranslate('logout', 'Вихід'); ?></span>
                     </a>
-                <?php else: ?>
-                    <div class="nav-divider"></div>
-                    <a href="<?php echo getSiteUrl('pages/login.php'); ?>" class="nav-item">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span><?php echo safeTranslate('login', 'Вхід'); ?></span>
-                    </a>
-                    <a href="<?php echo getSiteUrl('pages/register.php'); ?>" class="nav-item">
-                        <i class="fas fa-user-plus"></i>
-                        <span><?php echo safeTranslate('register', 'Реєстрація'); ?></span>
-                    </a>
                 <?php endif; ?>
+            </div>
+        </div>
+        
+        <!-- Language Selection with Circles -->
+        <div class="menu-section">
+            <div class="section-title">
+                <i class="fas fa-globe"></i>
+                <span><?php echo safeTranslate('language', 'Мова'); ?></span>
+            </div>
+            <div class="language-circles-menu">
+                <div class="lang-circle-menu <?php echo $currentLang === 'uk' ? 'active' : ''; ?>" data-lang="uk" title="Українська">
+                    🇺🇦
+                </div>
+                <div class="lang-circle-menu <?php echo $currentLang === 'ru' ? 'active' : ''; ?>" data-lang="ru" title="Русский">
+                    🇷🇺
+                </div>
+                <div class="lang-circle-menu <?php echo $currentLang === 'en' ? 'active' : ''; ?>" data-lang="en" title="English">
+                    🇺🇸
+                </div>
             </div>
         </div>
     </div>
@@ -1264,6 +1302,11 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
             
             changeTheme(theme);
+            
+            // Close menu after theme change
+            setTimeout(() => {
+                closeMenu();
+            }, 800);
         });
     });
     
@@ -1282,31 +1325,22 @@ document.addEventListener('DOMContentLoaded', function() {
             touchMenuBtn.style.background = this.style.background;
             
             changeGradient(gradient);
+            
+            // Close menu after gradient change
+            setTimeout(() => {
+                closeMenu();
+            }, 800);
         });
     });
     
-    // Language options (in touch menu)
-    const languageOptions = document.querySelectorAll('.language-option');
-    languageOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            const lang = this.dataset.lang;
-            
-            // Update active state immediately
-            languageOptions.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            
-            changeLanguage(lang);
-        });
-    });
-    
-    // Language circles (in header)
-    const langCircles = document.querySelectorAll('.lang-circle');
-    langCircles.forEach(circle => {
+    // Language circles in menu
+    const langCirclesMenu = document.querySelectorAll('.lang-circle-menu');
+    langCirclesMenu.forEach(circle => {
         circle.addEventListener('click', function() {
             const lang = this.dataset.lang;
             
             // Update active state immediately
-            langCircles.forEach(opt => opt.classList.remove('active'));
+            langCirclesMenu.forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
             
             changeLanguage(lang);
@@ -1460,10 +1494,11 @@ function applyGradient(gradientKey, gradientValue) {
     document.documentElement.setAttribute('data-gradient', gradientKey);
     document.documentElement.style.setProperty('--current-gradient', gradientValue);
     
-    // Update touch menu background
+    // Update all gradient elements
     const touchMenu = document.getElementById('touchMenu');
     const touchMenuBtn = document.getElementById('touchMenuBtn');
     const topHeader = document.querySelector('.top-header');
+    const joinBtn = document.querySelector('.join-btn');
     
     if (touchMenu) {
         touchMenu.style.background = gradientValue;
@@ -1473,6 +1508,9 @@ function applyGradient(gradientKey, gradientValue) {
     }
     if (topHeader) {
         topHeader.style.background = gradientValue;
+    }
+    if (joinBtn) {
+        joinBtn.style.background = gradientValue;
     }
 }
 

@@ -10,9 +10,9 @@ try {
         'logo' => 'images/default_logo.svg'
     ];
     
-    $themeSettings = function_exists('getThemeSettings') ? getThemeSettings() : [];
-    $currentTheme = $themeSettings['current_theme'] ?? 'light';
-    $currentGradient = $themeSettings['current_gradient'] ?? 'gradient-1';
+    // Отримуємо тему з сесії або використовуємо дефолтні
+    $currentTheme = $_SESSION['current_theme'] ?? 'light';
+    $currentGradient = $_SESSION['current_gradient'] ?? 'gradient-1';
 } catch (Exception $e) {
     // Fallback values if database is not available
     $metaTags = [
@@ -122,73 +122,169 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             transition: all 0.3s ease;
         }
         
-        /* Красивий Navbar */
+        /* Красивий Navbar з покращеними анімаціями */
         .navbar {
-            background: var(--theme-bg-secondary) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--theme-border);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dark-theme .navbar {
+            background: rgba(26, 26, 26, 0.95) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Анімація появи navbar при скролі */
+        .navbar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--current-gradient);
+            opacity: 0;
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+        
+        .navbar:hover::before {
+            left: 0;
+            opacity: 0.05;
         }
         
         .navbar-brand {
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             color: var(--theme-text) !important;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            z-index: 10;
         }
         
         .navbar-brand:hover {
-            transform: scale(1.05);
+            transform: scale(1.08) rotate(2deg);
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .navbar-brand img {
             border-radius: 50%;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            filter: brightness(1);
+        }
+        
+        .navbar-brand:hover img {
+            transform: rotate(-5deg) scale(1.1);
+            filter: brightness(1.2) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
         }
         
         .navbar-nav .nav-link {
             color: var(--theme-text) !important;
             font-weight: 500;
-            padding: 0.5rem 1rem !important;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            padding: 0.6rem 1.2rem !important;
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
+            margin: 0 2px;
+            overflow: hidden;
+        }
+        
+        /* Красивий hover ефект з градієнтом */
+        .navbar-nav .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--current-gradient);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: -1;
+            border-radius: 12px;
+        }
+        
+        .navbar-nav .nav-link:hover::before {
+            left: 0;
         }
         
         .navbar-nav .nav-link:hover {
-            background: var(--current-gradient);
             color: white !important;
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         
         .navbar-nav .nav-link.active {
             background: var(--current-gradient);
             color: white !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: scale(1.02);
         }
         
         .navbar-nav .nav-link i {
-            margin-right: 5px;
+            margin-right: 8px;
+            transition: all 0.3s ease;
         }
         
-        /* Dropdown стилі */
+        .navbar-nav .nav-link:hover i {
+            transform: rotate(10deg) scale(1.2);
+        }
+        
+        /* Dropdown стилі з покращеними анімаціями */
         .dropdown-menu {
-            background: var(--theme-bg-secondary);
-            border: 1px solid var(--theme-border);
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            animation: fadeInDown 0.3s ease;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            animation: dropdownSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+            min-width: 200px;
+        }
+        
+        .dark-theme .dropdown-menu {
+            background: rgba(26, 26, 26, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .dropdown-item {
             color: var(--theme-text);
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dropdown-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--current-gradient);
             transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .dropdown-item:hover::before {
+            left: 0;
         }
         
         .dropdown-item:hover {
-            background: var(--current-gradient);
             color: white;
+            transform: translateX(5px);
+        }
+        
+        .dropdown-item i {
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover i {
+            transform: scale(1.2) rotate(5deg);
         }
         
         /* Кнопка теми */
@@ -327,19 +423,95 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             transform: scale(1.2);
         }
         
-        /* Responsive */
+        /* Адаптивні стилі для всіх екранів */
+        .main-content {
+            min-height: calc(100vh - 80px);
+            padding: 0;
+        }
+        
+        .container-fluid, .container {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        
+        /* Responsive для tablet */
+        @media (max-width: 992px) {
+            .navbar-nav .nav-link {
+                padding: 0.5rem 0.8rem !important;
+                margin: 2px 0;
+            }
+            
+            .navbar-brand {
+                font-size: 1.4rem;
+            }
+        }
+        
+        /* Responsive для mobile */
         @media (max-width: 768px) {
             .navbar-brand {
                 font-size: 1.2rem;
+            }
+            
+            .navbar-nav {
+                background: var(--theme-bg-secondary);
+                border-radius: 15px;
+                margin-top: 10px;
+                padding: 10px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+            
+            .navbar-nav .nav-link {
+                margin: 5px 0;
+                text-align: center;
             }
             
             .sidebar {
                 width: 100%;
                 right: -100%;
             }
+            
+            .container-fluid, .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            
+            /* Адаптивність для контенту */
+            .row {
+                margin-left: -10px;
+                margin-right: -10px;
+            }
+            
+            .col, .col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
+            .col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
+            .col-auto, .col-lg, .col-lg-1, .col-lg-2, .col-lg-3,
+            .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8,
+            .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-auto,
+            .col-md, .col-md-1, .col-md-2, .col-md-3, .col-md-4,
+            .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9,
+            .col-md-10, .col-md-11, .col-md-12, .col-md-auto,
+            .col-sm, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4,
+            .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9,
+            .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-auto,
+            .col-xl, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4,
+            .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9,
+            .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-auto {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
         }
         
         /* Анімації */
+        @keyframes dropdownSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -348,6 +520,35 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             to {
                 opacity: 1;
                 transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
             }
         }
         
@@ -568,6 +769,8 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
 <script>
 // Language change function
 function changeLanguage(lang) {
+    const loading = showLoadingIndicator();
+    
     fetch('<?php echo getSiteUrl('change_language.php'); ?>', {
         method: 'POST',
         headers: {
@@ -579,12 +782,18 @@ function changeLanguage(lang) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            // Smooth transition before reload
+            document.body.style.opacity = '0.7';
+            setTimeout(() => {
+                location.reload();
+            }, 300);
         } else {
+            loading.remove();
             console.error('Language change error:', data.message);
         }
     })
     .catch(error => {
+        loading.remove();
         console.error('Error changing language:', error);
     });
 }
@@ -633,6 +842,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Change theme
 function changeTheme(theme) {
+    const loading = showLoadingIndicator();
+    
     fetch('<?php echo getSiteUrl('ajax/change_theme.php'); ?>', {
         method: 'POST',
         headers: {
@@ -644,16 +855,26 @@ function changeTheme(theme) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            // Smooth transition before reload
+            document.body.style.opacity = '0.7';
+            setTimeout(() => {
+                location.reload();
+            }, 300);
+        } else {
+            loading.remove();
+            console.error('Theme change failed:', data.message);
         }
     })
     .catch(error => {
+        loading.remove();
         console.error('Error changing theme:', error);
     });
 }
 
 // Change gradient
 function changeGradient(gradient) {
+    const loading = showLoadingIndicator();
+    
     fetch('<?php echo getSiteUrl('ajax/change_theme.php'); ?>', {
         method: 'POST',
         headers: {
@@ -665,24 +886,105 @@ function changeGradient(gradient) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            // Smooth transition before reload
+            document.body.style.opacity = '0.7';
+            setTimeout(() => {
+                location.reload();
+            }, 300);
+        } else {
+            loading.remove();
+            console.error('Gradient change failed:', data.message);
         }
     })
     .catch(error => {
+        loading.remove();
         console.error('Error changing gradient:', error);
     });
 }
 
-// Set active nav link
+// Set active nav link and add scroll effects
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname;
     const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    const navbar = document.querySelector('.navbar');
     
+    // Set active link
     navLinks.forEach(link => {
         if (link.getAttribute('href') === currentPage || 
             (currentPage === '/' && link.getAttribute('href') === '<?php echo getSiteUrl(); ?>')) {
             link.classList.add('active');
         }
     });
+    
+    // Add scroll effect to navbar
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            // Scrolling down
+            navbar.style.transform = 'translateY(-100%)';
+        } else {
+            // Scrolling up
+            navbar.style.transform = 'translateY(0)';
+        }
+        
+        // Add glassmorphism effect when scrolled
+        if (scrollTop > 50) {
+            navbar.style.backdropFilter = 'blur(25px) saturate(200%)';
+            navbar.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.15)';
+        } else {
+            navbar.style.backdropFilter = 'blur(20px) saturate(180%)';
+            navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
+        }
+        
+        lastScrollTop = scrollTop;
+    });
+    
+    // Add stagger animation to nav links
+    navLinks.forEach((link, index) => {
+        link.style.animationDelay = `${index * 0.1}s`;
+        link.style.animation = 'slideInFromLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+    });
+    
+    // Add loading animation to dropdowns
+    const dropdowns = document.querySelectorAll('.dropdown-menu');
+    dropdowns.forEach(dropdown => {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (dropdown.classList.contains('show')) {
+                        const items = dropdown.querySelectorAll('.dropdown-item');
+                        items.forEach((item, index) => {
+                            item.style.animationDelay = `${index * 0.05}s`;
+                            item.style.animation = 'slideInFromLeft 0.3s ease forwards';
+                        });
+                    }
+                }
+            });
+        });
+        observer.observe(dropdown, { attributes: true });
+    });
 });
+
+// Add loading indicator for theme changes
+function showLoadingIndicator() {
+    const loading = document.createElement('div');
+    loading.className = 'loading-indicator';
+    loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    loading.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 9999;
+        font-size: 24px;
+    `;
+    document.body.appendChild(loading);
+    return loading;
+}
 </script>

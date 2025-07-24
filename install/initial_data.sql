@@ -87,7 +87,7 @@ INSERT IGNORE INTO `categories` (`name`, `slug`, `description`, `icon`, `parent_
 ('Ігрові консолі', 'gaming', 'PlayStation, Xbox, Nintendo', 'fas fa-gamepad', 5, 5);
 
 -- Атрибути для категорії "Легкові автомобілі"
-INSERT IGNORE INTO `category_attributes` (`category_id`, `name`, `type`, `options`, `is_required`, `is_searchable`, `sort_order`) VALUES
+INSERT IGNORE INTO `category_attributes` (`category_id`, `name`, `type`, `options`, `is_required`, `is_filterable`, `sort_order`) VALUES
 ((SELECT id FROM categories WHERE slug = 'cars'), 'Марка', 'select', 
 '["Audi", "BMW", "Mercedes-Benz", "Volkswagen", "Toyota", "Honda", "Nissan", "Ford", "Chevrolet", "Hyundai", "Kia", "Mazda", "Mitsubishi", "Opel", "Peugeot", "Renault", "Skoda", "Volvo", "Lexus", "Infiniti", "Acura", "Jaguar", "Land Rover", "Porsche", "Ferrari", "Lamborghini", "Bentley", "Rolls-Royce", "Maserati", "Alfa Romeo", "Fiat", "Citroën", "Seat", "Dacia", "Lada", "GAZ", "UAZ", "ZAZ", "Bogdan", "КрАЗ", "Інше"]', 
 true, true, 1),
@@ -103,7 +103,7 @@ true, true, 1),
 ((SELECT id FROM categories WHERE slug = 'cars'), 'Технічний стан', 'select', '["Відмінний", "Хороший", "Задовільний", "Потребує ремонту", "Не на ходу"]', false, true, 10);
 
 -- Атрибути для категорії "Квартири"
-INSERT IGNORE INTO `category_attributes` (`category_id`, `name`, `type`, `options`, `is_required`, `is_searchable`, `sort_order`) VALUES
+INSERT IGNORE INTO `category_attributes` (`category_id`, `name`, `type`, `options`, `is_required`, `is_filterable`, `sort_order`) VALUES
 ((SELECT id FROM categories WHERE slug = 'apartments'), 'Кількість кімнат', 'select', '["1", "2", "3", "4", "5", "6+"]', true, true, 1),
 ((SELECT id FROM categories WHERE slug = 'apartments'), 'Загальна площа (м²)', 'number', NULL, false, true, 2),
 ((SELECT id FROM categories WHERE slug = 'apartments'), 'Житлова площа (м²)', 'number', NULL, false, true, 3),
@@ -116,7 +116,7 @@ INSERT IGNORE INTO `category_attributes` (`category_id`, `name`, `type`, `option
 ((SELECT id FROM categories WHERE slug = 'apartments'), 'Санвузол', 'select', '["Суміжний", "Роздільний", "2 санвузли", "3+ санвузли"]', false, false, 10);
 
 -- Атрибути для категорії "Мобільні телефони"
-INSERT IGNORE INTO `category_attributes` (`category_id`, `name`, `type`, `options`, `is_required`, `is_searchable`, `sort_order`) VALUES
+INSERT IGNORE INTO `category_attributes` (`category_id`, `name`, `type`, `options`, `is_required`, `is_filterable`, `sort_order`) VALUES
 ((SELECT id FROM categories WHERE slug = 'mobile-phones'), 'Бренд', 'select', 
 '["Apple", "Samsung", "Xiaomi", "Huawei", "OnePlus", "Google", "Sony", "LG", "Motorola", "Nokia", "Honor", "Realme", "Oppo", "Vivo", "Meizu", "Asus", "Blackberry", "Інший"]', 
 true, true, 1),

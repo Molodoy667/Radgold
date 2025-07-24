@@ -61,15 +61,12 @@ function __($key) {
     if ($db && !$db->connect_error) {
         if (!isset($db_translations[$currentLang])) {
             try {
-                $stmt = $db->prepare("SELECT translation_key, " . $db->real_escape_string($currentLang) . " as translation FROM translations WHERE " . $db->real_escape_string($currentLang) . " IS NOT NULL");
-                if ($stmt) {
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    $db_translations[$currentLang] = [];
-                    while ($row = $result->fetch_assoc()) {
-                        $db_translations[$currentLang][$row['translation_key']] = $row['translation'];
-                    }
-                    $stmt->close();
+                $escapedLang = $db->real_escape_string($currentLang);
+                $sql = "SELECT translation_key, $escapedLang as translation FROM translations WHERE $escapedLang IS NOT NULL";
+                $rows = safeQueryAll($sql, []);
+                $db_translations[$currentLang] = [];
+                foreach ($rows as $row) {
+                    $db_translations[$currentLang][$row['translation_key']] = $row['translation'];
                 }
             } catch (Exception $e) {
                 error_log("Translation DB error: " . $e->getMessage());
@@ -117,12 +114,7 @@ function getCurrentUser() {
     }
     
     try {
-        $db = Database::getInstance();
-        $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->bind_param("i", $_SESSION['user_id']);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        return safeQuerySingle("SELECT * FROM users WHERE id = ?", [$_SESSION['user_id']]);
     } catch (Exception $e) {
         return null;
     }
@@ -131,12 +123,7 @@ function getCurrentUser() {
 // Функція входу користувача
 function loginUser($email, $password, $userType = 'user', $remember = false) {
     try {
-        $db = Database::getInstance();
-        $stmt = $db->prepare("SELECT * FROM users WHERE email = ? AND user_type = ? AND status = 'active'");
-        $stmt->bind_param("ss", $email, $userType);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        $user = safeQuerySingle("SELECT * FROM users WHERE email = ? AND user_type = ? AND status = 'active'", [$email, $userType]);
         
         if ($user && password_verify($password, $user['password'])) {
             // Оновлення останнього входу
@@ -213,12 +200,8 @@ function registerUser($userData) {
 // Перевірка існування користувача
 function userExists($email) {
     try {
-        $db = Database::getInstance();
-        $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->num_rows > 0;
+        $result = safeQuery("SELECT id FROM users WHERE email = ?", [$email]);
+        return $result && $result->num_rows > 0;
     } catch (Exception $e) {
         return false;
     }
@@ -227,12 +210,7 @@ function userExists($email) {
 // Відправка листа для відновлення паролю
 function sendPasswordReset($email, $userType = 'user') {
     try {
-        $db = Database::getInstance();
-        $stmt = $db->prepare("SELECT id, first_name FROM users WHERE email = ? AND user_type = ?");
-        $stmt->bind_param("ss", $email, $userType);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        $user = safeQuerySingle("SELECT id, first_name FROM users WHERE email = ? AND user_type = ?", [$email, $userType]);
         
         if (!$user) {
             return false;

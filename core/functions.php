@@ -1,6 +1,34 @@
 <?php
 // Файл функцій для AdBoard Pro
 
+// Універсальні функції для безпечного виконання запитів (сумісність зі старими MySQL)
+function safeQuery($sql, $params = []) {
+    $db = Database::getInstance();
+    return $db->query($sql, $params);
+}
+
+// Функція для отримання одного рядка
+function safeQuerySingle($sql, $params = []) {
+    $result = safeQuery($sql, $params);
+    if ($result) {
+        return $result->fetch_assoc();
+    }
+    return null;
+}
+
+// Функція для отримання всіх рядків
+function safeQueryAll($sql, $params = []) {
+    $result = safeQuery($sql, $params);
+    if ($result) {
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    return [];
+}
+
 // Безпечна функція виводу
 function sanitize($input) {
     return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
@@ -57,28 +85,8 @@ function __($key) {
     static $translations = [];
     static $db_translations = [];
     
-    // Спочатку спробуємо отримати з бази даних
-    if ($db && !$db->connect_error) {
-        if (!isset($db_translations[$currentLang])) {
-            try {
-                $escapedLang = $db->real_escape_string($currentLang);
-                $sql = "SELECT translation_key, $escapedLang as translation FROM translations WHERE $escapedLang IS NOT NULL";
-                $rows = safeQueryAll($sql, []);
-                $db_translations[$currentLang] = [];
-                foreach ($rows as $row) {
-                    $db_translations[$currentLang][$row['translation_key']] = $row['translation'];
-                }
-            } catch (Exception $e) {
-                error_log("Translation DB error: " . $e->getMessage());
-                $db_translations[$currentLang] = [];
-            }
-        }
-        
-        // Якщо знайшли в базі, повертаємо
-        if (isset($db_translations[$currentLang][$key])) {
-            return $db_translations[$currentLang][$key];
-        }
-    }
+    // Тимчасово відключено отримання з БД для уникнення конфліктів MySQL
+    // TODO: Повернути підтримку БД перекладів після виправлення get_result() проблем
     
     // Fallback на файли перекладів
     if (!isset($translations[$currentLang])) {

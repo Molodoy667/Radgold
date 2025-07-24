@@ -38,8 +38,9 @@ vendor/
 .env.local
 .env.production
 
-# Database backups
+# Database backups (but keep installer SQL files)
 *.sql
+!install/*.sql
 *.db
 backup/
 

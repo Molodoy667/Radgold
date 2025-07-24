@@ -52,7 +52,7 @@ spl_autoload_register(function ($class) {
 
 // Include core files
 require_once __DIR__ . '/database.php';
-require_once __DIR__ . '/functions.php';
+// functions.php буде включено пізніше для уникнення конфліктів MySQL
 
 // Database connection using Singleton
 try {

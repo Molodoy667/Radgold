@@ -337,41 +337,15 @@ function logout() {
 
 // Функції для роботи з мета-тегами
 function getMetaTags() {
-    try {
-        $db = Database::getInstance();
-        $settings = [];
-        
-        // Використовуємо простий запит без параметрів для кращої сумісності
-        $keys = ['site_name', 'site_description', 'site_keywords', 'favicon_url', 'logo_url'];
-        $keysList = "'" . implode("','", $keys) . "'";
-        
-        $result = $db->directQuery("SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ($keysList)");
-        
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $settings[$row['setting_key']] = $row['setting_value'];
-            }
-        }
-        
-        return [
-            'title' => $settings['site_name'] ?? (defined('SITE_NAME') ? SITE_NAME : 'AdBoard Pro'),
-            'description' => $settings['site_description'] ?? (defined('SITE_DESCRIPTION') ? SITE_DESCRIPTION : 'Сучасна дошка оголошень'),
-            'keywords' => $settings['site_keywords'] ?? 'оголошення, купити, продати',
-            'author' => 'AdBoard Pro',
-            'favicon' => $settings['favicon_url'] ?? 'images/favicon.svg',
-            'logo' => $settings['logo_url'] ?? 'images/default_logo.svg'
-        ];
-    } catch (Exception $e) {
-        error_log("Error in getMetaTags: " . $e->getMessage());
-        return [
-            'title' => defined('SITE_NAME') ? SITE_NAME : 'AdBoard Pro',
-            'description' => defined('SITE_DESCRIPTION') ? SITE_DESCRIPTION : 'Сучасна дошка оголошень',
-            'keywords' => 'оголошення, купити, продати',
-            'author' => 'AdBoard Pro',
-            'favicon' => 'images/favicon.svg',
-            'logo' => 'images/default_logo.svg'
-        ];
-    }
+    // Використовуємо константи без підключення до БД для уникнення конфліктів MySQL
+    return [
+        'title' => defined('SITE_NAME') ? SITE_NAME : 'AdBoard Pro',
+        'description' => defined('SITE_DESCRIPTION') ? SITE_DESCRIPTION : 'Сучасна дошка оголошень',
+        'keywords' => 'оголошення, купити, продати',
+        'author' => 'AdBoard Pro',
+        'favicon' => 'images/favicon.svg',
+        'logo' => 'images/default_logo.svg'
+    ];
 }
 
 // Функції для роботи з темою

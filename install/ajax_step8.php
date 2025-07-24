@@ -285,16 +285,34 @@ if (session_status() == PHP_SESSION_NONE) {
         }
         
         // 5. Створення адміністратора
+        error_log("Starting admin creation...");
+        error_log("Admin config: " . print_r($adminConfig, true));
+        
+        if (empty($adminConfig['admin_password'])) {
+            throw new Exception('Пароль адміністратора порожній!');
+        }
+        
         $adminPassword = password_hash($adminConfig['admin_password'], PASSWORD_DEFAULT);
+        error_log("Password hashed successfully");
         
         // Перевіряємо чи існує таблиця users
         $result = $mysqli->query("SHOW TABLES LIKE 'users'");
+        error_log("Tables check: " . $result->num_rows . " tables found");
         if ($result->num_rows == 0) {
             throw new Exception('Таблиця users не була створена');
         }
         
+        // Перевіряємо структуру таблиці users
+        $structureResult = $mysqli->query("DESCRIBE users");
+        $columns = [];
+        while ($row = $structureResult->fetch_assoc()) {
+            $columns[] = $row['Field'];
+        }
+        error_log("Users table columns: " . implode(', ', $columns));
+        
         // Видаляємо існуючого адміна якщо є
-        $mysqli->query("DELETE FROM users WHERE role = 'admin' OR user_type = 'admin'");
+        $deleteResult = $mysqli->query("DELETE FROM users WHERE role = 'admin' OR user_type = 'admin'");
+        error_log("Deleted existing admins: " . $mysqli->affected_rows . " rows");
         
         $stmt = $mysqli->prepare("
             INSERT INTO users (username, first_name, last_name, email, password, role, user_type, group_id, status, email_verified, created_at) 
@@ -302,12 +320,15 @@ if (session_status() == PHP_SESSION_NONE) {
         ");
         
         if (!$stmt) {
+            error_log("Prepare failed: " . $mysqli->error);
             throw new Exception('Помилка підготовки запиту користувача: ' . $mysqli->error);
         }
         
         $firstName = $adminConfig['admin_first_name'] ?? 'Admin';
         $lastName = $adminConfig['admin_last_name'] ?? 'User';
         $username = $adminConfig['admin_login'];
+        
+        error_log("Binding params: username=$username, firstName=$firstName, lastName=$lastName, email={$adminConfig['admin_email']}");
         
         $stmt->bind_param("sssss", 
             $adminConfig['admin_login'], 
@@ -318,8 +339,13 @@ if (session_status() == PHP_SESSION_NONE) {
         );
         
         if (!$stmt->execute()) {
+            error_log("Execute failed: " . $stmt->error);
+            error_log("MySQL error: " . $mysqli->error);
             throw new Exception('Помилка створення адміністратора: ' . $stmt->error);
         }
+        
+        $adminId = $mysqli->insert_id;
+        error_log("Admin created successfully with ID: $adminId");
         
         $stmt->close();
         
@@ -356,7 +382,17 @@ if (session_status() == PHP_SESSION_NONE) {
         
         // Перевіряємо чи існує таблиця site_settings
         $result = $mysqli->query("SHOW TABLES LIKE 'site_settings'");
+        error_log("Site_settings table check: " . $result->num_rows . " tables found");
+        
         if ($result->num_rows > 0) {
+            // Перевіряємо структуру таблиці site_settings
+            $structureResult = $mysqli->query("DESCRIBE site_settings");
+            $settingsColumns = [];
+            while ($row = $structureResult->fetch_assoc()) {
+                $settingsColumns[] = $row['Field'];
+            }
+            error_log("Site_settings table columns: " . implode(', ', $settingsColumns));
+            
             $settingsStmt = $mysqli->prepare("
                 INSERT INTO site_settings (setting_key, setting_value, setting_type, setting_group, description) 
                 VALUES (?, ?, ?, ?, ?) 
@@ -364,12 +400,23 @@ if (session_status() == PHP_SESSION_NONE) {
             ");
             
             if ($settingsStmt) {
+                $settingsInserted = 0;
                 foreach ($settings as $setting) {
+                    error_log("Inserting setting: {$setting[0]} = {$setting[1]}");
                     $settingsStmt->bind_param("sssss", $setting[0], $setting[1], $setting[2], $setting[3], $setting[4]);
-                    $settingsStmt->execute();
+                    if ($settingsStmt->execute()) {
+                        $settingsInserted++;
+                    } else {
+                        error_log("Failed to insert setting {$setting[0]}: " . $settingsStmt->error);
+                    }
                 }
+                error_log("Successfully inserted $settingsInserted settings");
                 $settingsStmt->close();
+            } else {
+                error_log("Failed to prepare settings statement: " . $mysqli->error);
             }
+        } else {
+            error_log("ERROR: site_settings table not found!");
         }
         
         // 7. Створення файлу .installed
@@ -381,6 +428,7 @@ if (session_status() == PHP_SESSION_NONE) {
         
         // Зберігаємо дані для показу в step_9, але позначаємо інсталяцію як завершену
         $_SESSION['install_data']['installation_completed'] = true;
+        error_log("Installation completed successfully! Sending response...");
         
         // Повертаємо успішний результат
         $response = [
@@ -389,6 +437,7 @@ if (session_status() == PHP_SESSION_NONE) {
             'redirect_url' => '?step=9'
         ];
         
+        error_log("Response to send: " . json_encode($response));
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
         exit();
         

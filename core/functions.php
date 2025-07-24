@@ -108,10 +108,7 @@ function __($key) {
     return is_string($result) ? $result : $key;
 }
 
-// Перевірка ролі адміністратора
-function isAdmin() {
-    return isLoggedIn() && $_SESSION['user_role'] === 'admin';
-}
+// Перевірка ролі адміністратора (видалено дублікат - див. функцію нижче)
 
 // Отримання поточного користувача
 function getCurrentUser() {

@@ -10,9 +10,17 @@ try {
         'logo' => 'images/default_logo.svg'
     ];
     
-    // Отримуємо тему з сесії або використовуємо дефолтні
-    $currentTheme = $_SESSION['current_theme'] ?? 'light';
-    $currentGradient = $_SESSION['current_gradient'] ?? 'gradient-1';
+    // Отримуємо тему з сесії, cookies або використовуємо дефолтні
+    $currentTheme = $_SESSION['current_theme'] ?? $_COOKIE['current_theme'] ?? 'light';
+    $currentGradient = $_SESSION['current_gradient'] ?? $_COOKIE['current_gradient'] ?? 'gradient-1';
+    
+    // Оновлюємо сесію якщо є cookie
+    if (!isset($_SESSION['current_theme']) && isset($_COOKIE['current_theme'])) {
+        $_SESSION['current_theme'] = $_COOKIE['current_theme'];
+    }
+    if (!isset($_SESSION['current_gradient']) && isset($_COOKIE['current_gradient'])) {
+        $_SESSION['current_gradient'] = $_COOKIE['current_gradient'];
+    }
 } catch (Exception $e) {
     // Fallback values if database is not available
     $metaTags = [
@@ -108,12 +116,14 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
     <!-- Dynamic Styles -->
     <style>
         :root {
-            --current-gradient: <?php echo $gradients[$currentGradient]; ?>;
-            --theme-bg: <?php echo $currentTheme === 'dark' ? '#1a1a1a' : '#ffffff'; ?>;
-            --theme-text: <?php echo $currentTheme === 'dark' ? '#ffffff' : '#333333'; ?>;
-            --theme-bg-secondary: <?php echo $currentTheme === 'dark' ? '#2d2d2d' : '#f8f9fa'; ?>;
-            --theme-border: <?php echo $currentTheme === 'dark' ? '#404040' : '#dee2e6'; ?>;
-            --theme-accent: <?php echo $currentTheme === 'dark' ? '#007bff' : '#0056b3'; ?>;
+            --current-gradient: <?php echo $gradients[$currentGradient] ?? $gradients['gradient-1']; ?>;
+            --theme-bg: <?php echo $currentTheme === 'dark' ? '#0d1117' : '#ffffff'; ?>;
+            --theme-text: <?php echo $currentTheme === 'dark' ? '#f0f6fc' : '#24292f'; ?>;
+            --theme-bg-secondary: <?php echo $currentTheme === 'dark' ? '#161b22' : '#f6f8fa'; ?>;
+            --theme-bg-tertiary: <?php echo $currentTheme === 'dark' ? '#21262d' : '#ffffff'; ?>;
+            --theme-border: <?php echo $currentTheme === 'dark' ? '#30363d' : '#d0d7de'; ?>;
+            --theme-accent: <?php echo $currentTheme === 'dark' ? '#58a6ff' : '#0969da'; ?>;
+            --theme-muted: <?php echo $currentTheme === 'dark' ? '#8b949e' : '#656d76'; ?>;
         }
         
         body {
@@ -126,7 +136,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         .navbar {
             background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            border-bottom: 1px solid var(--theme-border);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
@@ -134,8 +144,9 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         }
         
         .dark-theme .navbar {
-            background: rgba(26, 26, 26, 0.95) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(13, 17, 23, 0.95) !important;
+            border-bottom: 1px solid var(--theme-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
         /* Анімація появи navbar при скролі */
@@ -235,19 +246,20 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         
         /* Dropdown стилі з покращеними анімаціями */
         .dropdown-menu {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background: var(--theme-bg-tertiary) !important;
             backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid var(--theme-border);
             border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             animation: dropdownSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             overflow: hidden;
             min-width: 200px;
         }
         
         .dark-theme .dropdown-menu {
-            background: rgba(26, 26, 26, 0.95) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--theme-bg-tertiary) !important;
+            border: 1px solid var(--theme-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
         }
         
         .dropdown-item {
@@ -423,6 +435,32 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             transform: scale(1.2);
         }
         
+        /* Глобальні стилі для тем */
+        .card {
+            background-color: var(--theme-bg-tertiary) !important;
+            border: 1px solid var(--theme-border) !important;
+            color: var(--theme-text) !important;
+        }
+        
+        .bg-light {
+            background-color: var(--theme-bg-secondary) !important;
+        }
+        
+        .text-muted {
+            color: var(--theme-muted) !important;
+        }
+        
+        .gradient-bg {
+            background: var(--current-gradient) !important;
+        }
+        
+        .text-gradient {
+            background: var(--current-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
         /* Адаптивні стилі для всіх екранів */
         .main-content {
             min-height: calc(100vh - 80px);
@@ -452,17 +490,21 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
                 font-size: 1.2rem;
             }
             
-            .navbar-nav {
-                background: var(--theme-bg-secondary);
+            .navbar-collapse {
+                background: var(--theme-bg-tertiary);
+                border: 1px solid var(--theme-border);
                 border-radius: 15px;
-                margin-top: 10px;
-                padding: 10px;
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                margin-top: 15px;
+                padding: 15px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             }
             
             .navbar-nav .nav-link {
-                margin: 5px 0;
+                margin: 8px 0;
                 text-align: center;
+                padding: 12px 20px !important;
+                border-radius: 10px;
+                display: block;
             }
             
             .sidebar {
@@ -475,28 +517,82 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
                 padding-right: 10px;
             }
             
-            /* Адаптивність для контенту */
+            /* Покращена адаптивність для контенту */
             .row {
-                margin-left: -10px;
-                margin-right: -10px;
+                margin-left: -5px;
+                margin-right: -5px;
             }
             
-            .col, .col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
-            .col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
-            .col-auto, .col-lg, .col-lg-1, .col-lg-2, .col-lg-3,
-            .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8,
-            .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-auto,
-            .col-md, .col-md-1, .col-md-2, .col-md-3, .col-md-4,
-            .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9,
-            .col-md-10, .col-md-11, .col-md-12, .col-md-auto,
-            .col-sm, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4,
-            .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9,
-            .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-auto,
-            .col-xl, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4,
-            .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9,
-            .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-auto {
-                padding-left: 10px;
-                padding-right: 10px;
+            .row > * {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+            
+            /* Hero section мобільна оптимізація */
+            .hero-section .row {
+                margin-left: 0;
+                margin-right: 0;
+            }
+            
+            .hero-section .col-lg-6 {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            
+            /* Cards мобільна оптимізація */
+            .card {
+                margin-bottom: 15px;
+            }
+            
+            .card-body {
+                padding: 15px !important;
+            }
+            
+            /* Buttons мобільна оптимізація */
+            .btn-lg {
+                padding: 12px 20px;
+                font-size: 16px;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            /* Font sizes для мобільних */
+            .display-4 {
+                font-size: 1.8rem !important;
+            }
+            
+            .display-5 {
+                font-size: 1.5rem !important;
+            }
+            
+            .lead {
+                font-size: 1rem !important;
+            }
+        }
+        
+        /* Дуже маленькі екрани */
+        @media (max-width: 576px) {
+            .container-fluid, .container {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+            
+            .navbar-brand {
+                font-size: 1rem;
+            }
+            
+            .btn {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+            
+            .card-body {
+                padding: 10px !important;
+            }
+            
+            .hero-section {
+                padding-top: 20px !important;
+                padding-bottom: 20px !important;
             }
         }
         
@@ -805,12 +901,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const overlay = document.getElementById('sidebarOverlay');
     const closeSidebar = document.getElementById('closeSidebar');
     
+    // Застосовуємо поточну тему до body
+    const currentTheme = '<?php echo $currentTheme; ?>';
+    document.body.className = currentTheme + '-theme';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    document.documentElement.setAttribute('data-gradient', '<?php echo $currentGradient; ?>');
+    
     // Open sidebar
-    themeToggle.addEventListener('click', function() {
-        sidebar.classList.add('show');
-        overlay.classList.add('show');
-        document.body.style.overflow = 'hidden';
-    });
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            sidebar.classList.add('show');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        });
+    }
     
     // Close sidebar
     function closeSidebarFunc() {
@@ -819,8 +925,26 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = '';
     }
     
-    closeSidebar.addEventListener('click', closeSidebarFunc);
-    overlay.addEventListener('click', closeSidebarFunc);
+    if (closeSidebar) {
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+    }
+    if (overlay) {
+        overlay.addEventListener('click', closeSidebarFunc);
+    }
+    
+    // ESC key to close sidebar
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidebar.classList.contains('show')) {
+            closeSidebarFunc();
+        }
+    });
+    
+    // Close sidebar when clicking outside navbar
+    document.addEventListener('click', function(e) {
+        if (!sidebar.contains(e.target) && !themeToggle.contains(e.target) && sidebar.classList.contains('show')) {
+            closeSidebarFunc();
+        }
+    });
     
     // Theme toggle
     const themeInputs = document.querySelectorAll('input[name="theme"]');
@@ -835,6 +959,11 @@ document.addEventListener('DOMContentLoaded', function() {
     gradientOptions.forEach(option => {
         option.addEventListener('click', function() {
             const gradient = this.dataset.gradient;
+            
+            // Update active state immediately
+            gradientOptions.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            
             changeGradient(gradient);
         });
     });
@@ -854,26 +983,66 @@ function changeTheme(theme) {
     })
     .then(response => response.json())
     .then(data => {
+        loading.remove();
         if (data.success) {
-            // Smooth transition before reload
-            document.body.style.opacity = '0.7';
-            setTimeout(() => {
-                location.reload();
-            }, 300);
+            // Миттєво застосовуємо тему без перезавантаження
+            applyTheme(theme);
+            console.log('Theme changed to:', theme);
         } else {
-            loading.remove();
             console.error('Theme change failed:', data.message);
+            alert('Помилка зміни теми: ' + data.message);
         }
     })
     .catch(error => {
         loading.remove();
         console.error('Error changing theme:', error);
+        alert('Помилка зміни теми');
     });
+}
+
+// Apply theme immediately
+function applyTheme(theme) {
+    document.body.className = theme + '-theme';
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // Update CSS variables
+    const root = document.documentElement;
+    if (theme === 'dark') {
+        root.style.setProperty('--theme-bg', '#0d1117');
+        root.style.setProperty('--theme-text', '#f0f6fc');
+        root.style.setProperty('--theme-bg-secondary', '#161b22');
+        root.style.setProperty('--theme-bg-tertiary', '#21262d');
+        root.style.setProperty('--theme-border', '#30363d');
+        root.style.setProperty('--theme-accent', '#58a6ff');
+        root.style.setProperty('--theme-muted', '#8b949e');
+    } else {
+        root.style.setProperty('--theme-bg', '#ffffff');
+        root.style.setProperty('--theme-text', '#24292f');
+        root.style.setProperty('--theme-bg-secondary', '#f6f8fa');
+        root.style.setProperty('--theme-bg-tertiary', '#ffffff');
+        root.style.setProperty('--theme-border', '#d0d7de');
+        root.style.setProperty('--theme-accent', '#0969da');
+        root.style.setProperty('--theme-muted', '#656d76');
+    }
 }
 
 // Change gradient
 function changeGradient(gradient) {
     const loading = showLoadingIndicator();
+    
+    // Градієнти
+    const gradients = {
+        'gradient-1': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'gradient-2': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'gradient-3': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'gradient-4': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'gradient-5': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        'gradient-6': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        'gradient-7': 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+        'gradient-8': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+        'gradient-9': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+        'gradient-10': 'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)'
+    };
     
     fetch('<?php echo getSiteUrl('ajax/change_theme.php'); ?>', {
         method: 'POST',
@@ -885,21 +1054,27 @@ function changeGradient(gradient) {
     })
     .then(response => response.json())
     .then(data => {
+        loading.remove();
         if (data.success) {
-            // Smooth transition before reload
-            document.body.style.opacity = '0.7';
-            setTimeout(() => {
-                location.reload();
-            }, 300);
+            // Миттєво застосовуємо градієнт без перезавантаження
+            applyGradient(gradient, gradients[gradient]);
+            console.log('Gradient changed to:', gradient);
         } else {
-            loading.remove();
             console.error('Gradient change failed:', data.message);
+            alert('Помилка зміни градієнта: ' + data.message);
         }
     })
     .catch(error => {
         loading.remove();
         console.error('Error changing gradient:', error);
+        alert('Помилка зміни градієнта');
     });
+}
+
+// Apply gradient immediately
+function applyGradient(gradientKey, gradientValue) {
+    document.documentElement.setAttribute('data-gradient', gradientKey);
+    document.documentElement.style.setProperty('--current-gradient', gradientValue);
 }
 
 // Set active nav link and add scroll effects

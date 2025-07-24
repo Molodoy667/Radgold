@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '../core/config.php';
 
 header('Content-Type: application/json');
+header('Cache-Control: no-cache, must-revalidate');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
@@ -17,28 +17,20 @@ try {
     // Якщо змінюємо тему
     if (!empty($theme)) {
         if (!in_array($theme, ['light', 'dark'])) {
-            throw new Exception('Invalid theme');
+            throw new Exception('Invalid theme: ' . $theme);
         }
         
         $_SESSION['current_theme'] = $theme;
         
-        // Також спробуємо зберегти в БД якщо можливо
-        try {
-            if (isset($GLOBALS['db'])) {
-                $db = $GLOBALS['db'];
-                $stmt = $db->prepare("UPDATE theme_settings SET current_theme = ? WHERE id = 1");
-                if ($stmt) {
-                    $stmt->bind_param("s", $theme);
-                    $stmt->execute();
-                    $stmt->close();
-                }
-            }
-        } catch (Exception $e) {
-            // Ігноруємо помилки БД, головне що зберегли в сесії
-            error_log("Theme DB update error: " . $e->getMessage());
-        }
+        // Встановлюємо cookie на 30 днів
+        setcookie('current_theme', $theme, time() + (30 * 24 * 60 * 60), '/');
         
-        echo json_encode(['success' => true, 'message' => 'Theme updated successfully']);
+        error_log("Theme changed to: " . $theme);
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Theme updated successfully',
+            'theme' => $theme
+        ]);
         exit;
     }
     
@@ -51,34 +43,27 @@ try {
         ];
         
         if (!in_array($gradient, $allowedGradients)) {
-            throw new Exception('Invalid gradient');
+            throw new Exception('Invalid gradient: ' . $gradient);
         }
         
         $_SESSION['current_gradient'] = $gradient;
         
-        // Також спробуємо зберегти в БД якщо можливо
-        try {
-            if (isset($GLOBALS['db'])) {
-                $db = $GLOBALS['db'];
-                $stmt = $db->prepare("UPDATE theme_settings SET current_gradient = ? WHERE id = 1");
-                if ($stmt) {
-                    $stmt->bind_param("s", $gradient);
-                    $stmt->execute();
-                    $stmt->close();
-                }
-            }
-        } catch (Exception $e) {
-            // Ігноруємо помилки БД, головне що зберегли в сесії
-            error_log("Gradient DB update error: " . $e->getMessage());
-        }
+        // Встановлюємо cookie на 30 днів
+        setcookie('current_gradient', $gradient, time() + (30 * 24 * 60 * 60), '/');
         
-        echo json_encode(['success' => true, 'message' => 'Gradient updated successfully']);
+        error_log("Gradient changed to: " . $gradient);
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Gradient updated successfully',
+            'gradient' => $gradient
+        ]);
         exit;
     }
     
-    throw new Exception('No action specified');
+    throw new Exception('No theme or gradient specified');
     
 } catch (Exception $e) {
+    error_log("Theme change error: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     exit;
 }

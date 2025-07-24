@@ -207,10 +207,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     }
                 }
             } else {
-                // Файл initial_data.sql не обов'язковий
-                if ($sqlFile !== 'initial_data.sql') {
-                    throw new Exception("SQL файл не знайдено: $fullPath");
-                }
+                throw new Exception("SQL файл не знайдено: $fullPath");
             }
         }
         

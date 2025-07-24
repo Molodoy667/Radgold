@@ -24,21 +24,14 @@ function logInstallStep($step, $message, $status = 'info') {
     ];
 }
 
-// Функція створення бази даних та імпорту схеми
+// Функція підключення до існуючої БД та імпорту схеми
 function createDatabaseAndSchema($host, $user, $pass, $name) {
-    // Підключення до MySQL
-    $mysqli = new mysqli($host, $user, $pass);
+    // Підключення до існуючої БД
+    $mysqli = new mysqli($host, $user, $pass, $name);
     
     if ($mysqli->connect_error) {
-        throw new Exception('Помилка підключення до MySQL: ' . $mysqli->connect_error);
+        throw new Exception('Помилка підключення до БД: ' . $mysqli->connect_error);
     }
-    
-    // Створюємо базу даних
-    if (!$mysqli->query("CREATE DATABASE IF NOT EXISTS `{$name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
-        throw new Exception('Не вдалося створити базу даних: ' . $mysqli->error);
-    }
-    
-    $mysqli->select_db($name);
     
     // Імпортуємо ТІЛЬКИ структуру, дані будуть додані пізніше
     $sqlFiles = [
@@ -334,7 +327,7 @@ function testDatabaseConnection() {
             throw new Exception("Версія MySQL {$version} застаріла. Мінімальна підтримувана версія: 5.7+");
         }
         
-        // Тест створення бази даних
+        // Тест підключення до існуючої БД
         if (!empty($name)) {
             $dbName = $connection->real_escape_string($name);
             
@@ -342,8 +335,8 @@ function testDatabaseConnection() {
             $result = $connection->query("SHOW DATABASES LIKE '$dbName'");
             $dbExists = $result && $result->num_rows > 0;
             
-            if (!$connection->query("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
-                throw new Exception("Помилка створення БД '$dbName': {$connection->error}. Перевірте права користувача на створення баз даних.");
+            if (!$dbExists) {
+                throw new Exception("База даних '$dbName' не існує. Створіть її заздалегідь.");
             }
             
             // Перевірка доступу до БД

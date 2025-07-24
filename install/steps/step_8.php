@@ -155,8 +155,8 @@ if (session_status() == PHP_SESSION_NONE) {
             throw new Exception('Не вдалося створити файл конфігурації');
         }
         
-        // 3. Підключення до БД та створення структури
-        $mysqli = new mysqli($dbConfig['host'], $dbConfig['user'], $dbConfig['pass'] ?? '');
+        // 3. Підключення до існуючої БД
+        $mysqli = new mysqli($dbConfig['host'], $dbConfig['user'], $dbConfig['pass'] ?? '', $dbConfig['name']);
         
         if ($mysqli->connect_error) {
             throw new Exception('Помилка підключення до БД: ' . $mysqli->connect_error);
@@ -164,15 +164,6 @@ if (session_status() == PHP_SESSION_NONE) {
         
         // Встановлюємо кодування
         $mysqli->set_charset('utf8mb4');
-        
-        // Створюємо базу даних якщо не існує
-        if (!$mysqli->query("CREATE DATABASE IF NOT EXISTS `" . $mysqli->real_escape_string($dbConfig['name']) . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
-            throw new Exception('Не вдалося створити базу даних: ' . $mysqli->error);
-        }
-        
-        if (!$mysqli->select_db($dbConfig['name'])) {
-            throw new Exception('Не вдалося вибрати базу даних: ' . $mysqli->error);
-        }
         
         // 4. Імпорт структури та початкових даних БД
         $sqlFiles = [
@@ -403,7 +394,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     <i class="fas fa-database"></i>
                 </div>
                 <div class="step-content">
-                    <h6>Створення бази даних</h6>
+                    <h6>Підключення до бази даних</h6>
                     <p>Налаштування структури бази даних</p>
                     <div class="step-progress">
                         <div class="progress">
@@ -887,7 +878,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     duration: 1000
                 },
                 {
-                    action: 'Створення бази даних',
+                    action: 'Підключення до бази даних',
                     description: 'Налаштовуємо структуру бази даних',
                     duration: 2000
                 },

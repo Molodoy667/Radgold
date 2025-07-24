@@ -7,9 +7,8 @@ SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
--- Створення бази даних
-CREATE DATABASE IF NOT EXISTS `adboard_site` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `adboard_site`;
+-- База даних має бути створена заздалегідь
+-- Підключення відбувається через конфігурацію інсталятора
 
 -- Таблиця налаштувань сайту
 CREATE TABLE IF NOT EXISTS `site_settings` (

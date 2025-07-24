@@ -144,6 +144,11 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             --theme-border: <?php echo $currentTheme === 'dark' ? '#30363d' : '#d0d7de'; ?>;
             --theme-accent: <?php echo $currentTheme === 'dark' ? '#58a6ff' : '#0969da'; ?>;
             --theme-muted: <?php echo $currentTheme === 'dark' ? '#8b949e' : '#656d76'; ?>;
+            
+            /* Header/Menu backgrounds - gradient in light, dark in dark theme */
+            --header-bg: <?php echo $currentTheme === 'dark' ? '#161b22' : 'var(--current-gradient)'; ?>;
+            --menu-bg: <?php echo $currentTheme === 'dark' ? '#161b22' : 'var(--current-gradient)'; ?>;
+            --footer-bg: <?php echo $currentTheme === 'dark' ? '#161b22' : 'var(--current-gradient)'; ?>;
         }
         
         body {
@@ -228,7 +233,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             left: 0;
             right: 0;
             height: 70px;
-            background: var(--theme-bg-secondary);
+            background: var(--header-bg);
             border-bottom: 1px solid var(--theme-border);
             box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
             z-index: 1050;
@@ -559,7 +564,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             left: -400px;
             width: 350px;
             height: 100%;
-            background: var(--theme-bg-secondary);
+            background: var(--menu-bg);
             border-right: 1px solid var(--theme-border);
             z-index: 1060;
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);

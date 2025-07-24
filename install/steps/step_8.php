@@ -215,8 +215,8 @@ if (session_status() == PHP_SESSION_NONE) {
         $mysqli->query("DELETE FROM users WHERE role = 'admin' OR user_type = 'admin'");
         
         $stmt = $mysqli->prepare("
-            INSERT INTO users (username, first_name, last_name, email, password, role, user_type, status, email_verified, created_at) 
-            VALUES (?, ?, ?, ?, ?, 'admin', 'admin', 'active', 1, NOW())
+            INSERT INTO users (username, first_name, last_name, email, password, role, user_type, group_id, status, email_verified, created_at) 
+            VALUES (?, ?, ?, ?, ?, 'admin', 'admin', 1, 'active', 1, NOW())
         ");
         
         if (!$stmt) {

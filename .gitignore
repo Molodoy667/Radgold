@@ -71,6 +71,8 @@ coverage/
 # Testing
 phpunit.xml
 .phpunit.result.cache
+test_*.php
+debug_*.php
 
 # Documentation builds
 docs/_build/

@@ -135,6 +135,14 @@ INSERT IGNORE INTO `paid_services` (`name`, `description`, `price`, `duration_da
 ('Автопродовження', 'Автоматичне оновлення дати публікації', 25.00, 30, 'republish', 5),
 ('Турбо-просування', 'Максимальна видимість: топ + виділення + термінове', 200.00, 7, 'boost', 6);
 
+-- Вставка груп користувачів
+INSERT IGNORE INTO `user_groups` (`name`, `description`, `permissions`, `color`, `sort_order`) VALUES
+('Адміністратори', 'Повний доступ до всіх функцій системи', '["admin.full_access","users.manage","ads.manage","settings.manage","groups.manage","categories.manage","locations.manage","payments.manage","stats.view","logs.view","backups.manage"]', '#dc3545', 1),
+('Модератори', 'Модерація контенту та користувачів', '["ads.moderate","users.moderate","comments.moderate","reports.view","stats.view"]', '#fd7e14', 2),
+('Партнери', 'Розширені можливості для бізнес-користувачів', '["ads.create_unlimited","ads.featured","stats.own","analytics.basic"]', '#6f42c1', 3),
+('Користувачі', 'Стандартні користувачі системи', '["ads.create","ads.edit_own","ads.delete_own","profile.edit","messages.send"]', '#28a745', 4),
+('VIP Користувачі', 'Преміум користувачі з додатковими можливостями', '["ads.create_unlimited","ads.priority","ads.featured_discount","support.priority"]', '#ffc107', 5);
+
 -- Початкові сповіщення для тесту (можна видалити після установки)
 -- INSERT INTO `notifications` (`user_id`, `type`, `title`, `message`, `priority`) VALUES
 -- (1, 'welcome', 'Ласкаво просимо!', 'Дякуємо за реєстрацію в AdBoard Pro. Почніть з створення вашого першого оголошення.', 'normal');

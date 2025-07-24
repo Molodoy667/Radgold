@@ -123,6 +123,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `bio` text DEFAULT NULL,
     `password` varchar(255) NOT NULL,
     `role` enum('user','admin','moderator','partner') DEFAULT 'user',
+    `user_type` enum('user','admin','moderator','partner') DEFAULT 'user',
+    `group_id` int(11) DEFAULT NULL,
     `status` enum('active','inactive','banned','pending') DEFAULT 'active',
     `email_verified` boolean DEFAULT FALSE,
     `phone_verified` boolean DEFAULT FALSE,
@@ -149,10 +151,13 @@ CREATE TABLE IF NOT EXISTS `users` (
     UNIQUE KEY `email` (`email`),
     UNIQUE KEY `username` (`username`),
     KEY `idx_role` (`role`),
+    KEY `idx_user_type` (`user_type`),
+    KEY `idx_group_id` (`group_id`),
     KEY `idx_status` (`status`),
     KEY `idx_google_id` (`google_id`),
     KEY `idx_last_login` (`last_login`),
-    KEY `idx_email_verified` (`email_verified`)
+    KEY `idx_email_verified` (`email_verified`),
+    FOREIGN KEY (`group_id`) REFERENCES `user_groups`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Таблиця remember tokens

@@ -426,14 +426,14 @@
         
         .touch-title {
             flex: 1;
-            color: var(--footer-text-color, white);
+            color: white;
             font-weight: 600;
             font-size: 1.1rem;
             margin: 0;
         }
         
         .touch-arrow {
-            color: var(--footer-text-color, rgba(255, 255, 255, 0.7));
+            color: white;
             opacity: 0.7;
             transition: all 0.3s ease;
             font-size: 1rem;
@@ -441,7 +441,7 @@
         
         .touch-block.active .touch-arrow {
             transform: rotate(180deg);
-            color: var(--footer-text-color, white);
+            color: white;
             opacity: 1;
         }
         
@@ -826,7 +826,7 @@
         
         /* Brand Title */
         .brand-title {
-            color: var(--footer-text-color, white);
+            color: white;
             font-weight: 800;
             font-size: 2rem;
             margin-bottom: 15px;
@@ -834,7 +834,7 @@
         }
         
         .brand-description {
-            color: var(--footer-text-color, rgba(255, 255, 255, 0.9));
+            color: white;
             font-size: 1.1rem;
             margin-bottom: 30px;
             line-height: 1.6;
@@ -843,7 +843,7 @@
         
         /* Section Titles */
         .section-title {
-            color: var(--footer-text-color, white);
+            color: white;
             font-weight: 700;
             font-size: 1.1rem;
             margin-bottom: 20px;

@@ -147,9 +147,9 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             
             /* Dynamic backgrounds based on theme */
             --header-bg: <?php echo $currentTheme === 'dark' ? '#161b22' : 'var(--current-gradient)'; ?>;
-            --menu-bg: <?php echo $currentTheme === 'dark' ? '#161b22' : 'var(--current-gradient)'; ?>;
-            --footer-bg: <?php echo $currentTheme === 'dark' ? '#161b22' : 'var(--current-gradient)'; ?>;
-            --footer-text-color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
+            --menu-bg: var(--current-gradient);
+            --footer-bg: var(--current-gradient);
+            --footer-text-color: white;
         }
         
         body {
@@ -592,7 +592,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             width: 350px;
             height: 100%;
             background: var(--menu-bg);
-            border-right: 1px solid <?php echo $currentTheme === 'dark' ? 'var(--theme-border)' : 'rgba(255,255,255,0.3)'; ?>;
+            border-right: 1px solid rgba(255,255,255,0.3);
             z-index: 1060;
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             overflow-y: auto;
@@ -609,7 +609,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             justify-content: space-between;
             align-items: center;
             background: var(--menu-bg);
-            border-bottom: 1px solid <?php echo $currentTheme === 'dark' ? 'var(--theme-border)' : 'rgba(255,255,255,0.2)'; ?>;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
             backdrop-filter: blur(10px);
         }
         
@@ -617,7 +617,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             display: flex;
             align-items: center;
             gap: 10px;
-            color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
+            color: white;
             font-weight: 700;
         }
         
@@ -645,14 +645,14 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         /* Menu Sections */
         .menu-section {
             padding: 20px;
-            border-bottom: 1px solid <?php echo $currentTheme === 'dark' ? 'var(--theme-border)' : 'rgba(255, 255, 255, 0.1)'; ?>;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .section-title {
             display: flex;
             align-items: center;
             gap: 10px;
-            color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
+            color: white;
             font-weight: 600;
             font-size: 1rem;
             margin-bottom: 15px;
@@ -670,7 +670,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-secondary)' : 'var(--current-gradient)'; ?>;
+            background: var(--current-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -678,19 +678,19 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             transition: all 0.3s ease;
             font-size: 1.2rem;
             color: white;
-            border: 2px solid <?php echo $currentTheme === 'dark' ? 'var(--theme-border)' : 'rgba(255,255,255,0.3)'; ?>;
+            border: 2px solid rgba(255,255,255,0.3);
         }
         
         .theme-option:hover {
-            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-tertiary)' : 'var(--current-gradient)'; ?>;
+            background: var(--current-gradient);
             transform: scale(1.1);
             filter: brightness(1.1);
         }
         
         .theme-option.active {
-            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-accent)' : 'var(--current-gradient)'; ?>;
+            background: var(--current-gradient);
             transform: scale(1.15);
-            box-shadow: 0 4px 15px <?php echo $currentTheme === 'dark' ? 'rgba(88, 166, 255, 0.3)' : 'rgba(255, 255, 255, 0.3)'; ?>;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
             filter: brightness(1.2);
         }
         
@@ -724,7 +724,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         }
         
         .gradient-circle.active {
-            border-color: <?php echo $currentTheme === 'dark' ? 'var(--theme-accent)' : 'white'; ?>;
+            border-color: white;
             transform: scale(1.3);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
@@ -786,28 +786,28 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-secondary)' : 'var(--current-gradient)'; ?>;
+            background: var(--current-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
-            border: 2px solid <?php echo $currentTheme === 'dark' ? 'var(--theme-border)' : 'rgba(255,255,255,0.3)'; ?>;
+            border: 2px solid rgba(255,255,255,0.3);
             font-size: 1.3rem;
         }
         
         .lang-circle-menu:hover {
-            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-tertiary)' : 'var(--current-gradient)'; ?>;
+            background: var(--current-gradient);
             transform: scale(1.1);
             filter: brightness(1.1);
         }
         
         .lang-circle-menu.active {
-            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-accent)' : 'var(--current-gradient)'; ?>;
-            border-color: <?php echo $currentTheme === 'dark' ? 'var(--theme-accent)' : 'white'; ?>;
+            background: var(--current-gradient);
+            border-color: white;
             transform: scale(1.2);
-            box-shadow: 0 6px 20px <?php echo $currentTheme === 'dark' ? 'rgba(88, 166, 255, 0.3)' : 'rgba(255, 255, 255, 0.3)'; ?>;
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
             filter: brightness(1.2);
         }
         
@@ -824,17 +824,17 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             gap: 15px;
             padding: 12px 15px;
             border-radius: 10px;
-            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-secondary)' : 'var(--current-gradient)'; ?>;
+            background: var(--current-gradient);
             color: white;
             text-decoration: none;
             transition: all 0.3s ease;
             font-weight: 500;
-            border: 1px solid <?php echo $currentTheme === 'dark' ? 'var(--theme-border)' : 'rgba(255,255,255,0.3)'; ?>;
+            border: 1px solid rgba(255,255,255,0.3);
             margin-bottom: 8px;
         }
         
         .nav-item:hover {
-            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-tertiary)' : 'var(--current-gradient)'; ?>;
+            background: var(--current-gradient);
             transform: translateX(8px) scale(1.02);
             color: white;
             text-decoration: none;

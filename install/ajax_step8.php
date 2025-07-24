@@ -322,47 +322,49 @@ if (session_status() == PHP_SESSION_NONE) {
         
         $stmt->close();
         
-        // 6. Додаємо початкові налаштування сайту (БЕЗ даних адміністратора)
+        // 6. Додаємо початкові налаштування сайту з правильною структурою
         $settings = [
-            // Основні налаштування сайту з форми
-            ['site_title', $siteConfig['site_name']],
-            ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень'],
-            ['site_keywords', $siteConfig['site_keywords'] ?? 'реклама, оголошення, дошка оголошень'],
-            ['contact_email', $siteConfig['contact_email'] ?? ''],
-            ['site_url', rtrim($siteConfig['site_url'], '/')],
+            // Основні налаштування сайту з форми (5 полів: key, value, type, group, description)
+            ['site_name', $siteConfig['site_name'], 'string', 'general', 'Назва сайту'],
+            ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень', 'text', 'general', 'Опис сайту'],
+            ['site_keywords', $siteConfig['site_keywords'] ?? 'реклама, оголошення, дошка оголошень', 'text', 'general', 'Ключові слова'],
+            ['contact_email', $siteConfig['contact_email'] ?? $adminConfig['admin_email'], 'email', 'general', 'Email для контактів'],
+            ['site_url', rtrim($siteConfig['site_url'], '/'), 'url', 'general', 'URL сайту'],
+            ['admin_email', $adminConfig['admin_email'], 'email', 'general', 'Email адміністратора'],
             
             // Додаткові налаштування з форми
-            ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev'],
-            ['language', $additionalConfig['default_language'] ?? 'uk'],
-            ['available_languages', '["uk","ru","en"]'],
+            ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev', 'string', 'general', 'Часовий пояс'],
+            ['default_language', $additionalConfig['default_language'] ?? 'uk', 'string', 'general', 'Мова за замовчуванням'],
+            ['available_languages', '["uk","ru","en"]', 'json', 'general', 'Доступні мови'],
             
             // Налаштування теми з форми
-            ['current_theme', $themeConfig['default_theme'] ?? 'light'],
-            ['current_gradient', $themeConfig['default_gradient'] ?? 'gradient-1'],
-            ['enable_animations', $additionalConfig['enable_animations'] ?? '0'],
-            ['enable_particles', $additionalConfig['enable_particles'] ?? '0'],
-            ['smooth_scroll', $additionalConfig['smooth_scroll'] ?? '0'],
-            ['enable_tooltips', $additionalConfig['enable_tooltips'] ?? '0'],
+            ['current_theme', $themeConfig['default_theme'] ?? 'light', 'string', 'theme', 'Поточна тема'],
+            ['current_gradient', $themeConfig['default_gradient'] ?? 'gradient-1', 'string', 'theme', 'Поточний градієнт'],
+            ['enable_animations', $additionalConfig['enable_animations'] ?? '0', 'bool', 'theme', 'Увімкнути анімації'],
+            ['enable_particles', $additionalConfig['enable_particles'] ?? '0', 'bool', 'theme', 'Частинки на фоні'],
+            ['smooth_scroll', $additionalConfig['smooth_scroll'] ?? '0', 'bool', 'theme', 'Плавна прокрутка'],
+            ['enable_tooltips', $additionalConfig['enable_tooltips'] ?? '0', 'bool', 'theme', 'Підказки'],
             
             // Системні налаштування (дефолтні значення)
-            ['max_ad_duration_days', '30'],
-            ['ads_per_page', '12'],
-            ['auto_approve_ads', '0'],
-            ['maintenance_mode', '0']
+            ['max_ad_duration_days', '30', 'int', 'ads', 'Максимальна тривалість оголошення (днів)'],
+            ['ads_per_page', '12', 'int', 'ads', 'Оголошень на сторінку'],
+            ['auto_approve_ads', '0', 'bool', 'ads', 'Автоматичне схвалення оголошень'],
+            ['maintenance_mode', '0', 'bool', 'system', 'Режим обслуговування'],
+            ['currency', 'UAH', 'string', 'general', 'Валюта']
         ];
         
         // Перевіряємо чи існує таблиця site_settings
         $result = $mysqli->query("SHOW TABLES LIKE 'site_settings'");
         if ($result->num_rows > 0) {
             $settingsStmt = $mysqli->prepare("
-                INSERT INTO site_settings (setting_key, value) 
-                VALUES (?, ?) 
-                ON DUPLICATE KEY UPDATE value = VALUES(value)
+                INSERT INTO site_settings (setting_key, setting_value, setting_type, setting_group, description) 
+                VALUES (?, ?, ?, ?, ?) 
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
             ");
             
             if ($settingsStmt) {
                 foreach ($settings as $setting) {
-                    $settingsStmt->bind_param("ss", $setting[0], $setting[1]);
+                    $settingsStmt->bind_param("sssss", $setting[0], $setting[1], $setting[2], $setting[3], $setting[4]);
                     $settingsStmt->execute();
                 }
                 $settingsStmt->close();

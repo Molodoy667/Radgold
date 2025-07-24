@@ -645,7 +645,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         /* Menu Sections */
         .menu-section {
             padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid <?php echo $currentTheme === 'dark' ? 'var(--theme-border)' : 'rgba(255, 255, 255, 0.1)'; ?>;
         }
         
         .section-title {
@@ -783,7 +783,7 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
+            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-secondary)' : 'rgba(255, 255, 255, 0.2)'; ?>;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -795,15 +795,15 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         }
         
         .lang-circle-menu:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-tertiary)' : 'rgba(255, 255, 255, 0.3)'; ?>;
             transform: scale(1.1);
         }
         
         .lang-circle-menu.active {
-            background: rgba(255, 255, 255, 0.4);
-            border-color: rgba(255, 255, 255, 0.6);
+            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.4)'; ?>;
+            border-color: <?php echo $currentTheme === 'dark' ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.6)'; ?>;
             transform: scale(1.2);
-            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 20px <?php echo $currentTheme === 'dark' ? 'rgba(88, 166, 255, 0.3)' : 'rgba(255, 255, 255, 0.3)'; ?>;
         }
         
         /* Navigation Menu */
@@ -819,17 +819,17 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             gap: 15px;
             padding: 12px 15px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-secondary)' : 'rgba(255, 255, 255, 0.1)'; ?>;
+            color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
             text-decoration: none;
             transition: all 0.3s ease;
             font-weight: 500;
         }
         
         .nav-item:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: <?php echo $currentTheme === 'dark' ? 'var(--theme-bg-tertiary)' : 'rgba(255, 255, 255, 0.2)'; ?>;
             transform: translateX(8px);
-            color: white;
+            color: <?php echo $currentTheme === 'dark' ? 'var(--theme-text)' : 'white'; ?>;
             text-decoration: none;
         }
         

@@ -46,7 +46,7 @@ try {
 
 function getDashboardStats() {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Загальна статистика
         $stats = [];
@@ -135,7 +135,7 @@ function getDashboardStats() {
 
 function getRecentActivity($limit = 10) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $activities = [];
         
@@ -224,7 +224,7 @@ function getSystemHealth() {
         
         // Перевірка бази даних
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $result = $db->query("SELECT VERSION() as version");
             $mysqlVersion = $result->fetch_assoc()['version'];
             
@@ -268,7 +268,7 @@ function getSystemHealth() {
 
 function getChartData($type, $period) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Визначаємо період
         switch ($period) {

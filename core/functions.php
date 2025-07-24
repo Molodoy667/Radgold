@@ -1,6 +1,34 @@
 <?php
 // Файл функцій для AdBoard Pro
 
+// Універсальні функції для безпечного виконання запитів (сумісність зі старими MySQL)
+function safeQuery($sql, $params = []) {
+    $db = Database::getInstance();
+    return $db->query($sql, $params);
+}
+
+// Функція для отримання одного рядка
+function safeQuerySingle($sql, $params = []) {
+    $result = safeQuery($sql, $params);
+    if ($result) {
+        return $result->fetch_assoc();
+    }
+    return null;
+}
+
+// Функція для отримання всіх рядків
+function safeQueryAll($sql, $params = []) {
+    $result = safeQuery($sql, $params);
+    if ($result) {
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    return [];
+}
+
 // Безпечна функція виводу
 function sanitize($input) {
     return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
@@ -57,31 +85,8 @@ function __($key) {
     static $translations = [];
     static $db_translations = [];
     
-    // Спочатку спробуємо отримати з бази даних
-    if ($db && !$db->connect_error) {
-        if (!isset($db_translations[$currentLang])) {
-            try {
-                $stmt = $db->prepare("SELECT translation_key, " . $db->real_escape_string($currentLang) . " as translation FROM translations WHERE " . $db->real_escape_string($currentLang) . " IS NOT NULL");
-                if ($stmt) {
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    $db_translations[$currentLang] = [];
-                    while ($row = $result->fetch_assoc()) {
-                        $db_translations[$currentLang][$row['translation_key']] = $row['translation'];
-                    }
-                    $stmt->close();
-                }
-            } catch (Exception $e) {
-                error_log("Translation DB error: " . $e->getMessage());
-                $db_translations[$currentLang] = [];
-            }
-        }
-        
-        // Якщо знайшли в базі, повертаємо
-        if (isset($db_translations[$currentLang][$key])) {
-            return $db_translations[$currentLang][$key];
-        }
-    }
+    // Тимчасово відключено отримання з БД для уникнення конфліктів MySQL
+    // TODO: Повернути підтримку БД перекладів після виправлення get_result() проблем
     
     // Fallback на файли перекладів
     if (!isset($translations[$currentLang])) {
@@ -108,10 +113,7 @@ function __($key) {
     return is_string($result) ? $result : $key;
 }
 
-// Перевірка ролі адміністратора
-function isAdmin() {
-    return isLoggedIn() && $_SESSION['user_role'] === 'admin';
-}
+// Перевірка ролі адміністратора (видалено дублікат - див. функцію нижче)
 
 // Отримання поточного користувача
 function getCurrentUser() {
@@ -120,12 +122,7 @@ function getCurrentUser() {
     }
     
     try {
-        $db = new Database();
-        $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->bind_param("i", $_SESSION['user_id']);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        return safeQuerySingle("SELECT * FROM users WHERE id = ?", [$_SESSION['user_id']]);
     } catch (Exception $e) {
         return null;
     }
@@ -134,12 +131,7 @@ function getCurrentUser() {
 // Функція входу користувача
 function loginUser($email, $password, $userType = 'user', $remember = false) {
     try {
-        $db = new Database();
-        $stmt = $db->prepare("SELECT * FROM users WHERE email = ? AND user_type = ? AND status = 'active'");
-        $stmt->bind_param("ss", $email, $userType);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        $user = safeQuerySingle("SELECT * FROM users WHERE email = ? AND user_type = ? AND status = 'active'", [$email, $userType]);
         
         if ($user && password_verify($password, $user['password'])) {
             // Оновлення останнього входу
@@ -180,7 +172,7 @@ function loginUser($email, $password, $userType = 'user', $remember = false) {
 // Функція реєстрації користувача
 function registerUser($userData) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Перевірка існування користувача
         if (userExists($userData['email'])) {
@@ -216,12 +208,8 @@ function registerUser($userData) {
 // Перевірка існування користувача
 function userExists($email) {
     try {
-        $db = new Database();
-        $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->num_rows > 0;
+        $result = safeQuery("SELECT id FROM users WHERE email = ?", [$email]);
+        return $result && $result->num_rows > 0;
     } catch (Exception $e) {
         return false;
     }
@@ -230,12 +218,7 @@ function userExists($email) {
 // Відправка листа для відновлення паролю
 function sendPasswordReset($email, $userType = 'user') {
     try {
-        $db = new Database();
-        $stmt = $db->prepare("SELECT id, first_name FROM users WHERE email = ? AND user_type = ?");
-        $stmt->bind_param("ss", $email, $userType);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        $user = safeQuerySingle("SELECT id, first_name FROM users WHERE email = ? AND user_type = ?", [$email, $userType]);
         
         if (!$user) {
             return false;
@@ -343,7 +326,7 @@ function logout() {
     // Видалення remember token
     if (isset($_COOKIE['remember_token'])) {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $stmt = $db->prepare("DELETE FROM remember_tokens WHERE token = ?");
             $stmt->bind_param("s", $_COOKIE['remember_token']);
             $stmt->execute();
@@ -362,35 +345,21 @@ function logout() {
 
 // Функції для роботи з мета-тегами
 function getMetaTags() {
-    try {
-        $db = new Database();
-        $result = $db->query("SELECT * FROM site_settings WHERE id = 1");
-        $settings = $result->fetch_assoc();
-        
-        return [
-            'title' => $settings['site_title'] ?? SITE_NAME,
-            'description' => $settings['site_description'] ?? SITE_DESCRIPTION,
-            'keywords' => $settings['site_keywords'] ?? SITE_KEYWORDS,
-            'author' => $settings['site_author'] ?? 'AdBoard Pro',
-            'favicon' => $settings['favicon_url'] ?? 'images/favicon.svg',
-            'logo' => $settings['logo_url'] ?? 'images/default_logo.svg'
-        ];
-    } catch (Exception $e) {
-        return [
-            'title' => SITE_NAME,
-            'description' => SITE_DESCRIPTION,
-            'keywords' => SITE_KEYWORDS ?? 'реклама, оголошення',
-            'author' => 'AdBoard Pro',
-            'favicon' => 'images/favicon.svg',
-            'logo' => 'images/default_logo.svg'
-        ];
-    }
+    // Використовуємо константи без підключення до БД для уникнення конфліктів MySQL
+    return [
+        'title' => defined('SITE_NAME') ? SITE_NAME : 'AdBoard Pro',
+        'description' => defined('SITE_DESCRIPTION') ? SITE_DESCRIPTION : 'Сучасна дошка оголошень',
+        'keywords' => 'оголошення, купити, продати',
+        'author' => 'AdBoard Pro',
+        'favicon' => 'images/favicon.svg',
+        'logo' => 'images/default_logo.svg'
+    ];
 }
 
 // Функції для роботи з темою
 function getThemeSettings() {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $result = $db->query("SELECT * FROM theme_settings WHERE id = 1");
         return $result->fetch_assoc() ?? [];
     } catch (Exception $e) {
@@ -438,7 +407,7 @@ function generateGradients() {
 function checkRememberToken() {
     if (!isLoggedIn() && isset($_COOKIE['remember_token'])) {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $stmt = $db->prepare("
                 SELECT u.* FROM users u 
                 JOIN remember_tokens rt ON u.id = rt.user_id 
@@ -862,5 +831,91 @@ function getGroupPermissions($groupId) {
         error_log("Error getting group permissions: " . $e->getMessage());
         return [];
     }
+}
+
+/**
+ * Отримує IP адресу клієнта
+ */
+function getClientIP() {
+    $ipKeys = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 
+               'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];
+    
+    foreach ($ipKeys as $key) {
+        if (array_key_exists($key, $_SERVER) === true) {
+            foreach (explode(',', $_SERVER[$key]) as $ip) {
+                $ip = trim($ip);
+                
+                if (filter_var($ip, FILTER_VALIDATE_IP, 
+                    FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) {
+                    return $ip;
+                }
+            }
+        }
+    }
+    
+    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+}
+
+/**
+ * Логування активності користувачів
+ */
+function logActivity($userId, $action, $description, $meta = []) {
+    try {
+        $db = Database::getInstance();
+        
+        // Додаємо додаткову інформацію
+        $meta['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $meta['timestamp'] = date('Y-m-d H:i:s');
+        
+        $stmt = $db->prepare("
+            INSERT INTO activity_logs (user_id, action, description, meta_data, ip_address, created_at) 
+            VALUES (?, ?, ?, ?, ?, NOW())
+        ");
+        
+        $metaJson = json_encode($meta);
+        $ipAddress = getClientIP();
+        
+        $stmt->bind_param("issss", $userId, $action, $description, $metaJson, $ipAddress);
+        $stmt->execute();
+        $stmt->close();
+        
+        return true;
+    } catch (Exception $e) {
+        error_log("Activity log error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Логування помилок
+ */
+function logError($message, $context = []) {
+    $timestamp = date('Y-m-d H:i:s');
+    $ip = getClientIP();
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    $userId = $_SESSION['user_id'] ?? null;
+    
+    $logEntry = "[{$timestamp}] IP: {$ip} | User: {$userId} | {$message}";
+    
+    if (!empty($context)) {
+        $logEntry .= " | Context: " . json_encode($context);
+    }
+    
+    $logEntry .= " | UA: {$userAgent}" . PHP_EOL;
+    
+    // Логуємо в файл
+    $logFile = __DIR__ . '/../logs/error.log';
+    $logDir = dirname($logFile);
+    
+    if (!is_dir($logDir)) {
+        mkdir($logDir, 0755, true);
+    }
+    
+    error_log($logEntry, 3, $logFile);
+    
+    // Також логуємо в стандартний лог PHP
+    error_log($message);
+    
+    return true;
 }
 ?>

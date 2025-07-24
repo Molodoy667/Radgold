@@ -176,30 +176,25 @@ spl_autoload_register(function (\$class) {
     }
 });
 
-// Global database variable
-\$db = null;
+// Include core files
+require_once __DIR__ . '/core/database.php';
+// functions.php буде включено пізніше для уникнення конфліктів MySQL
 
-// Database connection
+// Database connection using Singleton
 try {
-    \$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    \$db->set_charset('utf8mb4');
+    \$db = Database::getInstance();
+    \$db->getConnection()->set_charset('utf8mb4');
     
-    if (\$db->connect_error) {
-        if (defined('DEBUG_MODE') && DEBUG_MODE) {
-            error_log('Database connection error: ' . \$db->connect_error);
-            die('Database connection error: ' . \$db->connect_error);
-        } else {
-            error_log('Database connection error: ' . \$db->connect_error);
-            die('Database connection error');
-        }
-    }
+    // Also create global \$db variable for backward compatibility
+    \$GLOBALS['db'] = \$db->getConnection();
+    
 } catch (Exception \$e) {
     if (defined('DEBUG_MODE') && DEBUG_MODE) {
-        error_log('Database error: ' . \$e->getMessage());
-        die('Database error: ' . \$e->getMessage());
+        error_log('Database connection error: ' . \$e->getMessage());
+        die('Database connection error: ' . \$e->getMessage());
     } else {
-        error_log('Database error: ' . \$e->getMessage());
-        die('Database error');
+        error_log('Database connection error: ' . \$e->getMessage());
+        die('Database connection error');
     }
 }
 
@@ -214,8 +209,8 @@ if (session_status() == PHP_SESSION_NONE) {
             throw new Exception('Не вдалося створити файл конфігурації');
         }
         
-        // 3. Підключення до БД та створення структури
-        $mysqli = new mysqli($dbConfig['host'], $dbConfig['user'], $dbConfig['pass'] ?? '');
+        // 3. Підключення до існуючої БД
+        $mysqli = new mysqli($dbConfig['host'], $dbConfig['user'], $dbConfig['pass'] ?? '', $dbConfig['name']);
         
         if ($mysqli->connect_error) {
             throw new Exception('Помилка підключення до БД: ' . $mysqli->connect_error);
@@ -224,22 +219,10 @@ if (session_status() == PHP_SESSION_NONE) {
         // Встановлюємо кодування
         $mysqli->set_charset('utf8mb4');
         
-        // Створюємо базу даних якщо не існує
-        if (!$mysqli->query("CREATE DATABASE IF NOT EXISTS `" . $mysqli->real_escape_string($dbConfig['name']) . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
-            throw new Exception('Не вдалося створити базу даних: ' . $mysqli->error);
-        }
-        
-        if (!$mysqli->select_db($dbConfig['name'])) {
-            throw new Exception('Не вдалося вибрати базу даних: ' . $mysqli->error);
-        }
-        
         // 4. Імпорт структури БД
         $sqlFiles = [
             'database.sql',
-            'ads_database.sql',
-            'admin_tables.sql',
-            'translations.sql',
-            'user_groups.sql'
+            'initial_data.sql'
         ];
         
                         foreach ($sqlFiles as $sqlFile) {
@@ -296,16 +279,34 @@ if (session_status() == PHP_SESSION_NONE) {
         }
         
         // 5. Створення адміністратора
+        error_log("Starting admin creation...");
+        error_log("Admin config: " . print_r($adminConfig, true));
+        
+        if (empty($adminConfig['admin_password'])) {
+            throw new Exception('Пароль адміністратора порожній!');
+        }
+        
         $adminPassword = password_hash($adminConfig['admin_password'], PASSWORD_DEFAULT);
+        error_log("Password hashed successfully");
         
         // Перевіряємо чи існує таблиця users
         $result = $mysqli->query("SHOW TABLES LIKE 'users'");
+        error_log("Tables check: " . $result->num_rows . " tables found");
         if ($result->num_rows == 0) {
             throw new Exception('Таблиця users не була створена');
         }
         
+        // Перевіряємо структуру таблиці users
+        $structureResult = $mysqli->query("DESCRIBE users");
+        $columns = [];
+        while ($row = $structureResult->fetch_assoc()) {
+            $columns[] = $row['Field'];
+        }
+        error_log("Users table columns: " . implode(', ', $columns));
+        
         // Видаляємо існуючого адміна якщо є
-        $mysqli->query("DELETE FROM users WHERE role = 'admin' OR user_type = 'admin'");
+        $deleteResult = $mysqli->query("DELETE FROM users WHERE role = 'admin' OR user_type = 'admin'");
+        error_log("Deleted existing admins: " . $mysqli->affected_rows . " rows");
         
         $stmt = $mysqli->prepare("
             INSERT INTO users (username, first_name, last_name, email, password, role, user_type, group_id, status, email_verified, created_at) 
@@ -313,12 +314,15 @@ if (session_status() == PHP_SESSION_NONE) {
         ");
         
         if (!$stmt) {
+            error_log("Prepare failed: " . $mysqli->error);
             throw new Exception('Помилка підготовки запиту користувача: ' . $mysqli->error);
         }
         
         $firstName = $adminConfig['admin_first_name'] ?? 'Admin';
         $lastName = $adminConfig['admin_last_name'] ?? 'User';
         $username = $adminConfig['admin_login'];
+        
+        error_log("Binding params: username=$username, firstName=$firstName, lastName=$lastName, email={$adminConfig['admin_email']}");
         
         $stmt->bind_param("sssss", 
             $adminConfig['admin_login'], 
@@ -329,56 +333,84 @@ if (session_status() == PHP_SESSION_NONE) {
         );
         
         if (!$stmt->execute()) {
+            error_log("Execute failed: " . $stmt->error);
+            error_log("MySQL error: " . $mysqli->error);
             throw new Exception('Помилка створення адміністратора: ' . $stmt->error);
         }
         
+        $adminId = $mysqli->insert_id;
+        error_log("Admin created successfully with ID: $adminId");
+        
         $stmt->close();
         
-        // 6. Додаємо початкові налаштування сайту (БЕЗ даних адміністратора)
+        // 6. Додаємо початкові налаштування сайту з правильною структурою
         $settings = [
-            // Основні налаштування сайту з форми
-            ['site_title', $siteConfig['site_name']],
-            ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень'],
-            ['site_keywords', $siteConfig['site_keywords'] ?? 'реклама, оголошення, дошка оголошень'],
-            ['contact_email', $siteConfig['contact_email'] ?? ''],
-            ['site_url', rtrim($siteConfig['site_url'], '/')],
+            // Основні налаштування сайту з форми (5 полів: key, value, type, group, description)
+            ['site_name', $siteConfig['site_name'], 'string', 'general', 'Назва сайту'],
+            ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень', 'text', 'general', 'Опис сайту'],
+            ['site_keywords', $siteConfig['site_keywords'] ?? 'реклама, оголошення, дошка оголошень', 'text', 'general', 'Ключові слова'],
+            ['contact_email', $siteConfig['contact_email'] ?? $adminConfig['admin_email'], 'email', 'general', 'Email для контактів'],
+            ['site_url', rtrim($siteConfig['site_url'], '/'), 'url', 'general', 'URL сайту'],
+            ['admin_email', $adminConfig['admin_email'], 'email', 'general', 'Email адміністратора'],
             
             // Додаткові налаштування з форми
-            ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev'],
-            ['language', $additionalConfig['default_language'] ?? 'uk'],
-            ['available_languages', '["uk","ru","en"]'],
+            ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev', 'string', 'general', 'Часовий пояс'],
+            ['default_language', $additionalConfig['default_language'] ?? 'uk', 'string', 'general', 'Мова за замовчуванням'],
+            ['available_languages', '["uk","ru","en"]', 'json', 'general', 'Доступні мови'],
             
             // Налаштування теми з форми
-            ['current_theme', $themeConfig['default_theme'] ?? 'light'],
-            ['current_gradient', $themeConfig['default_gradient'] ?? 'gradient-1'],
-            ['enable_animations', $additionalConfig['enable_animations'] ?? '0'],
-            ['enable_particles', $additionalConfig['enable_particles'] ?? '0'],
-            ['smooth_scroll', $additionalConfig['smooth_scroll'] ?? '0'],
-            ['enable_tooltips', $additionalConfig['enable_tooltips'] ?? '0'],
+            ['current_theme', $themeConfig['default_theme'] ?? 'light', 'string', 'theme', 'Поточна тема'],
+            ['current_gradient', $themeConfig['default_gradient'] ?? 'gradient-1', 'string', 'theme', 'Поточний градієнт'],
+            ['enable_animations', $additionalConfig['enable_animations'] ?? '0', 'bool', 'theme', 'Увімкнути анімації'],
+            ['enable_particles', $additionalConfig['enable_particles'] ?? '0', 'bool', 'theme', 'Частинки на фоні'],
+            ['smooth_scroll', $additionalConfig['smooth_scroll'] ?? '0', 'bool', 'theme', 'Плавна прокрутка'],
+            ['enable_tooltips', $additionalConfig['enable_tooltips'] ?? '0', 'bool', 'theme', 'Підказки'],
             
             // Системні налаштування (дефолтні значення)
-            ['max_ad_duration_days', '30'],
-            ['ads_per_page', '12'],
-            ['auto_approve_ads', '0'],
-            ['maintenance_mode', '0']
+            ['max_ad_duration_days', '30', 'int', 'ads', 'Максимальна тривалість оголошення (днів)'],
+            ['ads_per_page', '12', 'int', 'ads', 'Оголошень на сторінку'],
+            ['auto_approve_ads', '0', 'bool', 'ads', 'Автоматичне схвалення оголошень'],
+            ['maintenance_mode', '0', 'bool', 'system', 'Режим обслуговування'],
+            ['currency', 'UAH', 'string', 'general', 'Валюта']
         ];
         
         // Перевіряємо чи існує таблиця site_settings
         $result = $mysqli->query("SHOW TABLES LIKE 'site_settings'");
+        error_log("Site_settings table check: " . $result->num_rows . " tables found");
+        
         if ($result->num_rows > 0) {
+            // Перевіряємо структуру таблиці site_settings
+            $structureResult = $mysqli->query("DESCRIBE site_settings");
+            $settingsColumns = [];
+            while ($row = $structureResult->fetch_assoc()) {
+                $settingsColumns[] = $row['Field'];
+            }
+            error_log("Site_settings table columns: " . implode(', ', $settingsColumns));
+            
             $settingsStmt = $mysqli->prepare("
-                INSERT INTO site_settings (setting_key, value) 
-                VALUES (?, ?) 
-                ON DUPLICATE KEY UPDATE value = VALUES(value)
+                INSERT INTO site_settings (setting_key, setting_value, setting_type, setting_group, description) 
+                VALUES (?, ?, ?, ?, ?) 
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
             ");
             
             if ($settingsStmt) {
+                $settingsInserted = 0;
                 foreach ($settings as $setting) {
-                    $settingsStmt->bind_param("ss", $setting[0], $setting[1]);
-                    $settingsStmt->execute();
+                    error_log("Inserting setting: {$setting[0]} = {$setting[1]}");
+                    $settingsStmt->bind_param("sssss", $setting[0], $setting[1], $setting[2], $setting[3], $setting[4]);
+                    if ($settingsStmt->execute()) {
+                        $settingsInserted++;
+                    } else {
+                        error_log("Failed to insert setting {$setting[0]}: " . $settingsStmt->error);
+                    }
                 }
+                error_log("Successfully inserted $settingsInserted settings");
                 $settingsStmt->close();
+            } else {
+                error_log("Failed to prepare settings statement: " . $mysqli->error);
             }
+        } else {
+            error_log("ERROR: site_settings table not found!");
         }
         
         // 7. Створення файлу .installed
@@ -388,8 +420,9 @@ if (session_status() == PHP_SESSION_NONE) {
         
         $mysqli->close();
         
-        // Очищаємо дані сесії установки
-        unset($_SESSION['install_data']);
+        // Зберігаємо дані для показу в step_9, але позначаємо інсталяцію як завершену
+        $_SESSION['install_data']['installation_completed'] = true;
+        error_log("Installation completed successfully! Sending response...");
         
         // Повертаємо успішний результат
         $response = [
@@ -398,6 +431,7 @@ if (session_status() == PHP_SESSION_NONE) {
             'redirect_url' => '?step=9'
         ];
         
+        error_log("Response to send: " . json_encode($response));
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
         exit();
         

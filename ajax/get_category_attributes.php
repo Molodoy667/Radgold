@@ -11,7 +11,7 @@ try {
         throw new Exception('Невірний ID категорії');
     }
     
-    $db = new Database();
+    $db = Database::getInstance();
     $stmt = $db->prepare("
         SELECT id, name, type, options, is_required, sort_order
         FROM category_attributes 

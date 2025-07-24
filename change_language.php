@@ -30,18 +30,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
             $user_id = intval($_SESSION['user_id']);
             
             // Перевіряємо чи існує стовпець language в таблиці users
-            $result = $db->query("SHOW COLUMNS FROM users LIKE 'language'");
-            if ($result->num_rows == 0) {
-                // Додаємо стовпець language якщо не існує
-                $db->query("ALTER TABLE users ADD COLUMN language VARCHAR(5) DEFAULT 'uk' AFTER email");
-            }
-            
-            // Оновлюємо мову користувача
-            $stmt = $db->prepare("UPDATE users SET language = ? WHERE id = ?");
-            if ($stmt) {
-                $stmt->bind_param("si", $language, $user_id);
-                $stmt->execute();
-                $stmt->close();
+            try {
+                $result = $db->query("SHOW COLUMNS FROM users LIKE 'language'");
+                if ($result->num_rows == 0) {
+                    // Додаємо стовпець language якщо не існує
+                    $db->query("ALTER TABLE users ADD COLUMN language VARCHAR(5) DEFAULT 'uk' AFTER email");
+                }
+                
+                // Оновлюємо мову користувача
+                $stmt = $db->prepare("UPDATE users SET language = ? WHERE id = ?");
+                if ($stmt) {
+                    $stmt->bind_param("si", $language, $user_id);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            } catch (Exception $e) {
+                error_log("Error updating user language: " . $e->getMessage());
             }
         }
         
@@ -89,16 +93,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
                 $user_id = intval($_SESSION['user_id']);
                 
                 // Перевіряємо чи існує стовпець language
-                $result = $db->query("SHOW COLUMNS FROM users LIKE 'language'");
-                if ($result->num_rows == 0) {
-                    $db->query("ALTER TABLE users ADD COLUMN language VARCHAR(5) DEFAULT 'uk' AFTER email");
-                }
-                
-                $stmt = $db->prepare("UPDATE users SET language = ? WHERE id = ?");
-                if ($stmt) {
-                    $stmt->bind_param("si", $language, $user_id);
-                    $stmt->execute();
-                    $stmt->close();
+                try {
+                    $result = $db->query("SHOW COLUMNS FROM users LIKE 'language'");
+                    if ($result->num_rows == 0) {
+                        $db->query("ALTER TABLE users ADD COLUMN language VARCHAR(5) DEFAULT 'uk' AFTER email");
+                    }
+                    
+                    $stmt = $db->prepare("UPDATE users SET language = ? WHERE id = ?");
+                    if ($stmt) {
+                        $stmt->bind_param("si", $language, $user_id);
+                        $stmt->execute();
+                        $stmt->close();
+                    }
+                } catch (Exception $e) {
+                    error_log("Error updating user language: " . $e->getMessage());
                 }
             } catch (Exception $e) {
                 error_log("Language update error: " . $e->getMessage());

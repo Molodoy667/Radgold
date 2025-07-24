@@ -6,326 +6,20 @@ if (!defined('DEBUG_MODE')) {
     define('DEBUG_MODE', false);
 }
 
-// Обробка AJAX POST запиту для фактичної установки
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'install') {
-    // Очищаємо будь-який попередній вивід
-    while (ob_get_level()) {
-        ob_end_clean();
-    }
-    
-    // Встановлюємо правильні заголовки JSON ТІЛЬКИ якщо заголовки ще не відправлені
-    if (!headers_sent()) {
-        header('Content-Type: application/json; charset=utf-8');
-        header('Cache-Control: no-cache, must-revalidate');
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-    }
-    
-    // Відключаємо вивід помилок в JSON
-    ini_set('display_errors', 0);
-    
-    try {
-        // Перевіряємо чи є дані установки в сесії
-        if (!isset($_SESSION['install_data'])) {
-            throw new Exception('Дані установки не знайдені в сесії. Почніть установку заново.');
-        }
-        
-        // Отримуємо дані з сесії
-        $dbConfig = $_SESSION['install_data']['db_config'] ?? [];
-        $adminConfig = $_SESSION['install_data']['admin'] ?? [];
-        $siteConfig = $_SESSION['install_data']['site'] ?? [];
-        $additionalConfig = $_SESSION['install_data']['additional'] ?? [];
-        $themeConfig = $_SESSION['install_data']['theme'] ?? [];
-        
-        // Валідація обов'язкових полів
-        if (empty($dbConfig['host']) || empty($dbConfig['user']) || empty($dbConfig['name'])) {
-            throw new Exception('Неповні дані конфігурації бази даних');
-        }
-        
-        if (empty($adminConfig['admin_login']) || empty($adminConfig['admin_email']) || empty($adminConfig['admin_password'])) {
-            throw new Exception('Неповні дані адміністратора');
-        }
-        
-        if (empty($siteConfig['site_name']) || empty($siteConfig['site_url'])) {
-            throw new Exception('Неповні дані конфігурації сайту');
-        }
-        
-        // 1. Створення необхідних директорій
-        $directories = [
-            '../uploads',
-            '../uploads/ads',
-            '../uploads/users',
-            '../uploads/temp',
-            '../cache',
-            '../logs'
-        ];
-        
-        foreach ($directories as $dir) {
-            if (!file_exists($dir)) {
-                if (!mkdir($dir, 0755, true)) {
-                    throw new Exception("Не вдалося створити директорію: $dir");
-                }
-            }
-        }
-        
-        // 2. Створення конфігураційного файлу
-        $secretKey = bin2hex(random_bytes(32));
-        $jwtSecret = bin2hex(random_bytes(32));
-        
-        $configContent = "<?php
-// AdBoard Pro Configuration
-// Generated on " . date('Y-m-d H:i:s') . "
-
-// Database Configuration  
-define('DB_HOST', '" . addslashes($dbConfig['host']) . "');
-define('DB_USER', '" . addslashes($dbConfig['user']) . "');
-define('DB_PASS', '" . addslashes($dbConfig['pass'] ?? '') . "');
-define('DB_NAME', '" . addslashes($dbConfig['name']) . "');
-
-// Site Configuration
-define('SITE_URL', '" . rtrim(addslashes($siteConfig['site_url']), '/') . "');
-define('SITE_NAME', '" . addslashes($siteConfig['site_name']) . "');
-define('SITE_EMAIL', '" . addslashes($siteConfig['site_email'] ?? '') . "');
-define('SITE_DESCRIPTION', '" . addslashes($siteConfig['site_description'] ?? 'Сучасна дошка оголошень') . "');
-
-// Security
-define('SECRET_KEY', '$secretKey');
-define('JWT_SECRET', '$jwtSecret');
-define('SESSION_NAME', 'adboard_session');
-
-// Environment
-define('DEBUG_MODE', false);
-define('MAINTENANCE_MODE', false);
-
-// Upload settings
-define('UPLOAD_PATH', 'uploads/');
-define('MAX_FILE_SIZE', 10485760); // 10MB
-define('ALLOWED_EXTENSIONS', 'jpg,jpeg,png,gif,webp');
-
-// Pagination
-define('ITEMS_PER_PAGE', 12);
-
-// Email settings (can be configured later)
-define('SMTP_HOST', '');
-define('SMTP_PORT', 587);
-define('SMTP_USER', '');
-define('SMTP_PASS', '');
-define('SMTP_SECURE', 'tls');
-
-// Session settings
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
-
-// Auto-loading
-spl_autoload_register(function (\$class) {
-    \$file = __DIR__ . '/classes/' . \$class . '.php';
-    if (file_exists(\$file)) {
-        require_once \$file;
-    }
-});
-
-// Database connection
-try {
-    \$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    \$db->set_charset('utf8mb4');
-    
-    if (\$db->connect_error) {
-        if (DEBUG_MODE) {
-            die('Database connection error: ' . \$db->connect_error);
-        } else {
-            die('Database connection error');
-        }
-    }
-} catch (Exception \$e) {
-    if (DEBUG_MODE) {
-        die('Database error: ' . \$e->getMessage());
-    } else {
-        die('Database error');
-    }
+// Дебаг: Перевіряємо які дані є в сесії
+if (isset($_SESSION['install_data'])) {
+    error_log("Step 8 Debug - Session data exists");
+    error_log("Step 8 Debug - DB Config: " . print_r($_SESSION['install_data']['db_config'] ?? [], true));
+    error_log("Step 8 Debug - Admin Config: " . print_r($_SESSION['install_data']['admin'] ?? [], true));
+    error_log("Step 8 Debug - Site Config: " . print_r($_SESSION['install_data']['site'] ?? [], true));
+    error_log("Step 8 Debug - Theme Config: " . print_r($_SESSION['install_data']['theme'] ?? [], true));
+    error_log("Step 8 Debug - Additional Config: " . print_r($_SESSION['install_data']['additional'] ?? [], true));
+} else {
+    error_log("Step 8 Debug - NO SESSION DATA FOUND!");
 }
 
-// Start session
-if (session_status() == PHP_SESSION_NONE) {
-    session_name(SESSION_NAME);
-    session_start();
-}
-?>";
-        
-        if (!file_put_contents('../core/config.php', $configContent)) {
-            throw new Exception('Не вдалося створити файл конфігурації');
-        }
-        
-        // 3. Підключення до БД та створення структури
-        $mysqli = new mysqli($dbConfig['host'], $dbConfig['user'], $dbConfig['pass'] ?? '');
-        
-        if ($mysqli->connect_error) {
-            throw new Exception('Помилка підключення до БД: ' . $mysqli->connect_error);
-        }
-        
-        // Встановлюємо кодування
-        $mysqli->set_charset('utf8mb4');
-        
-        // Створюємо базу даних якщо не існує
-        if (!$mysqli->query("CREATE DATABASE IF NOT EXISTS `" . $mysqli->real_escape_string($dbConfig['name']) . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
-            throw new Exception('Не вдалося створити базу даних: ' . $mysqli->error);
-        }
-        
-        if (!$mysqli->select_db($dbConfig['name'])) {
-            throw new Exception('Не вдалося вибрати базу даних: ' . $mysqli->error);
-        }
-        
-        // 4. Імпорт структури БД
-        $sqlFiles = [
-            'database.sql',
-            'ads_database.sql',
-            'admin_tables.sql'
-        ];
-        
-        foreach ($sqlFiles as $sqlFile) {
-            $fullPath = __DIR__ . '/../' . $sqlFile;
-            if (file_exists($fullPath)) {
-                $sql = file_get_contents($fullPath);
-                if ($sql) {
-                    // Розділяємо на окремі запити
-                    $queries = explode(';', $sql);
-                    foreach ($queries as $query) {
-                        $query = trim($query);
-                        if (!empty($query)) {
-                            if (!$mysqli->query($query)) {
-                                // Ігноруємо помилки створення БД (може вже існувати)
-                                if (strpos($mysqli->error, 'database exists') === false && 
-                                    strpos($mysqli->error, 'table exists') === false) {
-                                    throw new Exception("Помилка в {$sqlFile}: " . $mysqli->error);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        // 5. Створення адміністратора
-        $adminPassword = password_hash($adminConfig['admin_password'], PASSWORD_DEFAULT);
-        
-        // Перевіряємо чи існує таблиця users
-        $result = $mysqli->query("SHOW TABLES LIKE 'users'");
-        if ($result->num_rows == 0) {
-            throw new Exception('Таблиця users не була створена');
-        }
-        
-        // Видаляємо існуючого адміна якщо є
-        $mysqli->query("DELETE FROM users WHERE role = 'admin' OR user_type = 'admin'");
-        
-        $stmt = $mysqli->prepare("
-            INSERT INTO users (username, first_name, last_name, email, password, role, user_type, status, email_verified, created_at) 
-            VALUES (?, ?, ?, ?, ?, 'admin', 'admin', 'active', 1, NOW())
-        ");
-        
-        if (!$stmt) {
-            throw new Exception('Помилка підготовки запиту користувача: ' . $mysqli->error);
-        }
-        
-        $firstName = $adminConfig['admin_first_name'] ?? 'Admin';
-        $lastName = $adminConfig['admin_last_name'] ?? 'User';
-        
-        $stmt->bind_param("sssss", 
-            $adminConfig['admin_login'], 
-            $firstName,
-            $lastName,
-            $adminConfig['admin_email'], 
-            $adminPassword
-        );
-        
-        if (!$stmt->execute()) {
-            throw new Exception('Помилка створення адміністратора: ' . $stmt->error);
-        }
-        
-        $stmt->close();
-        
-        // 6. Додаємо початкові налаштування сайту
-        $settings = [
-            ['site_name', $siteConfig['site_name']],
-            ['site_url', rtrim($siteConfig['site_url'], '/')],
-            ['site_email', $siteConfig['site_email'] ?? ''],
-            ['site_description', $siteConfig['site_description'] ?? 'Сучасна дошка оголошень'],
-            ['timezone', $additionalConfig['timezone'] ?? 'Europe/Kiev'],
-            ['language', $additionalConfig['default_language'] ?? 'uk'],
-            ['available_languages', '["uk","ru","en"]'],
-            ['current_theme', $themeConfig['default_theme'] ?? 'light'],
-            ['current_gradient', $themeConfig['default_gradient'] ?? 'gradient-1'],
-            ['enable_animations', isset($additionalConfig['enable_animations']) ? '1' : '0'],
-            ['enable_particles', isset($additionalConfig['enable_particles']) ? '1' : '0'],
-            ['smooth_scroll', isset($additionalConfig['smooth_scroll']) ? '1' : '0'],
-            ['enable_tooltips', isset($additionalConfig['enable_tooltips']) ? '1' : '0'],
-            ['max_ad_duration_days', '30'],
-            ['ads_per_page', '12'],
-            ['auto_approve_ads', '0'],
-            ['maintenance_mode', '0']
-        ];
-        
-        // Перевіряємо чи існує таблиця site_settings
-        $result = $mysqli->query("SHOW TABLES LIKE 'site_settings'");
-        if ($result->num_rows > 0) {
-            $settingsStmt = $mysqli->prepare("
-                INSERT INTO site_settings (setting_key, value) 
-                VALUES (?, ?) 
-                ON DUPLICATE KEY UPDATE value = VALUES(value)
-            ");
-            
-            if ($settingsStmt) {
-                foreach ($settings as $setting) {
-                    $settingsStmt->bind_param("ss", $setting[0], $setting[1]);
-                    $settingsStmt->execute();
-                }
-                $settingsStmt->close();
-            }
-        }
-        
-        // 7. Створення файлу .installed
-        if (!file_put_contents('../.installed', date('Y-m-d H:i:s'))) {
-            throw new Exception('Не вдалося створити файл .installed');
-        }
-        
-        $mysqli->close();
-        
-        // Очищаємо дані сесії установки
-        unset($_SESSION['install_data']);
-        
-        // Повертаємо успішний результат
-        $response = [
-            'success' => true,
-            'message' => 'Установка завершена успішно',
-            'redirect_url' => '?step=9'
-        ];
-        
-        echo json_encode($response, JSON_UNESCAPED_UNICODE);
-        exit();
-        
-    } catch (Exception $e) {
-        // Логуємо помилку
-        error_log("Installation error: " . $e->getMessage());
-        
-        $response = [
-            'success' => false,
-            'error' => $e->getMessage(),
-            'trace' => (defined('DEBUG_MODE') && DEBUG_MODE) ? $e->getTraceAsString() : null
-        ];
-        
-        echo json_encode($response, JSON_UNESCAPED_UNICODE);
-        exit();
-    } catch (Error $e) {
-        // Логуємо фатальну помилку
-        error_log("Installation fatal error: " . $e->getMessage());
-        
-        $response = [
-            'success' => false,
-            'error' => 'Критична помилка установки: ' . $e->getMessage()
-        ];
-        
-        echo json_encode($response, JSON_UNESCAPED_UNICODE);
-        exit();
-    }
-}
+// AJAX запити обробляються в ajax_step8.php
+// Цей файл відповідає тільки за UI кроку 8
 
 // Якщо це не AJAX запит, показуємо HTML
 ?>
@@ -377,7 +71,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     <i class="fas fa-database"></i>
                 </div>
                 <div class="step-content">
-                    <h6>Створення бази даних</h6>
+                    <h6>Підключення до бази даних</h6>
                     <p>Налаштування структури бази даних</p>
                     <div class="step-progress">
                         <div class="progress">
@@ -861,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     duration: 1000
                 },
                 {
-                    action: 'Створення бази даних',
+                    action: 'Підключення до бази даних',
                     description: 'Налаштовуємо структуру бази даних',
                     duration: 2000
                 },

@@ -38,8 +38,9 @@ vendor/
 .env.local
 .env.production
 
-# Database backups
+# Database backups (but keep installer SQL files)
 *.sql
+!install/*.sql
 *.db
 backup/
 
@@ -70,6 +71,8 @@ coverage/
 # Testing
 phpunit.xml
 .phpunit.result.cache
+test_*.php
+debug_*.php
 
 # Documentation builds
 docs/_build/

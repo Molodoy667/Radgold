@@ -209,9 +209,9 @@ $gradients = generateGradients();
             </div>
             
             <div class="nav-item">
-                <a href="<?php echo SITE_URL; ?>/admin/settings" class="nav-link">
+                <a href="settings.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'settings.php' ? 'active' : ''; ?>">
                     <i class="fas fa-sliders-h"></i>
-                    <span>Загальні</span>
+                    <span>Налаштування системи</span>
                 </a>
             </div>
             
@@ -303,9 +303,9 @@ $gradients = generateGradients();
             </div>
             
             <div class="nav-item">
-                <a href="<?php echo SITE_URL; ?>/admin/backups" class="nav-link">
+                <a href="backup.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'backup.php' ? 'active' : ''; ?>">
                     <i class="fas fa-download"></i>
-                    <span>Бекапи</span>
+                    <span>Резервні копії</span>
                 </a>
             </div>
             
@@ -334,7 +334,7 @@ $gradients = generateGradients();
             </div>
             
             <div class="nav-item">
-                <a href="<?php echo SITE_URL; ?>/logout" class="nav-link text-danger">
+                <a href="#" onclick="logout()" class="nav-link text-danger">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Вихід</span>
                 </a>
@@ -391,7 +391,7 @@ $gradients = generateGradients();
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item text-danger" href="<?php echo SITE_URL; ?>/logout">
+                            <a class="dropdown-item text-danger" href="#" onclick="logout()" id="logoutBtn">
                                 <i class="fas fa-sign-out-alt me-2"></i>Вихід
                             </a>
                         </li>
@@ -402,3 +402,38 @@ $gradients = generateGradients();
         
         <!-- Page Content -->
         <div class="p-4">
+
+<script>
+// Функція виходу з адмін-панелі
+function logout() {
+    if (confirm('Ви дійсно хочете вийти з адмін-панелі?')) {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Вихід...';
+        }
+        
+        fetch('<?php echo SITE_URL; ?>/admin/ajax/logout.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                alert('Помилка виходу: ' + (data.error || 'Невідома помилка'));
+                if (logoutBtn) {
+                    logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt me-2"></i>Вихід';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Logout error:', error);
+            // Fallback - перенаправляємо на головну
+            window.location.href = '<?php echo SITE_URL; ?>/admin/';
+        });
+    }
+}
+</script>

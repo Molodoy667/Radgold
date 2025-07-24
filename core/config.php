@@ -50,30 +50,25 @@ spl_autoload_register(function ($class) {
     }
 });
 
-// Global database variable
-$db = null;
+// Include core files
+require_once __DIR__ . '/database.php';
+// functions.php буде включено пізніше для уникнення конфліктів MySQL
 
-// Database connection
+// Database connection using Singleton
 try {
-    $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    $db->set_charset('utf8mb4');
+    $db = Database::getInstance();
+    $db->getConnection()->set_charset('utf8mb4');
     
-    if ($db->connect_error) {
-        if (defined('DEBUG_MODE') && DEBUG_MODE) {
-            error_log('Database connection error: ' . $db->connect_error);
-            die('Database connection error: ' . $db->connect_error);
-        } else {
-            error_log('Database connection error: ' . $db->connect_error);
-            die('Database connection error');
-        }
-    }
+    // Also create global $db variable for backward compatibility
+    $GLOBALS['db'] = $db->getConnection();
+    
 } catch (Exception $e) {
     if (defined('DEBUG_MODE') && DEBUG_MODE) {
-        error_log('Database error: ' . $e->getMessage());
-        die('Database error: ' . $e->getMessage());
+        error_log('Database connection error: ' . $e->getMessage());
+        die('Database connection error: ' . $e->getMessage());
     } else {
-        error_log('Database error: ' . $e->getMessage());
-        die('Database error');
+        error_log('Database connection error: ' . $e->getMessage());
+        die('Database connection error');
     }
 }
 
@@ -81,5 +76,10 @@ try {
 if (session_status() == PHP_SESSION_NONE) {
     session_name(SESSION_NAME);
     session_start();
+}
+
+// Generate CSRF token
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 ?>

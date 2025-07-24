@@ -51,7 +51,7 @@ try {
 
 function getAds() {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Параметри фільтрації та пагінації
         $page = (int)($_GET['page'] ?? 1);
@@ -201,7 +201,7 @@ function updateAdStatus() {
             throw new Exception('Невірні параметри');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Оновлюємо статус
         $stmt = $db->prepare("
@@ -251,7 +251,7 @@ function deleteAd() {
             throw new Exception('Невірний ID оголошення');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Отримуємо інформацію про оголошення
         $stmt = $db->prepare("SELECT title, user_id FROM ads WHERE id = ?");
@@ -318,7 +318,7 @@ function bulkAction() {
             throw new Exception('Не вибрано жодного оголошення');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         $affected = 0;
         
         switch ($action) {
@@ -413,7 +413,7 @@ function getAdDetails() {
             throw new Exception('Невірний ID оголошення');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Отримуємо детальну інформацію
         $stmt = $db->prepare("
@@ -494,7 +494,7 @@ function moderateAd() {
         
         $newStatus = $decision === 'approve' ? 'active' : 'rejected';
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         $stmt = $db->prepare("
             UPDATE ads 
@@ -530,7 +530,7 @@ function moderateAd() {
 
 function logActivity($action, $description, $data = []) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("
             INSERT INTO activity_logs (user_id, action, description, data, created_at) 
             VALUES (?, ?, ?, ?, NOW())

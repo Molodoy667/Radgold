@@ -55,7 +55,7 @@ try {
 
 function getUsers() {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Параметри фільтрації та пагінації
         $page = (int)($_GET['page'] ?? 1);
@@ -230,7 +230,7 @@ function updateUser() {
             throw new Exception('Невірний статус користувача');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Перевіряємо унікальність username та email
         $stmt = $db->prepare("
@@ -294,7 +294,7 @@ function deleteUser() {
             throw new Exception('Не можна видалити самого себе');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Отримуємо інформацію про користувача
         $stmt = $db->prepare("SELECT username, role FROM users WHERE id = ?");
@@ -368,7 +368,7 @@ function banUser() {
             throw new Exception('Не можна заблокувати самого себе');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Обчислюємо дату розблокування
         $unbanDate = null;
@@ -424,7 +424,7 @@ function getUserDetails() {
             throw new Exception('Невірний ID користувача');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Отримуємо детальну інформацію
         $stmt = $db->prepare("
@@ -517,7 +517,7 @@ function bulkAction() {
             throw new Exception('Не вибрано жодного користувача для операції');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         $affected = 0;
         
         switch ($action) {
@@ -638,7 +638,7 @@ function sendMessageToUser() {
             throw new Exception('Заповніть всі поля');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Отримуємо email користувача
         $stmt = $db->prepare("SELECT username, email FROM users WHERE id = ?");
@@ -682,7 +682,7 @@ function sendMessageToUser() {
 
 function logActivity($action, $description, $data = []) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("
             INSERT INTO activity_logs (user_id, action, description, data, created_at) 
             VALUES (?, ?, ?, ?, NOW())

@@ -168,7 +168,7 @@ function getNearbyAds() {
             throw new Exception('Координати не вказані');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Використовуємо формулу гаверсинуса для пошуку в радіусі
         $stmt = $db->prepare("
@@ -244,7 +244,7 @@ function getAdLocation() {
             throw new Exception('ID оголошення не вказано');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         $stmt = $db->prepare("
             SELECT 
@@ -308,7 +308,7 @@ function updateAdLocation() {
         }
         
         $userId = $_SESSION['user_id'];
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Перевіряємо що оголошення належить користувачу
         $stmt = $db->prepare("SELECT id, user_id FROM ads WHERE id = ? AND user_id = ?");
@@ -360,7 +360,7 @@ function updateAdLocation() {
  */
 function logActivity($userId, $action, $description, $data = []) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("
             INSERT INTO activity_logs (user_id, action, description, data, created_at) 
             VALUES (?, ?, ?, ?, NOW())

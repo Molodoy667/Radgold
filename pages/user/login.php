@@ -48,29 +48,165 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../../themes/header.php';
 ?>
 
-<div class="auth-container">
-    <div class="auth-background">
-        <div class="auth-particles"></div>
-        <div class="auth-shapes">
+<div class="modern-auth-container user-login-container">
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="floating-shapes">
             <div class="shape shape-1"></div>
             <div class="shape shape-2"></div>
             <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+        <div class="gradient-orbs">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
         </div>
     </div>
     
     <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-lg-10 col-xl-8">
-                <div class="auth-card user-auth">
-                    <div class="row g-0">
-                        <!-- Ліва частина з інформацією -->
-                        <div class="col-md-6 auth-info">
-                            <div class="auth-info-content">
-                                <div class="auth-brand">
-                                    <i class="fas fa-bullhorn"></i>
-                                    <h2>AdBoard Pro</h2>
-                                    <p>Для розміщення оголошень</p>
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-5">
+                <div class="modern-auth-card user-login-card">
+                    <!-- Header -->
+                    <div class="auth-header">
+                        <div class="header-icon user-login-icon">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <h1>Вхід</h1>
+                        <p>Увійдіть до свого акаунту</p>
+                    </div>
+                    
+                    <!-- Alerts -->
+                    <?php if ($error): ?>
+                        <div class="modern-alert error-alert">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span><?php echo $error; ?></span>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <?php if ($success): ?>
+                        <div class="modern-alert success-alert">
+                            <i class="fas fa-check-circle"></i>
+                            <span><?php echo $success; ?></span>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <!-- Social Login -->
+                    <div class="social-login-section">
+                        <button type="button" class="social-btn google-btn" onclick="googleLogin()">
+                            <i class="fab fa-google"></i>
+                            <span>Увійти через Google</span>
+                        </button>
+                        
+                        <div class="divider">
+                            <span>або</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <form method="POST" id="modernLoginForm" class="modern-form" novalidate>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="email" 
+                                       id="email" 
+                                       name="email" 
+                                       placeholder="Email адреса *"
+                                       value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"
+                                       required>
+                                <div class="input-icon">
+                                    <i class="fas fa-envelope"></i>
                                 </div>
+                                <div class="input-line"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="password" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Пароль *"
+                                       required>
+                                <div class="input-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="input-line"></div>
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="login-options">
+                            <label class="modern-checkbox">
+                                <input type="checkbox" name="remember">
+                                <span class="checkmark"></span>
+                                <span class="checkbox-text">Запам'ятати мене</span>
+                            </label>
+                            
+                            <a href="#" class="forgot-password-link" onclick="showPasswordReset()">
+                                Забули пароль?
+                            </a>
+                        </div>
+                        
+                        <button type="submit" name="login" class="modern-submit-btn user-login-btn">
+                            <span class="btn-text">Увійти</span>
+                            <div class="btn-icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                    </form>
+                    
+                    <!-- Password Reset Form (Hidden) -->
+                    <form method="POST" id="passwordResetForm" class="modern-form" style="display: none;" novalidate>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="email" 
+                                       id="reset_email" 
+                                       name="reset_email" 
+                                       placeholder="Email для відновлення *"
+                                       required>
+                                <div class="input-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="input-line"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="reset-buttons">
+                            <button type="submit" name="reset_password" class="modern-submit-btn reset-btn">
+                                <span class="btn-text">Відновити</span>
+                                <div class="btn-icon">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                            </button>
+                            
+                            <button type="button" class="cancel-btn" onclick="hidePasswordReset()">
+                                Скасувати
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Footer Links -->
+                    <div class="auth-footer-links">
+                        <p>Ще не маєте акаунту?</p>
+                        <a href="register.php" class="register-link">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Зареєструватись</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Partner Link -->
+                    <div class="partner-suggestion">
+                        <p>Бізнес акаунт?</p>
+                        <a href="../partner/login.php" class="partner-link">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Вхід для партнерів</span>
+                        </a>
+                    </div>
                                 
                                 <div class="auth-features">
                                     <div class="feature-item">
@@ -678,6 +814,139 @@ function showAlert(message, type) {
         alertDiv.remove();
     }, 5000);
 }
+
+// Login specific functions
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const toggle = input.parentElement.querySelector('.password-toggle i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        toggle.classList.remove('fa-eye');
+        toggle.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        toggle.classList.remove('fa-eye-slash');
+        toggle.classList.add('fa-eye');
+    }
+}
+
+function showPasswordReset() {
+    document.getElementById('modernLoginForm').style.display = 'none';
+    document.getElementById('passwordResetForm').style.display = 'block';
+    document.querySelector('.auth-header h1').textContent = 'Відновлення паролю';
+    document.querySelector('.auth-header p').textContent = 'Введіть email для відновлення';
+}
+
+function hidePasswordReset() {
+    document.getElementById('modernLoginForm').style.display = 'block';
+    document.getElementById('passwordResetForm').style.display = 'none';
+    document.querySelector('.auth-header h1').textContent = 'Вхід';
+    document.querySelector('.auth-header p').textContent = 'Увійдіть до свого акаунту';
+}
+
+function googleLogin() {
+    alert('Google вхід буде доступний незабаром!');
+}
 </script>
+
+<style>
+/* Login specific styles */
+.user-login-container {
+    background: var(--theme-bg);
+}
+
+.user-login-icon {
+    background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
+}
+
+.user-login-card .modern-submit-btn {
+    background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
+}
+
+.user-login-card .modern-submit-btn:hover {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20) !important;
+}
+
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.forgot-password-link {
+    color: var(--theme-accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.forgot-password-link:hover {
+    color: var(--theme-text);
+    text-decoration: underline;
+}
+
+.reset-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.reset-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.cancel-btn {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid var(--theme-border);
+    border-radius: 12px;
+    background: var(--theme-bg-secondary);
+    color: var(--theme-text);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    border-color: var(--theme-accent);
+    background: var(--theme-bg);
+}
+
+.register-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--theme-bg-secondary);
+    border: 2px solid var(--theme-border);
+    border-radius: 10px;
+    color: var(--theme-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.register-link:hover {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 576px) {
+    .login-options {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .reset-buttons {
+        flex-direction: column;
+    }
+}
+</style>
 
 <?php include '../../themes/footer.php'; ?>

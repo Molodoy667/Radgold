@@ -1,789 +1,640 @@
--- Створення бази даних AdBoard Pro
-CREATE DATABASE IF NOT EXISTS adboard_site CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE adboard_site;
+-- Виправлена база даних AdBoard Pro (без зовнішніх ключів в CREATE TABLE)
+-- Версія: 2.1.2
+-- Дата: 2024
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+-- База даних має бути створена заздалегідь
+-- Підключення відбувається через конфігурацію інсталятора
 
 -- Таблиця налаштувань сайту
-CREATE TABLE IF NOT EXISTS site_settings (
-    setting_key VARCHAR(100) PRIMARY KEY,
-    value TEXT,
-    description VARCHAR(255),
-    type ENUM('string', 'text', 'int', 'bool', 'json') DEFAULT 'string',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+CREATE TABLE IF NOT EXISTS `site_settings` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `setting_key` varchar(100) NOT NULL,
+    `setting_value` text,
+    `setting_type` enum('string','text','int','bool','json','email','url') DEFAULT 'string',
+    `setting_group` varchar(50) DEFAULT 'general',
+    `description` varchar(255),
+    `is_public` boolean DEFAULT FALSE,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `setting_key` (`setting_key`),
+    KEY `idx_group` (`setting_group`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Вставляємо початкові налаштування
-INSERT IGNORE INTO site_settings (setting_key, value, description, type) VALUES
-('site_title', 'AdBoard Pro', 'Назва сайту', 'string'),
-('site_description', 'Сучасна дошка оголошень та рекламна компанія', 'Опис сайту', 'text'),
-('site_keywords', 'оголошення, купити, продати, послуги, реклама', 'Ключові слова', 'text'),
-('site_author', 'AdBoard Pro Team', 'Автор сайту', 'string'),
-('logo_url', 'images/default_logo.svg', 'URL логотипу', 'string'),
-('favicon_url', 'images/favicon.svg', 'URL фавікону', 'string'),
-('contact_email', '', 'Email для контактів', 'string'),
-('contact_phone', '', 'Телефон для контактів', 'string'),
-('contact_address', '', 'Адреса для контактів', 'text'),
-('timezone', 'Europe/Kiev', 'Часовий пояс', 'string'),
-('language', 'uk', 'Мова за замовчуванням', 'string'),
-('available_languages', '["uk","ru","en"]', 'Доступні мови', 'json'),
-('social_facebook', '', 'Facebook URL', 'string'),
-('social_twitter', '', 'Twitter URL', 'string'),
-('social_instagram', '', 'Instagram URL', 'string'),
-('social_linkedin', '', 'LinkedIn URL', 'string'),
-('social_youtube', '', 'YouTube URL', 'string'),
-('analytics_code', '', 'Код аналітики', 'text'),
-('meta_robots', 'index, follow', 'Meta robots', 'string'),
-('current_theme', 'light', 'Поточна тема', 'string'),
-('current_gradient', 'gradient-1', 'Поточний градієнт', 'string'),
-('enable_animations', '1', 'Увімкнути анімації', 'bool'),
-('enable_particles', '0', 'Частинки на фоні', 'bool'),
-('smooth_scroll', '1', 'Плавна прокрутка', 'bool'),
-('enable_tooltips', '1', 'Підказки', 'bool'),
-('custom_css', '', 'Кастомний CSS', 'text'),
-('custom_js', '', 'Кастомний JavaScript', 'text'),
-('site_url', '', 'URL сайту', 'string'),
-('max_ad_duration_days', '30', 'Максимальна тривалість оголошення (днів)', 'int'),
-('ads_per_page', '12', 'Оголошень на сторінку', 'int'),
-('auto_approve_ads', '0', 'Автоматичне схвалення оголошень', 'bool'),
-('maintenance_mode', '0', 'Режим обслуговування', 'bool');
-
-
-
--- Таблиця користувачів
-CREATE TABLE IF NOT EXISTS users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) UNIQUE NULL,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    avatar VARCHAR(255) NULL DEFAULT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    phone VARCHAR(20) NULL,
-    bio TEXT NULL,
-    password VARCHAR(255) NOT NULL,
-    user_type ENUM('user', 'partner', 'admin') DEFAULT 'user',
-    role ENUM('user', 'admin', 'moderator', 'partner') DEFAULT 'user',
-    status ENUM('active', 'inactive', 'banned', 'pending') DEFAULT 'active',
-    email_verified BOOLEAN DEFAULT FALSE,
-    newsletter BOOLEAN DEFAULT FALSE,
-    google_id VARCHAR(100) NULL,
-    email_verification_token VARCHAR(255),
-    last_login TIMESTAMP NULL,
-    login_count INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_email (email),
-    INDEX idx_username (username),
-    INDEX idx_user_type (user_type),
-    INDEX idx_role (role),
-    INDEX idx_status (status),
-    INDEX idx_google_id (google_id)
-);
-
--- Таблиця для токенів запам'ятовування
-CREATE TABLE IF NOT EXISTS remember_tokens (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    token VARCHAR(255) NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_token (token),
-    INDEX idx_user_id (user_id),
-    INDEX idx_expires (expires_at)
-);
-
--- Таблиця для відновлення паролю
-CREATE TABLE IF NOT EXISTS password_resets (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(255) NOT NULL,
-    token VARCHAR(255) NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_email (email),
-    INDEX idx_token (token),
-    INDEX idx_expires (expires_at)
-);
-
--- Таблиця категорій
-CREATE TABLE IF NOT EXISTS categories (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) UNIQUE NOT NULL,
-    description TEXT,
-    icon VARCHAR(50),
-    parent_id INT NULL,
-    sort_order INT DEFAULT 0,
-    status ENUM('active', 'inactive') DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL,
-    INDEX idx_slug (slug),
-    INDEX idx_parent (parent_id),
-    INDEX idx_status (status)
-);
-
--- Таблиця оголошень
-CREATE TABLE IF NOT EXISTS ads (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    category_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    price DECIMAL(10, 2),
-    currency VARCHAR(3) DEFAULT 'UAH',
-    images JSON,
-    location VARCHAR(255),
-    latitude DECIMAL(10, 8),
-    longitude DECIMAL(11, 8),
-    contact_name VARCHAR(100),
-    contact_phone VARCHAR(20),
-    contact_email VARCHAR(255),
-    is_featured BOOLEAN DEFAULT FALSE,
-    is_urgent BOOLEAN DEFAULT FALSE,
-    status ENUM('draft', 'active', 'inactive', 'expired', 'sold') DEFAULT 'draft',
-    views_count INT DEFAULT 0,
-    expires_at DATETIME,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
-    INDEX idx_user (user_id),
-    INDEX idx_category (category_id),
-    INDEX idx_status (status),
-    INDEX idx_location (location),
-    INDEX idx_created (created_at),
-    INDEX idx_featured (is_featured),
-    INDEX idx_urgent (is_urgent),
-    FULLTEXT idx_search (title, description)
-);
-
--- Таблиця сторінок
-CREATE TABLE IF NOT EXISTS pages (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) UNIQUE NOT NULL,
-    content LONGTEXT NOT NULL,
-    meta_title VARCHAR(255),
-    meta_description TEXT,
-    meta_keywords TEXT,
-    status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_slug (slug),
-    INDEX idx_status (status),
-    FULLTEXT idx_content (title, content)
-);
-
--- Таблиця меню
-CREATE TABLE IF NOT EXISTS menu_items (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(100) NOT NULL,
-    url VARCHAR(255) NOT NULL,
-    icon VARCHAR(50),
-    parent_id INT NULL,
-    sort_order INT DEFAULT 0,
-    target VARCHAR(10) DEFAULT '_self',
-    status ENUM('active', 'inactive') DEFAULT 'active',
-    menu_location ENUM('header', 'footer', 'sidebar') DEFAULT 'header',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (parent_id) REFERENCES menu_items(id) ON DELETE CASCADE,
-    INDEX idx_parent (parent_id),
-    INDEX idx_location (menu_location),
-    INDEX idx_status (status)
-);
-
--- Таблиця повідомлень
-CREATE TABLE IF NOT EXISTS messages (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    from_user_id INT NOT NULL,
-    to_user_id INT NOT NULL,
-    ad_id INT NULL,
-    subject VARCHAR(255),
-    message TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE SET NULL,
-    INDEX idx_from_user (from_user_id),
-    INDEX idx_to_user (to_user_id),
-    INDEX idx_ad (ad_id),
-    INDEX idx_read (is_read)
-);
-
--- Таблиця обраних оголошень
-CREATE TABLE IF NOT EXISTS favorites (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    ad_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_favorite (user_id, ad_id),
-    INDEX idx_user (user_id),
-    INDEX idx_ad (ad_id)
-);
-
--- Таблиця логів
-CREATE TABLE IF NOT EXISTS activity_logs (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NULL,
-    action VARCHAR(100) NOT NULL,
-    table_name VARCHAR(50),
-    record_id INT,
-    old_values JSON,
-    new_values JSON,
-    ip_address VARCHAR(45),
-    user_agent TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    INDEX idx_user (user_id),
-    INDEX idx_action (action),
-    INDEX idx_table (table_name),
-    INDEX idx_created (created_at)
-);
-
--- Вставка початкових даних
-
--- Налаштування сайту
-INSERT IGNORE INTO site_settings (
-    site_title, 
-    site_description, 
-    site_keywords, 
-    site_author,
-    contact_email,
-    contact_phone,
-    contact_address
-) VALUES (
-    'AdBoard Pro - Рекламна компанія та дошка оголошень',
-    'Професійна рекламна компанія та сучасна дошка оголошень. Ефективне просування бізнесу та пошук товарів і послуг.',
-    'реклама, оголошення, дошка оголошень, маркетинг, просування, бізнес, товари, послуги',
-    'AdBoard Pro Team',
-    'info@adboardpro.com',
-    '+380 (50) 123-45-67',
-    'вул. Хрещатик, 1, Київ, Україна'
-);
+-- Вставка базових налаштувань
+INSERT IGNORE INTO `site_settings` (`setting_key`, `setting_value`, `setting_type`, `setting_group`, `description`, `is_public`) VALUES
+-- Основні налаштування
+('site_name', 'AdBoard Pro', 'string', 'general', 'Назва сайту', TRUE),
+('site_description', 'Сучасна дошка оголошень та рекламна компанія', 'text', 'general', 'Опис сайту', TRUE),
+('site_keywords', 'дошка оголошень, купівля, продаж, оренда, послуги', 'text', 'general', 'Ключові слова', TRUE),
+('contact_email', 'info@adboard.local', 'email', 'general', 'Email для контактів', TRUE),
+('contact_phone', '+380123456789', 'string', 'general', 'Телефон для контактів', TRUE),
+('admin_email', 'admin@adboard.local', 'email', 'general', 'Email адміністратора', FALSE),
+('default_language', 'uk', 'string', 'general', 'Мова за замовчуванням', TRUE),
+('timezone', 'Europe/Kiev', 'string', 'general', 'Часовий пояс', FALSE),
 
 -- Налаштування теми
-INSERT IGNORE INTO theme_settings (current_theme, current_gradient) VALUES ('light', 'gradient-1');
+('default_theme', 'modern', 'string', 'theme', 'Тема за замовчуванням', TRUE),
+('enable_dark_mode', '1', 'bool', 'theme', 'Увімкнути темний режим', TRUE),
+('primary_color', '#007bff', 'string', 'theme', 'Основний колір', TRUE),
+('secondary_color', '#6c757d', 'string', 'theme', 'Вторинний колір', TRUE),
+('enable_animations', '1', 'bool', 'theme', 'Увімкнути анімації', TRUE),
+('enable_particles', '0', 'bool', 'theme', 'Увімкнути частинки', TRUE),
+('enable_smooth_scroll', '1', 'bool', 'theme', 'Плавна прокрутка', TRUE),
+('enable_tooltips', '1', 'bool', 'theme', 'Увімкнути підказки', TRUE),
 
--- Створення адміністратора
-INSERT IGNORE INTO users (
-    username, 
-    email, 
-    password, 
-    first_name, 
-    last_name, 
-    role, 
-    status, 
-    email_verified
-) VALUES (
-    'admin',
-    'admin@adboardpro.com',
-    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', -- password: password
-    'Адміністратор',
-    'Сайту',
-    'admin',
-    'active',
-    TRUE
-);
+-- Email налаштування  
+('smtp_enabled', '0', 'bool', 'email', 'Увімкнути SMTP', FALSE),
+('smtp_host', '', 'string', 'email', 'SMTP хост', FALSE),
+('smtp_port', '587', 'int', 'email', 'SMTP порт', FALSE),
+('smtp_username', '', 'string', 'email', 'SMTP користувач', FALSE),
+('smtp_password', '', 'string', 'email', 'SMTP пароль', FALSE),
+('smtp_encryption', 'tls', 'string', 'email', 'SMTP шифрування', FALSE),
+('from_email', 'noreply@adboard.local', 'email', 'email', 'Відправник email', FALSE),
+('from_name', 'AdBoard Pro', 'string', 'email', 'Ім\'я відправника', FALSE),
 
--- Основні категорії
-INSERT IGNORE INTO categories (name, slug, description, icon, sort_order) VALUES
-('Нерухомість', 'real-estate', 'Продаж та оренда нерухомості', 'fas fa-home', 1),
-('Транспорт', 'transport', 'Автомобілі, мотоцикли та інший транспорт', 'fas fa-car', 2),
-('Електроніка', 'electronics', 'Комп\'ютери, телефони, побутова техніка', 'fas fa-laptop', 3),
-('Мода та стиль', 'fashion', 'Одяг, взуття, аксесуари', 'fas fa-tshirt', 4),
-('Дім і сад', 'home-garden', 'Меблі, декор, садівництво', 'fas fa-couch', 5),
-('Робота', 'jobs', 'Вакансії та пошук роботи', 'fas fa-briefcase', 6),
-('Послуги', 'services', 'Різноманітні послуги', 'fas fa-cogs', 7),
-('Тварини', 'animals', 'Домашні тварини та товари для них', 'fas fa-paw', 8),
-('Хобі та відпочинок', 'hobby', 'Спорт, музика, книги, ігри', 'fas fa-gamepad', 9),
-('Інше', 'other', 'Різні товари та послуги', 'fas fa-ellipsis-h', 10);
+-- Платіжні системи
+('payments_enabled', '0', 'bool', 'payments', 'Увімкнути платежі', FALSE),
+('currency', 'UAH', 'string', 'payments', 'Валюта', TRUE),
+('liqpay_enabled', '0', 'bool', 'payments', 'Увімкнути LiqPay', FALSE),
+('liqpay_public_key', '', 'string', 'payments', 'LiqPay публічний ключ', FALSE),
+('liqpay_private_key', '', 'string', 'payments', 'LiqPay приватний ключ', FALSE),
+('fondy_enabled', '0', 'bool', 'payments', 'Увімкнути Fondy', FALSE),
+('fondy_merchant_id', '', 'string', 'payments', 'Fondy ID мерчанта', FALSE),
+('fondy_secret_key', '', 'string', 'payments', 'Fondy секретний ключ', FALSE),
+('paypal_enabled', '0', 'bool', 'payments', 'Увімкнути PayPal', FALSE),
+('paypal_client_id', '', 'string', 'payments', 'PayPal Client ID', FALSE),
+('paypal_secret', '', 'string', 'payments', 'PayPal секрет', FALSE),
 
--- Підкategorії для нерухомості
-INSERT IGNORE INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
-('Квартири', 'apartments', 'Продаж та оренда квартир', 'fas fa-building', 1, 1),
-('Будинки', 'houses', 'Продаж та оренда будинків', 'fas fa-home', 1, 2),
-('Комерційна нерухомість', 'commercial', 'Офіси, магазини, склади', 'fas fa-store', 1, 3),
-('Земельні ділянки', 'land', 'Продаж земельних ділянок', 'fas fa-mountain', 1, 4);
+-- Безпека
+('ssl_enabled', '0', 'bool', 'security', 'Увімкнути SSL', FALSE),
+('force_https', '0', 'bool', 'security', 'Примусовий HTTPS', FALSE),
+('session_lifetime', '1440', 'int', 'security', 'Час життя сесії (хв)', FALSE),
+('password_min_length', '6', 'int', 'security', 'Мін. довжина паролю', FALSE),
+('enable_2fa', '0', 'bool', 'security', 'Увімкнути 2FA', FALSE),
+('max_login_attempts', '5', 'int', 'security', 'Макс. спроб входу', FALSE),
+('lockout_duration', '15', 'int', 'security', 'Блокування (хв)', FALSE),
 
--- Підкategorії для транспорту
-INSERT IGNORE INTO categories (name, slug, description, icon, parent_id, sort_order) VALUES
-('Легкові автомобілі', 'cars', 'Продаж легкових автомобілів', 'fas fa-car', 2, 1),
-('Мотоцикли', 'motorcycles', 'Мотоцикли та скутери', 'fas fa-motorcycle', 2, 2),
-('Вантажівки', 'trucks', 'Вантажний транспорт', 'fas fa-truck', 2, 3),
-('Запчастини', 'auto-parts', 'Автозапчастини та аксесуари', 'fas fa-cog', 2, 4);
+-- Соціальні мережі
+('facebook_app_id', '', 'string', 'social', 'Facebook App ID', FALSE),
+('google_client_id', '', 'string', 'social', 'Google Client ID', FALSE),
+('google_analytics_id', '', 'string', 'social', 'Google Analytics ID', FALSE),
+('facebook_pixel_id', '', 'string', 'social', 'Facebook Pixel ID', FALSE),
 
--- Базові сторінки
-INSERT IGNORE INTO pages (title, slug, content, meta_title, meta_description, status) VALUES
-('Про нас', 'about', 
-'<h1>Про компанію AdBoard Pro</h1>
-<p>AdBoard Pro - це інноваційна платформа, яка поєднує в собі функціональність рекламної компанії та сучасної дошки оголошень.</p>
-<h2>Наша місія</h2>
-<p>Ми прагнемо створити найкращу платформу для ефективного просування бізнесу та комфортного пошуку товарів і послуг.</p>',
-'Про нас - AdBoard Pro',
-'Дізнайтеся більше про нашу компанію, місію та цінності',
-'published'),
+-- Системні налаштування
+('debug_mode', '0', 'bool', 'system', 'Режим налагодження', FALSE),
+('maintenance_mode', '0', 'bool', 'system', 'Режим обслуговування', FALSE),
+('cache_enabled', '1', 'bool', 'system', 'Увімкнути кеш', FALSE),
+('cache_lifetime', '3600', 'int', 'system', 'Час життя кешу (сек)', FALSE),
+('log_level', 'error', 'string', 'system', 'Рівень логування', FALSE),
+('backup_enabled', '1', 'bool', 'system', 'Увімкнути backup', FALSE),
+('backup_frequency', 'daily', 'string', 'system', 'Частота backup', FALSE),
+('backup_retention_days', '30', 'int', 'system', 'Зберігати backup (днів)', FALSE);
 
-('Контакти', 'contact',
-'<h1>Контактна інформація</h1>
-<div class="row">
-<div class="col-md-6">
-<h3>Наші контакти</h3>
-<p><strong>Адреса:</strong> вул. Хрещатик, 1, Київ, Україна</p>
-<p><strong>Телефон:</strong> +380 (50) 123-45-67</p>
-<p><strong>Email:</strong> info@adboardpro.com</p>
-</div>
-<div class="col-md-6">
-<h3>Режим роботи</h3>
-<p>Пн-Пт: 9:00 - 18:00</p>
-<p>Сб: 10:00 - 16:00</p>
-<p>Нд: вихідний</p>
-</div>
-</div>',
-'Контакти - AdBoard Pro',
-'Зв\'яжіться з нами. Адреса, телефон, email та режим роботи',
-'published'),
+-- Таблиця груп користувачів
+CREATE TABLE IF NOT EXISTS `user_groups` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(100) NOT NULL,
+    `description` text DEFAULT NULL,
+    `permissions` text DEFAULT NULL,
+    `color` varchar(7) DEFAULT '#6c757d',
+    `sort_order` int(11) DEFAULT 0,
+    `is_default` boolean DEFAULT FALSE,
+    `is_system` boolean DEFAULT FALSE,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `name` (`name`),
+    KEY `idx_sort_order` (`sort_order`),
+    KEY `idx_is_default` (`is_default`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-('Політика конфіденційності', 'privacy',
-'<h1>Політика конфіденційності</h1>
-<p>Ця політика конфіденційності описує, як ми збираємо, використовуємо та захищаємо вашу особисту інформацію.</p>
-<h2>Збір інформації</h2>
-<p>Ми збираємо інформацію, яку ви надаєте нам добровільно при реєстрації та використанні нашого сервісу.</p>',
-'Політика конфіденційності - AdBoard Pro',
-'Політика конфіденційності та захисту персональних даних',
-'published');
+-- Таблиця користувачів
+CREATE TABLE IF NOT EXISTS `users` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `username` varchar(50) DEFAULT NULL,
+    `first_name` varchar(100) NOT NULL,
+    `last_name` varchar(100) NOT NULL,
+    `email` varchar(255) NOT NULL,
+    `phone` varchar(20) DEFAULT NULL,
+    `avatar` varchar(255) DEFAULT NULL,
+    `bio` text DEFAULT NULL,
+    `password` varchar(255) NOT NULL,
+    `role` enum('user','admin','moderator','partner') DEFAULT 'user',
+    `user_type` enum('user','admin','moderator','partner') DEFAULT 'user',
+    `group_id` int(11) DEFAULT NULL,
+    `status` enum('active','inactive','banned','pending') DEFAULT 'active',
+    `email_verified` boolean DEFAULT FALSE,
+    `phone_verified` boolean DEFAULT FALSE,
+    `newsletter` boolean DEFAULT TRUE,
+    `google_id` varchar(100) DEFAULT NULL,
+    `facebook_id` varchar(100) DEFAULT NULL,
+    `email_verification_token` varchar(255) DEFAULT NULL,
+    `phone_verification_code` varchar(10) DEFAULT NULL,
+    `two_factor_enabled` boolean DEFAULT FALSE,
+    `two_factor_secret` varchar(255) DEFAULT NULL,
+    `language` varchar(5) DEFAULT 'uk',
+    `timezone` varchar(50) DEFAULT 'Europe/Kiev',
+    `last_login` timestamp NULL DEFAULT NULL,
+    `last_activity` timestamp NULL DEFAULT NULL,
+    `login_count` int(11) DEFAULT 0,
+    `failed_login_attempts` int(11) DEFAULT 0,
+    `blocked_until` timestamp NULL DEFAULT NULL,
+    `balance` decimal(10,2) DEFAULT 0.00,
+    `ban_reason` text DEFAULT NULL,
+    `ban_until` datetime DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `email` (`email`),
+    UNIQUE KEY `username` (`username`),
+    KEY `idx_role` (`role`),
+    KEY `idx_user_type` (`user_type`),
+    KEY `idx_group_id` (`group_id`),
+    KEY `idx_status` (`status`),
+    KEY `idx_google_id` (`google_id`),
+    KEY `idx_last_login` (`last_login`),
+    KEY `idx_email_verified` (`email_verified`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Початкові дані для налаштувань сайту
-INSERT IGNORE INTO site_settings (
-    site_title, 
-    site_description, 
-    site_keywords, 
-    site_author,
-    logo_url,
-    favicon_url,
-    contact_email,
-    timezone,
-    language,
-    meta_robots
-) VALUES (
-    'AdBoard Pro',
-    'Рекламна компанія та дошка оголошень',
-    'реклама, оголошення, дошка оголошень, маркетинг',
-    'AdBoard Pro Team',
-    'images/default_logo.svg',
-    'images/favicon.svg',
-    'info@adboardpro.com',
-    'Europe/Kiev',
-    'uk',
-    'index, follow'
-);
+-- Таблиця remember tokens
+CREATE TABLE IF NOT EXISTS `remember_tokens` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `token` varchar(255) NOT NULL,
+    `expires_at` timestamp NOT NULL,
+    `used` boolean DEFAULT FALSE,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `token` (`token`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_expires_at` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Початкові дані для налаштувань теми
-INSERT IGNORE INTO theme_settings (
-    current_theme,
-    current_gradient,
-    enable_animations,
-    enable_particles,
-    smooth_scroll,
-    enable_tooltips
-) VALUES (
-    'light',
-    'gradient-1',
-    TRUE,
-    FALSE,
-    TRUE,
-    TRUE
-);
+-- Таблиця відновлення паролів
+CREATE TABLE IF NOT EXISTS `password_resets` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `email` varchar(255) NOT NULL,
+    `token` varchar(255) NOT NULL,
+    `expires_at` timestamp NOT NULL,
+    `used` boolean DEFAULT FALSE,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `token` (`token`),
+    KEY `idx_email` (`email`),
+    KEY `idx_expires_at` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Таблиця системних оновлень
-CREATE TABLE IF NOT EXISTS system_updates (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    version VARCHAR(50) NOT NULL,
-    description TEXT,
-    file_path VARCHAR(500),
-    file_size BIGINT DEFAULT 0,
-    status ENUM('success', 'failed', 'pending') DEFAULT 'pending',
-    install_log LONGTEXT,
-    installed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    installed_by INT,
-    INDEX idx_status (status),
-    INDEX idx_installed_at (installed_at),
-    FOREIGN KEY (installed_by) REFERENCES users(id) ON DELETE SET NULL
-);
+-- Таблиця локацій
+CREATE TABLE IF NOT EXISTS `locations` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(100) NOT NULL,
+    `slug` varchar(100) NOT NULL,
+    `region` varchar(100) DEFAULT NULL,
+    `latitude` decimal(10,8) DEFAULT NULL,
+    `longitude` decimal(11,8) DEFAULT NULL,
+    `sort_order` int(11) DEFAULT 0,
+    `status` enum('active','inactive') DEFAULT 'active',
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `slug` (`slug`),
+    KEY `idx_region` (`region`),
+    KEY `idx_status` (`status`),
+    KEY `idx_sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Розширення таблиці site_settings для додаткових налаштувань
-ALTER TABLE site_settings 
-ADD COLUMN setting_key VARCHAR(100) UNIQUE,
-ADD COLUMN value TEXT,
-ADD INDEX idx_setting_key (setting_key);
-
--- Таблиця додаткової інформації про партнерів
-CREATE TABLE IF NOT EXISTS partner_info (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    company_name VARCHAR(255) NOT NULL,
-    website VARCHAR(500),
-    business_type VARCHAR(100),
-    annual_revenue DECIMAL(15,2),
-    employees_count INT,
-    description TEXT,
-    verified BOOLEAN DEFAULT FALSE,
-    verification_documents JSON,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user_id (user_id),
-    INDEX idx_verified (verified)
-);
-
--- Додаткові таблиці для дошки оголошень
-
--- Таблиця категорій оголошень (розширена)
-ALTER TABLE categories ADD COLUMN IF NOT EXISTS meta_title VARCHAR(255);
-ALTER TABLE categories ADD COLUMN IF NOT EXISTS meta_description TEXT;
-
--- Таблиця міст/локацій для оголошень
-CREATE TABLE IF NOT EXISTS locations (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) NOT NULL UNIQUE,
-    region VARCHAR(100),
-    country VARCHAR(100) DEFAULT 'Ukraine',
-    latitude DECIMAL(10, 8),
-    longitude DECIMAL(11, 8),
-    is_active BOOLEAN DEFAULT TRUE,
-    sort_order INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_slug (slug),
-    INDEX idx_region (region),
-    INDEX idx_active (is_active)
-);
+-- Таблиця категорій
+CREATE TABLE IF NOT EXISTS `categories` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(100) NOT NULL,
+    `slug` varchar(100) NOT NULL,
+    `description` text DEFAULT NULL,
+    `icon` varchar(50) DEFAULT NULL,
+    `image` varchar(255) DEFAULT NULL,
+    `parent_id` int(11) DEFAULT NULL,
+    `sort_order` int(11) DEFAULT 0,
+    `is_active` boolean DEFAULT TRUE,
+    `meta_title` varchar(255) DEFAULT NULL,
+    `meta_description` text DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `slug` (`slug`),
+    KEY `idx_parent_id` (`parent_id`),
+    KEY `idx_sort_order` (`sort_order`),
+    KEY `idx_is_active` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Таблиця оголошень
-CREATE TABLE IF NOT EXISTS ads (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    category_id INT NOT NULL,
-    location_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) NOT NULL UNIQUE,
-    description TEXT NOT NULL,
-    price DECIMAL(12, 2),
-    currency VARCHAR(3) DEFAULT 'UAH',
-    contact_name VARCHAR(100),
-    contact_phone VARCHAR(20),
-    contact_email VARCHAR(100),
-    address TEXT,
-    condition_type ENUM('new', 'used', 'refurbished') DEFAULT 'used',
-    status ENUM('draft', 'pending', 'active', 'sold', 'expired', 'rejected', 'archived') DEFAULT 'pending',
-    moderation_comment TEXT,
-    views_count INT DEFAULT 0,
-    favorites_count INT DEFAULT 0,
-    is_featured BOOLEAN DEFAULT FALSE,
-    featured_until DATETIME NULL,
-    is_urgent BOOLEAN DEFAULT FALSE,
-    urgent_until DATETIME NULL,
-    auto_republish BOOLEAN DEFAULT FALSE,
-    expires_at DATETIME,
-    published_at DATETIME NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
-    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE RESTRICT,
-    INDEX idx_user (user_id),
-    INDEX idx_category (category_id),
-    INDEX idx_location (location_id),
-    INDEX idx_status (status),
-    INDEX idx_featured (is_featured),
-    INDEX idx_urgent (is_urgent),
-    INDEX idx_published (published_at),
-    INDEX idx_expires (expires_at),
-    FULLTEXT idx_search (title, description)
-);
+CREATE TABLE IF NOT EXISTS `ads` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `category_id` int(11) NOT NULL,
+    `location_id` int(11) NOT NULL,
+    `title` varchar(255) NOT NULL,
+    `description` text NOT NULL,
+    `price` decimal(10,2) DEFAULT NULL,
+    `currency` varchar(3) DEFAULT 'UAH',
+    `condition_type` enum('new','used','not_specified') DEFAULT 'not_specified',
+    `contact_phone` varchar(20) DEFAULT NULL,
+    `contact_email` varchar(255) DEFAULT NULL,
+    `address` varchar(255) DEFAULT NULL,
+    `latitude` decimal(10,8) DEFAULT NULL,
+    `longitude` decimal(11,8) DEFAULT NULL,
+    `status` enum('active','pending','sold','expired','deleted') DEFAULT 'pending',
+    `is_featured` boolean DEFAULT FALSE,
+    `is_urgent` boolean DEFAULT FALSE,
+    `is_top` boolean DEFAULT FALSE,
+    `views_count` int(11) DEFAULT 0,
+    `favorites_count` int(11) DEFAULT 0,
+    `featured_until` datetime DEFAULT NULL,
+    `urgent_until` datetime DEFAULT NULL,
+    `top_until` datetime DEFAULT NULL,
+    `expires_at` datetime DEFAULT NULL,
+    `meta_title` varchar(255) DEFAULT NULL,
+    `meta_description` text DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_category_id` (`category_id`),
+    KEY `idx_location_id` (`location_id`),
+    KEY `idx_status` (`status`),
+    KEY `idx_is_featured` (`is_featured`),
+    KEY `idx_created_at` (`created_at`),
+    KEY `idx_price` (`price`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Таблиця зображень оголошень
-CREATE TABLE IF NOT EXISTS ad_images (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    ad_id INT NOT NULL,
-    filename VARCHAR(255) NOT NULL,
-    original_name VARCHAR(255),
-    file_size INT,
-    mime_type VARCHAR(100),
-    is_main BOOLEAN DEFAULT FALSE,
-    sort_order INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
-    INDEX idx_ad (ad_id),
-    INDEX idx_main (is_main)
-);
+CREATE TABLE IF NOT EXISTS `ad_images` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `ad_id` int(11) NOT NULL,
+    `filename` varchar(255) NOT NULL,
+    `original_name` varchar(255) NOT NULL,
+    `file_size` int(11) DEFAULT NULL,
+    `sort_order` int(11) DEFAULT 0,
+    `is_primary` boolean DEFAULT FALSE,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_ad_id` (`ad_id`),
+    KEY `idx_sort_order` (`sort_order`),
+    KEY `idx_is_primary` (`is_primary`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Таблиця улюблених оголошень
-CREATE TABLE IF NOT EXISTS favorites (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    ad_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_favorite (user_id, ad_id),
-    INDEX idx_user (user_id),
-    INDEX idx_ad (ad_id)
-);
+-- Таблиця атрибутів категорій
+CREATE TABLE IF NOT EXISTS `category_attributes` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `category_id` int(11) NOT NULL,
+    `name` varchar(100) NOT NULL,
+    `type` enum('text','number','select','multiselect','checkbox','radio','date') DEFAULT 'text',
+    `options` text DEFAULT NULL,
+    `is_required` boolean DEFAULT FALSE,
+    `is_filterable` boolean DEFAULT TRUE,
+    `sort_order` int(11) DEFAULT 0,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_category_id` (`category_id`),
+    KEY `idx_sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Таблиця значень атрибутів оголошень
+CREATE TABLE IF NOT EXISTS `ad_attributes` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `ad_id` int(11) NOT NULL,
+    `attribute_id` int(11) NOT NULL,
+    `value` text DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_ad_id` (`ad_id`),
+    KEY `idx_attribute_id` (`attribute_id`),
+    UNIQUE KEY `ad_attribute` (`ad_id`, `attribute_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Таблиця збережених оголошень
+CREATE TABLE IF NOT EXISTS `favorites` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `ad_id` int(11) NOT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_ad_id` (`ad_id`),
+    UNIQUE KEY `user_ad` (`user_id`, `ad_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Таблиця переглядів оголошень
-CREATE TABLE IF NOT EXISTS ad_views (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    ad_id INT NOT NULL,
-    user_id INT NULL,
-    ip_address VARCHAR(45),
-    user_agent TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    INDEX idx_ad (ad_id),
-    INDEX idx_user (user_id),
-    INDEX idx_ip (ip_address),
-    INDEX idx_date (created_at)
-);
+CREATE TABLE IF NOT EXISTS `ad_views` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `ad_id` int(11) NOT NULL,
+    `user_id` int(11) DEFAULT NULL,
+    `ip_address` varchar(45) NOT NULL,
+    `user_agent` text DEFAULT NULL,
+    `viewed_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_ad_id` (`ad_id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_ip_address` (`ip_address`),
+    KEY `idx_viewed_at` (`viewed_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Таблиця платних послуг
-CREATE TABLE IF NOT EXISTS paid_services (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    price DECIMAL(10, 2) NOT NULL,
-    duration_days INT NOT NULL,
-    service_type ENUM('featured', 'urgent', 'top', 'highlight', 'republish') NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_type (service_type),
-    INDEX idx_active (is_active)
-);
+CREATE TABLE IF NOT EXISTS `paid_services` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(100) NOT NULL,
+    `description` text DEFAULT NULL,
+    `price` decimal(10,2) NOT NULL,
+    `duration_days` int(11) NOT NULL,
+    `service_type` enum('featured','top','urgent','highlight','boost','republish') NOT NULL,
+    `is_active` boolean DEFAULT TRUE,
+    `sort_order` int(11) DEFAULT 0,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_service_type` (`service_type`),
+    KEY `idx_is_active` (`is_active`),
+    KEY `idx_sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Вставка міст України
-INSERT IGNORE INTO locations (name, slug, region, latitude, longitude, sort_order) VALUES
-('Київ', 'kyiv', 'Київська область', 50.4501, 30.5234, 1),
-('Харків', 'kharkiv', 'Харківська область', 49.9935, 36.2304, 2),
-('Одеса', 'odesa', 'Одеська область', 46.4825, 30.7233, 3),
-('Дніпро', 'dnipro', 'Дніпропетровська область', 48.4647, 35.0462, 4),
-('Львів', 'lviv', 'Львівська область', 49.8397, 24.0297, 5),
-('Запоріжжя', 'zaporizhzhia', 'Запорізька область', 47.8388, 35.1396, 6);
+-- Таблиця покупок послуг
+CREATE TABLE IF NOT EXISTS `service_purchases` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `ad_id` int(11) NOT NULL,
+    `service_id` int(11) NOT NULL,
+    `amount` decimal(10,2) NOT NULL,
+    `currency` varchar(3) DEFAULT 'UAH',
+    `payment_method` varchar(50) DEFAULT NULL,
+    `payment_id` varchar(255) DEFAULT NULL,
+    `status` enum('pending','completed','failed','refunded') DEFAULT 'pending',
+    `expires_at` datetime DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_ad_id` (`ad_id`),
+    KEY `idx_service_id` (`service_id`),
+    KEY `idx_status` (`status`),
+    KEY `idx_expires_at` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Вставка платних послуг
-INSERT IGNORE INTO paid_services (name, description, price, duration_days, service_type) VALUES
-('Виділити оголошення', 'Ваше оголошення буде виділено кольором', 50.00, 7, 'highlight'),
-('Закріпити зверху', 'Оголошення з\'явиться в топі списку', 100.00, 3, 'top'),
-('Термінове оголошення', 'Позначка "Термінове" привертає увагу', 30.00, 3, 'urgent'),
-('Рекомендоване', 'Показ в блоці рекомендованих', 150.00, 7, 'featured');
-
--- Створення директорій для завантажень
--- Це буде зроблено через PHP код
-
--- Додаткові таблиці для адмін функціоналу
-
--- Таблиця логування активності
-CREATE TABLE IF NOT EXISTS activity_logs (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT,
-    action VARCHAR(100) NOT NULL,
-    description TEXT NOT NULL,
-    data JSON,
-    ip_address VARCHAR(45),
-    user_agent TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
-    INDEX idx_action (action),
-    INDEX idx_created_at (created_at),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-);
-
--- Таблиця повідомлень від адміністраторів користувачам
-CREATE TABLE IF NOT EXISTS admin_messages (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    admin_id INT NOT NULL,
-    subject VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    read_at TIMESTAMP NULL,
-    INDEX idx_user_id (user_id),
-    INDEX idx_admin_id (admin_id),
-    INDEX idx_created_at (created_at),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Таблиця для користувацьких рейтингів
-CREATE TABLE IF NOT EXISTS user_ratings (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    rater_id INT NOT NULL,
-    rating TINYINT NOT NULL CHECK (rating >= 1 AND rating <= 5),
-    comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
-    INDEX idx_rater_id (rater_id),
-    UNIQUE KEY unique_rating (user_id, rater_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (rater_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Додаємо поля для блокування користувачів та балансу
-ALTER TABLE users 
-ADD COLUMN IF NOT EXISTS ban_reason TEXT,
-ADD COLUMN IF NOT EXISTS ban_until DATETIME NULL,
-ADD COLUMN IF NOT EXISTS balance DECIMAL(10,2) DEFAULT 0.00,
-ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+-- Таблиця push-підписок
+CREATE TABLE IF NOT EXISTS `push_subscriptions` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `endpoint` text NOT NULL,
+    `p256dh_key` varchar(255) NOT NULL,
+    `auth_key` varchar(255) NOT NULL,
+    `user_agent` text DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    UNIQUE KEY `user_endpoint` (`user_id`, `endpoint`(100))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Таблиця транзакцій
-CREATE TABLE IF NOT EXISTS transactions (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    type ENUM('income', 'expense') NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    description TEXT,
-    payment_method VARCHAR(50),
-    transaction_id VARCHAR(255),
-    status ENUM('pending', 'completed', 'failed', 'cancelled') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
-    INDEX idx_type (type),
-    INDEX idx_status (status),
-    INDEX idx_created_at (created_at),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+CREATE TABLE IF NOT EXISTS `transactions` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `ad_id` int(11) DEFAULT NULL,
+    `buyer_id` int(11) DEFAULT NULL,
+    `seller_id` int(11) NOT NULL,
+    `amount` decimal(10,2) NOT NULL,
+    `currency` varchar(3) DEFAULT 'UAH',
+    `type` enum('purchase','refund','fee','bonus') DEFAULT 'purchase',
+    `status` enum('pending','completed','failed','cancelled') DEFAULT 'pending',
+    `payment_method` varchar(50) DEFAULT NULL,
+    `payment_id` varchar(255) DEFAULT NULL,
+    `description` text DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_ad_id` (`ad_id`),
+    KEY `idx_buyer_id` (`buyer_id`),
+    KEY `idx_seller_id` (`seller_id`),
+    KEY `idx_status` (`status`),
+    KEY `idx_type` (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Таблиця чатів
-CREATE TABLE IF NOT EXISTS chats (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    ad_id INT NOT NULL,
-    buyer_id INT NOT NULL,
-    seller_id INT NOT NULL,
-    status ENUM('active', 'archived', 'blocked') DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_ad_id (ad_id),
-    INDEX idx_buyer_id (buyer_id),
-    INDEX idx_seller_id (seller_id),
-    INDEX idx_updated_at (updated_at),
-    UNIQUE KEY unique_chat (ad_id, buyer_id, seller_id),
-    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
-    FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (seller_id) REFERENCES users(id) ON DELETE CASCADE
-);
+CREATE TABLE IF NOT EXISTS `chats` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `ad_id` int(11) NOT NULL,
+    `buyer_id` int(11) NOT NULL,
+    `seller_id` int(11) NOT NULL,
+    `last_message_id` int(11) DEFAULT NULL,
+    `last_message_at` timestamp NULL DEFAULT NULL,
+    `status` enum('active','archived','blocked') DEFAULT 'active',
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_ad_id` (`ad_id`),
+    KEY `idx_buyer_id` (`buyer_id`),
+    KEY `idx_seller_id` (`seller_id`),
+    KEY `idx_last_message_at` (`last_message_at`),
+    UNIQUE KEY `chat_unique` (`ad_id`, `buyer_id`, `seller_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Таблиця повідомлень чату
-CREATE TABLE IF NOT EXISTS chat_messages (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    chat_id INT NOT NULL,
-    sender_id INT NOT NULL,
-    receiver_id INT NOT NULL,
-    ad_id INT NOT NULL,
-    message TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    message_type ENUM('text', 'image', 'file') DEFAULT 'text',
-    attachment_url VARCHAR(500),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_chat_id (chat_id),
-    INDEX idx_sender_id (sender_id),
-    INDEX idx_receiver_id (receiver_id),
-    INDEX idx_ad_id (ad_id),
-    INDEX idx_is_read (is_read),
-    INDEX idx_created_at (created_at),
-    FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE,
-    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE
-);
+-- Таблиця повідомлень
+CREATE TABLE IF NOT EXISTS `messages` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `chat_id` int(11) NOT NULL,
+    `sender_id` int(11) NOT NULL,
+    `receiver_id` int(11) NOT NULL,
+    `message` text NOT NULL,
+    `type` enum('text','image','file','system') DEFAULT 'text',
+    `attachment` varchar(255) DEFAULT NULL,
+    `is_read` boolean DEFAULT FALSE,
+    `read_at` timestamp NULL DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_chat_id` (`chat_id`),
+    KEY `idx_sender_id` (`sender_id`),
+    KEY `idx_receiver_id` (`receiver_id`),
+    KEY `idx_created_at` (`created_at`),
+    KEY `idx_is_read` (`is_read`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Таблиця блокування користувачів
-CREATE TABLE IF NOT EXISTS user_blocks (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    blocked_user_id INT NOT NULL,
-    reason TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
-    INDEX idx_blocked_user_id (blocked_user_id),
-    UNIQUE KEY unique_block (user_id, blocked_user_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (blocked_user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+-- Таблиця сповіщень
+CREATE TABLE IF NOT EXISTS `notifications` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `type` varchar(50) NOT NULL,
+    `title` varchar(255) NOT NULL,
+    `message` text NOT NULL,
+    `data` text DEFAULT NULL,
+    `priority` enum('low','normal','high') DEFAULT 'normal',
+    `is_read` boolean DEFAULT FALSE,
+    `read_at` timestamp NULL DEFAULT NULL,
+    `expires_at` timestamp NULL DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_type` (`type`),
+    KEY `idx_is_read` (`is_read`),
+    KEY `idx_priority` (`priority`),
+    KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Таблиця заявок на консультації
-CREATE TABLE IF NOT EXISTS consultation_requests (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    service_type ENUM('smm', 'seo', 'web', 'design', 'complex') NOT NULL,
-    message TEXT,
-    status ENUM('new', 'processing', 'completed', 'cancelled') DEFAULT 'new',
-    ip_address VARCHAR(45),
-    user_agent TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_status (status),
-    INDEX idx_service_type (service_type),
-    INDEX idx_created_at (created_at)
-);
+-- Таблиця логів активності
+CREATE TABLE IF NOT EXISTS `activity_logs` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) DEFAULT NULL,
+    `action` varchar(100) NOT NULL,
+    `description` text DEFAULT NULL,
+    `meta_data` text DEFAULT NULL,
+    `ip_address` varchar(45) DEFAULT NULL,
+    `user_agent` text DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_action` (`action`),
+    KEY `idx_ip_address` (`ip_address`),
+    KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Таблиця push сповіщень
-CREATE TABLE IF NOT EXISTS notifications (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    type VARCHAR(50) NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    action_url VARCHAR(500),
-    priority ENUM('low', 'normal', 'high') DEFAULT 'normal',
-    icon VARCHAR(50),
-    data JSON,
-    is_read BOOLEAN DEFAULT FALSE,
-    read_at TIMESTAMP NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
-    INDEX idx_type (type),
-    INDEX idx_is_read (is_read),
-    INDEX idx_created_at (created_at),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+-- Таблиця адмін повідомлень
+CREATE TABLE IF NOT EXISTS `admin_messages` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `admin_id` int(11) NOT NULL,
+    `subject` varchar(255) NOT NULL,
+    `message` text NOT NULL,
+    `type` enum('info','warning','success','danger') DEFAULT 'info',
+    `is_read` boolean DEFAULT FALSE,
+    `read_at` timestamp NULL DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_admin_id` (`admin_id`),
+    KEY `idx_type` (`type`),
+    KEY `idx_is_read` (`is_read`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Таблиця підписок на push сповіщення
-CREATE TABLE IF NOT EXISTS push_subscriptions (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    endpoint TEXT NOT NULL,
-    p256dh VARCHAR(255) NOT NULL,
-    auth VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+-- Таблиця рейтингів користувачів
+CREATE TABLE IF NOT EXISTS `user_ratings` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `rater_id` int(11) NOT NULL,
+    `rating` tinyint(1) NOT NULL,
+    `comment` text DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_rater_id` (`rater_id`),
+    UNIQUE KEY `user_rater` (`user_id`, `rater_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Таблиця денної статистики
-CREATE TABLE IF NOT EXISTS daily_stats (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    date DATE NOT NULL UNIQUE,
-    total_views INT DEFAULT 0,
-    unique_visitors INT DEFAULT 0,
-    ads_created INT DEFAULT 0,
-    ads_activated INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_date (date)
-);
+-- Таблиця блокувань користувачів
+CREATE TABLE IF NOT EXISTS `user_blocks` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `blocked_user_id` int(11) NOT NULL,
+    `reason` text DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_blocked_user_id` (`blocked_user_id`),
+    UNIQUE KEY `user_blocked` (`user_id`, `blocked_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Оптимізуємо індекси для існуючих таблиць
-ALTER TABLE users ADD INDEX IF NOT EXISTS idx_status (status);
-ALTER TABLE users ADD INDEX IF NOT EXISTS idx_role (role);
-ALTER TABLE users ADD INDEX IF NOT EXISTS idx_last_login (last_login);
+-- Таблиця скарг
+CREATE TABLE IF NOT EXISTS `reports` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `reporter_id` int(11) DEFAULT NULL,
+    `reported_user_id` int(11) DEFAULT NULL,
+    `ad_id` int(11) DEFAULT NULL,
+    `type` enum('spam','inappropriate','fake','other') NOT NULL,
+    `reason` text NOT NULL,
+    `status` enum('pending','reviewed','resolved','dismissed') DEFAULT 'pending',
+    `admin_notes` text DEFAULT NULL,
+    `resolved_by` int(11) DEFAULT NULL,
+    `resolved_at` timestamp NULL DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_reporter_id` (`reporter_id`),
+    KEY `idx_reported_user_id` (`reported_user_id`),
+    KEY `idx_ad_id` (`ad_id`),
+    KEY `idx_type` (`type`),
+    KEY `idx_status` (`status`),
+    KEY `idx_resolved_by` (`resolved_by`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Завершення
-SELECT 'База даних AdBoard Pro успішно створена з усіма таблицями!' as message;
+-- Таблиця збережених пошуків
+CREATE TABLE IF NOT EXISTS `saved_searches` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `name` varchar(100) NOT NULL,
+    `search_params` text NOT NULL,
+    `category_id` int(11) DEFAULT NULL,
+    `location_id` int(11) DEFAULT NULL,
+    `min_price` decimal(10,2) DEFAULT NULL,
+    `max_price` decimal(10,2) DEFAULT NULL,
+    `notifications_enabled` boolean DEFAULT TRUE,
+    `last_checked` timestamp NULL DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_category_id` (`category_id`),
+    KEY `idx_location_id` (`location_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Таблиця щоденної статистики
+CREATE TABLE IF NOT EXISTS `daily_stats` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `date` date NOT NULL,
+    `new_users` int(11) DEFAULT 0,
+    `new_ads` int(11) DEFAULT 0,
+    `active_ads` int(11) DEFAULT 0,
+    `sold_ads` int(11) DEFAULT 0,
+    `page_views` int(11) DEFAULT 0,
+    `unique_visitors` int(11) DEFAULT 0,
+    `revenue` decimal(10,2) DEFAULT 0.00,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `date` (`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Таблиця системних подій
+CREATE TABLE IF NOT EXISTS `system_events` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `event_type` varchar(50) NOT NULL,
+    `event_data` text DEFAULT NULL,
+    `severity` enum('info','warning','error','critical') DEFAULT 'info',
+    `user_id` int(11) DEFAULT NULL,
+    `ip_address` varchar(45) DEFAULT NULL,
+    `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_event_type` (`event_type`),
+    KEY `idx_severity` (`severity`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Таблиця backup'ів
+CREATE TABLE IF NOT EXISTS `backups` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `filename` varchar(255) NOT NULL,
+    `file_path` varchar(500) NOT NULL,
+    `file_size` bigint(20) DEFAULT NULL,
+    `backup_type` enum('database','files','full') NOT NULL,
+    `status` enum('running','completed','failed') DEFAULT 'running',
+    `started_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+    `completed_at` timestamp NULL DEFAULT NULL,
+    `error_message` text DEFAULT NULL,
+    `created_by` int(11) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_type` (`backup_type`),
+    KEY `idx_status` (`status`),
+    KEY `idx_started` (`started_at`),
+    KEY `idx_created_by` (`created_by`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+COMMIT;

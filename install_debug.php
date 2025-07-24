@@ -163,8 +163,7 @@ echo "<table class='table table-striped'>";
 
 $sqlFiles = [
     'install/database.sql' => 'Основна схема БД',
-    'install/ads_database.sql' => 'Схема оголошень',
-    'install/admin_tables.sql' => 'Адмін таблиці'
+            'install/initial_data.sql' => 'Початкові дані'
 ];
 
 foreach ($sqlFiles as $file => $desc) {

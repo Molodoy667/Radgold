@@ -24,41 +24,50 @@ function logInstallStep($step, $message, $status = 'info') {
     ];
 }
 
-// Функція створення бази даних та імпорту схеми
+// Функція підключення до існуючої БД та імпорту схеми
 function createDatabaseAndSchema($host, $user, $pass, $name) {
-    // Підключення до MySQL
-    $mysqli = new mysqli($host, $user, $pass);
+    // Підключення до існуючої БД
+    $mysqli = new mysqli($host, $user, $pass, $name);
     
     if ($mysqli->connect_error) {
-        throw new Exception('Помилка підключення до MySQL: ' . $mysqli->connect_error);
+        throw new Exception('Помилка підключення до БД: ' . $mysqli->connect_error);
     }
     
-    // Створюємо базу даних
-    if (!$mysqli->query("CREATE DATABASE IF NOT EXISTS `{$name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
-        throw new Exception('Не вдалося створити базу даних: ' . $mysqli->error);
-    }
-    
-    $mysqli->select_db($name);
-    
-    // Імпортуємо схему
+    // Імпортуємо ТІЛЬКИ структуру, дані будуть додані пізніше
     $sqlFiles = [
-        'install/database.sql',
-        'install/ads_database.sql', 
-        'install/admin_tables.sql'
+        'database.sql' => 'Основна структура БД'
     ];
     
-    foreach ($sqlFiles as $sqlFile) {
-        if (file_exists($sqlFile)) {
-            $sql = file_get_contents($sqlFile);
+    foreach ($sqlFiles as $sqlFile => $description) {
+        $fullPath = __DIR__ . '/' . $sqlFile;
+        if (file_exists($fullPath)) {
+            logInstallStep('install', "Імпортуємо $description...", 'info');
+            $sql = file_get_contents($fullPath);
+            
             if ($sql) {
-                $mysqli->multi_query($sql);
-                while ($mysqli->next_result()) {
-                    // Очищаємо результати
-                }
-                if ($mysqli->error) {
-                    throw new Exception("Помилка в {$sqlFile}: " . $mysqli->error);
+                // Замінюємо назву БД
+                $sql = str_replace('adboard_site', $name, $sql);
+                
+                // Виконуємо багатозапитний SQL
+                if ($mysqli->multi_query($sql)) {
+                    do {
+                        // Очищаємо результати
+                        if ($result = $mysqli->store_result()) {
+                            $result->free();
+                        }
+                    } while ($mysqli->next_result());
+                    
+                    if ($mysqli->error) {
+                        throw new Exception("Помилка в $sqlFile: " . $mysqli->error);
+                    }
+                    
+                    logInstallStep('install', "$description імпортовано успішно", 'success');
+                } else {
+                    throw new Exception("Помилка виконання $sqlFile: " . $mysqli->error);
                 }
             }
+        } else {
+            throw new Exception("SQL файл не знайдено: $fullPath");
         }
     }
     
@@ -92,6 +101,13 @@ if (!isset($_SESSION['install_data'])) {
     ];
 }
 
+// Обробка спеціальних дій
+if (isset($_GET['action']) && $_GET['action'] === 'clear_session') {
+    unset($_SESSION['install_data']);
+    echo json_encode(['success' => true, 'message' => 'Дані сесії очищено']);
+    exit();
+}
+
 // Обробка POST запитів
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($step) {
@@ -119,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 testDatabaseConnection();
                 return; // Зупиняємо виконання після AJAX відповіді
             } else {
-                // Збереження конфігурації БД
+                // Тільки збереження конфігурації БД (без створення)
                 $db_host = trim($_POST['db_host'] ?? 'localhost');
                 $db_user = trim($_POST['db_user'] ?? 'root');
                 $db_pass = $_POST['db_pass'] ?? '';
@@ -130,30 +146,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     break;
                 }
                 
-                            $_SESSION['install_data']['db_config'] = [
-                'host' => $db_host,
-                'user' => $db_user,
-                'pass' => $db_pass,
-                'name' => $db_name
-            ];
-            
-            // Створюємо базу даних та імпортуємо схему
-            try {
-                createDatabaseAndSchema($db_host, $db_user, $db_pass, $db_name);
-                logInstallStep('database', 'База даних створена та схема імпортована', 'success');
-            } catch (Exception $e) {
-                $error = 'Помилка створення БД: ' . $e->getMessage();
-                logInstallStep('database', $error, 'error');
-                break;
-            }
-            
-            header('Location: ?step=4');
-            exit();
+                // Тестуємо підключення перед збереженням
+                try {
+                    $testConnection = new mysqli($db_host, $db_user, $db_pass);
+                    if ($testConnection->connect_error) {
+                        throw new Exception('Не вдалося підключитися до MySQL: ' . $testConnection->connect_error);
+                    }
+                    $testConnection->close();
+                } catch (Exception $e) {
+                    $error = 'Помилка підключення до БД: ' . $e->getMessage();
+                    break;
+                }
+                
+                $_SESSION['install_data']['db_config'] = [
+                    'host' => $db_host,
+                    'user' => $db_user,
+                    'pass' => $db_pass,
+                    'name' => $db_name
+                ];
+                
+                logInstallStep('database', 'Конфігурація БД збережена та протестована', 'success');
+                header('Location: ?step=4');
+                exit();
             }
             break;
 
         case 4:
             // Налаштування сайту
+            error_log("Step 4 POST data: " . print_r($_POST, true));
             $siteData = [
                 'site_name' => trim($_POST['site_name'] ?? ''),
                 'site_url' => trim($_POST['site_url'] ?? ''),
@@ -193,6 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 6:
             // Налаштування теми
+            error_log("Step 6 POST data: " . print_r($_POST, true));
             $themeData = [
                 'default_theme' => $_POST['default_theme'] ?? 'light',
                 'default_gradient' => $_POST['default_gradient'] ?? 'gradient-1'
@@ -206,6 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 7:
             // Реєстрація адміністратора
+            error_log("Step 7 POST data: " . print_r($_POST, true));
             $adminData = [
                 'admin_login' => trim($_POST['admin_login'] ?? ''),
                 'admin_email' => trim($_POST['admin_email'] ?? ''),
@@ -248,14 +270,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 8:
-            try {
-                installSite();
-                header('Location: ?step=9');
-                exit();
-            } catch (Exception $e) {
-                $error = 'Помилка установки: ' . $e->getMessage();
-                logInstallStep('install', 'Помилка: ' . $error, 'error');
-            }
+            // Крок 8 обробляється через AJAX в ajax_step8.php
+            // Тут нічого робити не потрібно, просто показуємо інтерфейс
             break;
     }
 }
@@ -315,7 +331,7 @@ function testDatabaseConnection() {
             throw new Exception("Версія MySQL {$version} застаріла. Мінімальна підтримувана версія: 5.7+");
         }
         
-        // Тест створення бази даних
+        // Тест підключення до існуючої БД
         if (!empty($name)) {
             $dbName = $connection->real_escape_string($name);
             
@@ -323,8 +339,8 @@ function testDatabaseConnection() {
             $result = $connection->query("SHOW DATABASES LIKE '$dbName'");
             $dbExists = $result && $result->num_rows > 0;
             
-            if (!$connection->query("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
-                throw new Exception("Помилка створення БД '$dbName': {$connection->error}. Перевірте права користувача на створення баз даних.");
+            if (!$dbExists) {
+                throw new Exception("База даних '$dbName' не існує. Створіть її заздалегідь.");
             }
             
             // Перевірка доступу до БД
@@ -391,178 +407,7 @@ function getConnectionErrorSuggestion($errorCode) {
     }
 }
 
-function installSite() {
-    $installData = $_SESSION['install_data'];
-    
-    logInstallStep('install', 'Початок установки сайту...', 'info');
-    
-    // Створення директорій
-    $directories = [
-        '../images/uploads',
-        '../images/thumbs', 
-        '../images/avatars',
-        '../logs'
-    ];
-    
-    foreach ($directories as $dir) {
-        if (!is_dir($dir)) {
-            if (!mkdir($dir, 0755, true)) {
-                throw new Exception("Не вдалося створити директорію: $dir");
-            }
-            logInstallStep('install', "Створено директорію: $dir", 'success');
-        }
-    }
-    
-    // Створення бази даних
-    logInstallStep('install', 'Створюємо базу даних...', 'info');
-    $dbConfig = $installData['db_config'];
-    $connection = new mysqli($dbConfig['host'], $dbConfig['user'], $dbConfig['pass']);
-    
-    if ($connection->connect_error) {
-        throw new Exception('Помилка підключення до БД');
-    }
-    
-    $dbName = $dbConfig['name'];
-    if (!$connection->query("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
-        throw new Exception('Помилка створення БД');
-    }
-    
-    $connection->select_db($dbName);
-    logInstallStep('install', 'База даних створена', 'success');
-    
-    // Імпорт SQL
-    logInstallStep('install', 'Імпортуємо структуру БД...', 'info');
-    $sqlContent = file_get_contents('database.sql');
-    $sqlContent = str_replace('adboard_site', $dbName, $sqlContent);
-    
-    $queries = explode(';', $sqlContent);
-    $executed = 0;
-    
-    foreach ($queries as $query) {
-        $query = trim($query);
-        if (!empty($query) && !preg_match('/^--|^\/\*/', $query)) {
-            if (!$connection->query($query)) {
-                throw new Exception('SQL помилка: ' . $connection->error);
-            }
-            $executed++;
-        }
-    }
-    
-    logInstallStep('install', "Виконано $executed SQL запитів", 'success');
-    
-    // Налаштування сайту
-    logInstallStep('install', 'Налаштовуємо сайт...', 'info');
-    $siteConfig = $installData['site'];
-    $themeConfig = $installData['theme'];
-    
-    $stmt = $connection->prepare(
-        "UPDATE site_settings SET site_title = ?, site_description = ?, site_keywords = ?, contact_email = ?, timezone = ?, language = ? WHERE id = 1"
-    );
-    $stmt->bind_param('ssssss', 
-        $siteConfig['site_name'], 
-        $siteConfig['site_description'], 
-        $siteConfig['site_keywords'],
-        $siteConfig['contact_email'],
-        $siteConfig['timezone'],
-        $siteConfig['language']
-    );
-    $stmt->execute();
-    
-    $stmt = $connection->prepare(
-        "UPDATE theme_settings SET current_theme = ?, current_gradient = ?, enable_animations = ?, enable_particles = ?, smooth_scroll = ?, enable_tooltips = ? WHERE id = 1"
-    );
-    $stmt->bind_param('ssssss', 
-        $themeConfig['default_theme'], 
-        $themeConfig['default_gradient'],
-        $themeConfig['enable_animations'] ? 1 : 0,
-        $themeConfig['enable_particles'] ? 1 : 0,
-        $themeConfig['smooth_scroll'] ? 1 : 0,
-        $themeConfig['enable_tooltips'] ? 1 : 0
-    );
-    $stmt->execute();
-    
-    logInstallStep('install', 'Налаштування сайту збережено', 'success');
-    
-    // Створення адміністратора
-    logInstallStep('install', 'Створюємо адміністратора...', 'info');
-    
-    $adminConfig = $installData['admin'];
-    $hashedPassword = password_hash($adminConfig['admin_password'], PASSWORD_DEFAULT);
-    
-    $connection->query("DELETE FROM users WHERE email = 'admin@adboardpro.com'");
-    
-    $stmt = $connection->prepare(
-        "INSERT INTO users (username, email, password, first_name, last_name, role, status, email_verified, created_at) VALUES (?, ?, ?, ?, ?, 'admin', 'active', 1, NOW())"
-    );
-    $stmt->bind_param('sssss', 
-        $adminConfig['admin_login'], 
-        $adminConfig['admin_email'], 
-        $hashedPassword,
-        $adminConfig['admin_first_name'],
-        $adminConfig['admin_last_name']
-    );
-    
-    if (!$stmt->execute()) {
-        throw new Exception('Помилка створення адміністратора');
-    }
-    
-    logInstallStep('install', 'Адміністратор створений', 'success');
-    
-    // Створення конфігурації
-    logInstallStep('install', 'Створюємо конфігурацію...', 'info');
-    
-    $configContent = "<?php
-define('DB_HOST', '{$dbConfig['host']}');
-define('DB_USER', '{$dbConfig['user']}');
-define('DB_PASS', '{$dbConfig['pass']}');
-define('DB_NAME', '{$dbConfig['name']}');
-
-define('SITE_URL', '{$siteConfig['site_url']}');
-define('SITE_NAME', '{$siteConfig['site_name']}');
-define('SITE_DESCRIPTION', '{$siteConfig['site_description']}');
-define('SITE_KEYWORDS', '{$siteConfig['site_keywords']}');
-define('CONTACT_EMAIL', '{$siteConfig['contact_email']}');
-define('SITE_TIMEZONE', '{$siteConfig['timezone']}');
-define('SITE_LANGUAGE', '{$siteConfig['language']}');
-
-define('SECRET_KEY', '" . bin2hex(random_bytes(32)) . "');
-define('SESSION_NAME', 'adboard_session');
-define('UPLOAD_PATH', 'images/uploads/');
-define('MAX_FILE_SIZE', 5242880);
-define('ITEMS_PER_PAGE', 12);
-define('DEBUG_MODE', false);
-define('LOG_ERRORS', true);
-define('LOG_FILE', 'logs/error.log');
-
-spl_autoload_register(function (\$class) {
-    \$file = __DIR__ . '/classes/' . \$class . '.php';
-    if (file_exists(\$file)) {
-        require_once \$file;
-    }
-});
-
-if (session_status() == PHP_SESSION_NONE) {
-    session_name(SESSION_NAME);
-    session_start();
-}
-
-if (!file_exists(__DIR__ . '/.installed')) {
-    if (basename(\$_SERVER['PHP_SELF']) !== 'index.php' || strpos(\$_SERVER['REQUEST_URI'], '/install/') === false) {
-        header('Location: install/');
-        exit();
-    }
-}
-?>";
-    
-    if (!file_put_contents('../core/config.php', $configContent)) {
-        throw new Exception('Не вдалося створити файл конфігурації');
-    }
-    
-    file_put_contents('../.installed', date('Y-m-d H:i:s'));
-    
-    logInstallStep('install', 'Установка завершена успішно!', 'success');
-    $connection->close();
-}
+// Функція installSite() видалена - її логіка дублювалась з ajax_step8.php
 
 // Допоміжні функції
 function checkSystemRequirements() {
@@ -678,9 +523,9 @@ function generateGradients() {
                                 2 => 'Перевірка',
                                 3 => 'База даних',
                                 4 => 'Сайт',
-                                5 => 'Тема',
-                                6 => 'Адмін',
-                                7 => 'Додатково',
+                                5 => 'Додатково',
+                                6 => 'Тема',
+                                7 => 'Адмін',
                                 8 => 'Установка',
                                 9 => 'Завершення'
                             ];

@@ -1,4 +1,56 @@
 <?php
+// Клас для сумісності з старими версіями MySQL extension
+class DatabaseResultCompat {
+    private $data;
+    private $position = 0;
+    
+    public function __construct($data) {
+        $this->data = $data;
+    }
+    
+    public function fetch_assoc() {
+        if ($this->position < count($this->data)) {
+            return $this->data[$this->position++];
+        }
+        return null;
+    }
+    
+    public function fetch_array($type = MYSQLI_BOTH) {
+        if ($this->position < count($this->data)) {
+            $row = $this->data[$this->position++];
+            if ($type === MYSQLI_NUM) {
+                return array_values($row);
+            } elseif ($type === MYSQLI_ASSOC) {
+                return $row;
+            } else {
+                return array_merge(array_values($row), $row);
+            }
+        }
+        return null;
+    }
+    
+    public function fetch_row() {
+        return $this->fetch_array(MYSQLI_NUM);
+    }
+    
+    public function free() {
+        $this->data = [];
+    }
+    
+    public function num_rows() {
+        return count($this->data);
+    }
+    
+    public $num_rows;
+    
+    public function __get($name) {
+        if ($name === 'num_rows') {
+            return count($this->data);
+        }
+        return null;
+    }
+}
+
 class Database {
     private static $instance = null;
     private $connection;
@@ -51,10 +103,37 @@ class Database {
         }
         
         $stmt->execute();
-        $result = $stmt->get_result();
-        $stmt->close();
         
-        return $result;
+        // Перевіряємо чи доступний get_result() (потрібен mysqlnd)
+        if (method_exists($stmt, 'get_result')) {
+            $result = $stmt->get_result();
+            $stmt->close();
+            return $result;
+        } else {
+            // Fallback для старих версій MySQL extension
+            $meta = $stmt->result_metadata();
+            $fields = [];
+            $row = [];
+            
+            if ($meta) {
+                while ($field = $meta->fetch_field()) {
+                    $fields[] = &$row[$field->name];
+                }
+                call_user_func_array([$stmt, 'bind_result'], $fields);
+                
+                $results = [];
+                while ($stmt->fetch()) {
+                    $results[] = array_map(function($x) { return $x; }, $row);
+                }
+                $stmt->close();
+                
+                // Створюємо псевдо-результат який працює як mysqli_result
+                return new DatabaseResultCompat($results);
+            } else {
+                $stmt->close();
+                return true; // для INSERT/UPDATE/DELETE запитів
+            }
+        }
     }
     
     public function insert($sql, $params = []) {
@@ -77,7 +156,12 @@ class Database {
             $stmt->bind_param($types, ...$params);
         }
         
-        $result = $stmt->execute();
+        if (!$stmt->execute()) {
+            $error = $stmt->error;
+            $stmt->close();
+            throw new Exception("Execute failed: " . $error);
+        }
+        
         $insertId = $this->connection->insert_id;
         $stmt->close();
         
@@ -112,7 +196,12 @@ class Database {
             $stmt->bind_param($types, ...$params);
         }
         
-        $result = $stmt->execute();
+        if (!$stmt->execute()) {
+            $error = $stmt->error;
+            $stmt->close();
+            throw new Exception("Execute failed: " . $error);
+        }
+        
         $affectedRows = $stmt->affected_rows;
         $stmt->close();
         
@@ -121,6 +210,14 @@ class Database {
     
     public function escape($string) {
         return $this->connection->real_escape_string($string);
+    }
+    
+    public function directQuery($sql) {
+        $result = $this->connection->query($sql);
+        if (!$result) {
+            throw new Exception("Query failed: " . $this->connection->error);
+        }
+        return $result;
     }
     
     public function close() {

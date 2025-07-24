@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'email' => $email,
                 'phone' => $phone,
                 'password' => password_hash($password, PASSWORD_DEFAULT),
+                'role' => 'partner',
                 'user_type' => 'partner',
                 'status' => 'pending', // Партнери потребують модерації
                 'newsletter' => $agreeNewsletter,
@@ -65,39 +66,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../../themes/header.php';
 ?>
 
-<div class="auth-container partner-register-container">
-    <div class="auth-background">
-        <div class="auth-particles"></div>
-        <div class="auth-shapes">
+<div class="modern-auth-container partner-container">
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="floating-shapes">
             <div class="shape shape-1"></div>
             <div class="shape shape-2"></div>
             <div class="shape shape-3"></div>
             <div class="shape shape-4"></div>
             <div class="shape shape-5"></div>
         </div>
+        <div class="gradient-orbs">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
     </div>
     
     <div class="container">
         <div class="row justify-content-center align-items-center min-vh-100 py-5">
-            <div class="col-lg-11 col-xl-10">
-                <div class="auth-card partner-auth register-card">
-                    <div class="row g-0">
-                        <!-- Ліва частина з інформацією -->
-                        <div class="col-lg-5 auth-info">
-                            <div class="auth-info-content">
-                                <div class="auth-brand">
-                                    <i class="fas fa-crown"></i>
-                                    <h2>Станьте партнером AdBoard Pro</h2>
-                                    <p>Розширте свій бізнес з нами</p>
-                                </div>
-                                
-                                <div class="auth-features">
-                                    <div class="feature-item">
-                                        <i class="fas fa-rocket"></i>
-                                        <div>
-                                            <h5>Швидке зростання</h5>
-                                            <p>Збільште продажі до 300% за перший місяць</p>
-                                        </div>
+            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                <div class="modern-auth-card partner-register-card">
+                    <!-- Header -->
+                    <div class="auth-header">
+                        <div class="header-icon partner-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h1>Партнерський акаунт</h1>
+                        <p>Приєднуйтесь до нашої партнерської програми</p>
+                    </div>
+                    
+                    <!-- Features Preview -->
+                    <div class="features-preview">
+                        <div class="feature-badge partner-badge">
+                            <i class="fas fa-crown"></i>
+                            <span>VIP партнер</span>
+                        </div>
+                        <div class="feature-badge partner-badge">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Аналітика</span>
+                        </div>
+                        <div class="feature-badge partner-badge">
+                            <i class="fas fa-headset"></i>
+                            <span>Підтримка 24/7</span>
+                        </div>
+                    </div>
                                     </div>
                                     
                                     <div class="feature-item">
@@ -636,4 +649,107 @@ function notifyAdminsNewPartner($email, $company) {
         return false;
     }
 }
+
+// Toggle password visibility
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const toggle = input.parentElement.querySelector('.password-toggle i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        toggle.classList.remove('fa-eye');
+        toggle.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        toggle.classList.remove('fa-eye-slash');
+        toggle.classList.add('fa-eye');
+    }
+}
+
+// Google registration (placeholder)
+function googleRegister() {
+    alert('Google реєстрація буде доступна незабаром!');
+}
+</script>
+
+<style>
+/* Partner-specific styles */
+.partner-container {
+    background: var(--theme-bg);
+}
+
+.partner-icon {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.partner-badge {
+    background: rgba(255, 152, 0, 0.1) !important;
+    border-color: rgba(255, 152, 0, 0.3) !important;
+    color: #e65100 !important;
+}
+
+.partner-register-card .modern-submit-btn {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.partner-register-card .modern-submit-btn:hover {
+    background: linear-gradient(135deg, #f57c00, #e65100) !important;
+}
+
+.partner-register-card .terms-link {
+    color: #ff9800 !important;
+}
+
+.partner-register-card .input-wrapper input:focus {
+    border-color: #ff9800 !important;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1) !important;
+}
+
+.partner-register-card .input-wrapper input:focus + .input-icon {
+    color: #ff9800 !important;
+}
+
+.partner-register-card .input-line {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.user-suggestion {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--theme-bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--theme-border);
+}
+
+.user-suggestion p {
+    color: var(--theme-muted);
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.user-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.user-link:hover {
+    background: linear-gradient(135deg, #1976d2, #1565c0);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+</style>
+
+<?php include '../../themes/footer.php'; ?>
 ?>

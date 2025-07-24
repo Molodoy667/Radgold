@@ -24,7 +24,7 @@ try {
     }
     
     // Перевірка існування оголошення
-    $db = new Database();
+    $db = Database::getInstance();
     $stmt = $db->prepare("SELECT id FROM ads WHERE id = ? AND status = 'active'");
     $stmt->bind_param("i", $adId);
     $stmt->execute();

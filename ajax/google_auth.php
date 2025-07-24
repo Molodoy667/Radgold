@@ -155,7 +155,7 @@ function decodeGoogleJWT($credential) {
 // Отримання користувача по email
 function getUserByEmail($email) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -169,7 +169,7 @@ function getUserByEmail($email) {
 // Отримання користувача по ID
 function getUserById($id) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -183,7 +183,7 @@ function getUserById($id) {
 // Оновлення Google ID користувача
 function updateUserGoogleId($userId, $googleId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("UPDATE users SET google_id = ? WHERE id = ?");
         $stmt->bind_param("si", $googleId, $userId);
         return $stmt->execute();
@@ -195,7 +195,7 @@ function updateUserGoogleId($userId, $googleId) {
 // Створення користувача з Google даними
 function createGoogleUser($userData) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("
             INSERT INTO users (first_name, last_name, email, phone, password, user_type, status, newsletter, google_id, email_verified, created_at) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -239,7 +239,7 @@ function createUserSession($user) {
     
     // Оновлення останнього входу
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("UPDATE users SET last_login = NOW(), login_count = login_count + 1 WHERE id = ?");
         $stmt->bind_param("i", $user['id']);
         $stmt->execute();

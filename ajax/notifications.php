@@ -60,7 +60,7 @@ try {
  */
 function getNotifications($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $page = (int)($_GET['page'] ?? 1);
         $limit = 20;
@@ -133,7 +133,7 @@ function markAsRead($userId) {
             throw new Exception('ID сповіщення не вказано');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         $stmt = $db->prepare("
             UPDATE notifications 
@@ -162,7 +162,7 @@ function markAsRead($userId) {
  */
 function markAllAsRead($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $stmt = $db->prepare("
             UPDATE notifications 
@@ -199,7 +199,7 @@ function deleteNotification($userId) {
             throw new Exception('ID сповіщення не вказано');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         $stmt = $db->prepare("DELETE FROM notifications WHERE id = ? AND user_id = ?");
         $stmt->bind_param("ii", $notificationId, $userId);
@@ -227,7 +227,7 @@ function deleteNotification($userId) {
  */
 function getUnreadCount($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $stmt = $db->prepare("SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0");
         $stmt->bind_param("i", $userId);
@@ -257,7 +257,7 @@ function subscribePush($userId) {
             throw new Exception('Неповні дані підписки');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Перевіряємо чи існує підписка
         $stmt = $db->prepare("SELECT id FROM push_subscriptions WHERE user_id = ? AND endpoint = ?");
@@ -305,7 +305,7 @@ function unsubscribePush($userId) {
             throw new Exception('Endpoint не вказано');
         }
         
-        $db = new Database();
+        $db = Database::getInstance();
         
         $stmt = $db->prepare("DELETE FROM push_subscriptions WHERE user_id = ? AND endpoint = ?");
         $stmt->bind_param("is", $userId, $endpoint);
@@ -354,7 +354,7 @@ function testNotification($userId) {
  */
 function createNotification($userId, $type, $title, $message, $actionUrl = null, $priority = 'normal', $icon = null, $data = []) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $stmt = $db->prepare("
             INSERT INTO notifications (
@@ -388,7 +388,7 @@ function createNotification($userId, $type, $title, $message, $actionUrl = null,
  */
 function sendPushNotification($userId, $title, $message, $actionUrl = null, $icon = null) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Отримуємо підписки користувача
         $stmt = $db->prepare("SELECT endpoint, p256dh, auth FROM push_subscriptions WHERE user_id = ?");

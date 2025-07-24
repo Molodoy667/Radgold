@@ -56,7 +56,7 @@ try {
 
 function getUserChats($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Отримуємо всі чати користувача
         $stmt = $db->prepare("
@@ -173,7 +173,7 @@ function getUserChats($userId) {
 
 function getChatMessages($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $chatId = (int)($_GET['chat_id'] ?? 0);
         $page = (int)($_GET['page'] ?? 1);
@@ -266,7 +266,7 @@ function getChatMessages($userId) {
 
 function sendMessage($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $chatId = (int)($_POST['chat_id'] ?? 0);
         $message = trim($_POST['message'] ?? '');
@@ -365,7 +365,7 @@ function sendMessage($userId) {
 
 function startChat($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $adId = (int)($_POST['ad_id'] ?? 0);
         $sellerId = (int)($_POST['seller_id'] ?? 0);
@@ -451,7 +451,7 @@ function startChat($userId) {
 
 function markMessagesAsRead($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $chatId = (int)($_POST['chat_id'] ?? 0);
         
@@ -488,7 +488,7 @@ function markMessagesAsRead($userId) {
 
 function deleteChat($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $chatId = (int)($_POST['chat_id'] ?? 0);
         
@@ -531,7 +531,7 @@ function deleteChat($userId) {
 
 function blockUser($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $targetUserId = (int)($_POST['user_id'] ?? 0);
         

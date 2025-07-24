@@ -58,7 +58,7 @@ try {
     }
     
     // Збереження в базу даних
-    $db = new Database();
+    $db = Database::getInstance();
     
     $stmt = $db->prepare("
         INSERT INTO consultation_requests (
@@ -137,7 +137,7 @@ function getServiceName($serviceCode) {
 }
 
 function sendConsultationNotification($consultationId, $data) {
-    $db = new Database();
+    $db = Database::getInstance();
     
     // Отримуємо email адміністратора
     $stmt = $db->prepare("SELECT value FROM site_settings WHERE setting_key = 'contact_email' LIMIT 1");
@@ -182,7 +182,7 @@ function logActivity($action, $description, $data = []) {
     }
     
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("
             INSERT INTO activity_logs (user_id, action, description, data, created_at) 
             VALUES (?, ?, ?, ?, NOW())

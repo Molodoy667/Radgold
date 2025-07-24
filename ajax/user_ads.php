@@ -52,7 +52,7 @@ try {
 
 function getMyAds($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Параметри фільтрації та пагінації
         $page = (int)($_GET['page'] ?? 1);
@@ -201,7 +201,7 @@ function getMyAds($userId) {
 
 function getAdStats($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $adId = (int)($_GET['ad_id'] ?? 0);
         
         if (!$adId) {
@@ -309,7 +309,7 @@ function getAdStats($userId) {
 
 function promoteAd($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $adId = (int)($_POST['ad_id'] ?? 0);
         $serviceType = $_POST['service_type'] ?? '';
@@ -428,7 +428,7 @@ function promoteAd($userId) {
 
 function deleteUserAd($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $adId = (int)($_POST['ad_id'] ?? 0);
         
@@ -483,7 +483,7 @@ function deleteUserAd($userId) {
 
 function toggleAdStatus($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $adId = (int)($_POST['ad_id'] ?? 0);
         $newStatus = $_POST['status'] ?? '';
@@ -532,7 +532,7 @@ function toggleAdStatus($userId) {
 
 function republishAd($userId) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         $adId = (int)($_POST['ad_id'] ?? 0);
         

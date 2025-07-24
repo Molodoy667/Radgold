@@ -176,8 +176,9 @@ spl_autoload_register(function (\$class) {
     }
 });
 
-// Global database variable
-\$db = null;
+// Include core files
+require_once __DIR__ . '/core/database.php';
+require_once __DIR__ . '/core/functions.php';
 
 // Database connection
 try {

@@ -117,7 +117,7 @@ function getCurrentUser() {
     }
     
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->bind_param("i", $_SESSION['user_id']);
         $stmt->execute();
@@ -131,7 +131,7 @@ function getCurrentUser() {
 // Функція входу користувача
 function loginUser($email, $password, $userType = 'user', $remember = false) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("SELECT * FROM users WHERE email = ? AND user_type = ? AND status = 'active'");
         $stmt->bind_param("ss", $email, $userType);
         $stmt->execute();
@@ -177,7 +177,7 @@ function loginUser($email, $password, $userType = 'user', $remember = false) {
 // Функція реєстрації користувача
 function registerUser($userData) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         
         // Перевірка існування користувача
         if (userExists($userData['email'])) {
@@ -213,7 +213,7 @@ function registerUser($userData) {
 // Перевірка існування користувача
 function userExists($email) {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -227,7 +227,7 @@ function userExists($email) {
 // Відправка листа для відновлення паролю
 function sendPasswordReset($email, $userType = 'user') {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $stmt = $db->prepare("SELECT id, first_name FROM users WHERE email = ? AND user_type = ?");
         $stmt->bind_param("ss", $email, $userType);
         $stmt->execute();
@@ -340,7 +340,7 @@ function logout() {
     // Видалення remember token
     if (isset($_COOKIE['remember_token'])) {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $stmt = $db->prepare("DELETE FROM remember_tokens WHERE token = ?");
             $stmt->bind_param("s", $_COOKIE['remember_token']);
             $stmt->execute();
@@ -360,15 +360,24 @@ function logout() {
 // Функції для роботи з мета-тегами
 function getMetaTags() {
     try {
-        $db = new Database();
-        $result = $db->query("SELECT * FROM site_settings WHERE id = 1");
-        $settings = $result->fetch_assoc();
+        $db = Database::getInstance();
+        
+        // Отримуємо налаштування з правильної структури site_settings
+        $settings = [];
+        $keys = ['site_name', 'site_description', 'site_keywords', 'favicon_url', 'logo_url'];
+        
+        foreach ($keys as $key) {
+            $result = $db->query("SELECT setting_value FROM site_settings WHERE setting_key = ?", [$key]);
+            if ($result && $row = $result->fetch_assoc()) {
+                $settings[$key] = $row['setting_value'];
+            }
+        }
         
         return [
-            'title' => $settings['site_title'] ?? SITE_NAME,
-            'description' => $settings['site_description'] ?? SITE_DESCRIPTION,
-            'keywords' => $settings['site_keywords'] ?? SITE_KEYWORDS,
-            'author' => $settings['site_author'] ?? 'AdBoard Pro',
+            'title' => $settings['site_name'] ?? (defined('SITE_NAME') ? SITE_NAME : 'AdBoard Pro'),
+            'description' => $settings['site_description'] ?? (defined('SITE_DESCRIPTION') ? SITE_DESCRIPTION : 'Сучасна дошка оголошень'),
+            'keywords' => $settings['site_keywords'] ?? 'оголошення, купити, продати',
+            'author' => 'AdBoard Pro',
             'favicon' => $settings['favicon_url'] ?? 'images/favicon.svg',
             'logo' => $settings['logo_url'] ?? 'images/default_logo.svg'
         ];
@@ -387,7 +396,7 @@ function getMetaTags() {
 // Функції для роботи з темою
 function getThemeSettings() {
     try {
-        $db = new Database();
+        $db = Database::getInstance();
         $result = $db->query("SELECT * FROM theme_settings WHERE id = 1");
         return $result->fetch_assoc() ?? [];
     } catch (Exception $e) {
@@ -435,7 +444,7 @@ function generateGradients() {
 function checkRememberToken() {
     if (!isLoggedIn() && isset($_COOKIE['remember_token'])) {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $stmt = $db->prepare("
                 SELECT u.* FROM users u 
                 JOIN remember_tokens rt ON u.id = rt.user_id 

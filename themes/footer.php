@@ -113,40 +113,132 @@
                         </div>
                     </div>
                     
-                    <!-- Navigation Links -->
-                    <div class="col-lg-2 col-md-6 mb-4">
-                        <h6 class="section-title"><?php echo safeTranslate('navigation', 'Навігація'); ?></h6>
-                        <ul class="footer-links">
-                            <li><a href="<?php echo getSiteUrl(); ?>" class="footer-link"><?php echo safeTranslate('home', 'Головна'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('ads'); ?>" class="footer-link"><?php echo safeTranslate('ads', 'Оголошення'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('categories'); ?>" class="footer-link"><?php echo safeTranslate('categories', 'Категорії'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('services'); ?>" class="footer-link"><?php echo safeTranslate('services', 'Послуги'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('about'); ?>" class="footer-link"><?php echo safeTranslate('about', 'Про нас'); ?></a></li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Services -->
-                    <div class="col-lg-2 col-md-6 mb-4">
-                        <h6 class="section-title"><?php echo safeTranslate('services', 'Послуги'); ?></h6>
-                        <ul class="footer-links">
-                            <li><a href="<?php echo getSiteUrl('advertising'); ?>" class="footer-link"><?php echo safeTranslate('advertising', 'Реклама'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('marketing'); ?>" class="footer-link"><?php echo safeTranslate('marketing', 'Маркетинг'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('design'); ?>" class="footer-link"><?php echo safeTranslate('design', 'Дизайн'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('consulting'); ?>" class="footer-link"><?php echo safeTranslate('consulting', 'Консалтинг'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('analytics'); ?>" class="footer-link"><?php echo safeTranslate('analytics', 'Аналітика'); ?></a></li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Support -->
-                    <div class="col-lg-2 col-md-6 mb-4">
-                        <h6 class="section-title"><?php echo safeTranslate('support', 'Підтримка'); ?></h6>
-                        <ul class="footer-links">
-                            <li><a href="<?php echo getSiteUrl('help'); ?>" class="footer-link"><?php echo safeTranslate('help', 'Допомога'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('faq'); ?>" class="footer-link"><?php echo safeTranslate('faq', 'FAQ'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('contact'); ?>" class="footer-link"><?php echo safeTranslate('contact', 'Контакти'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('privacy'); ?>" class="footer-link"><?php echo safeTranslate('privacy', 'Приватність'); ?></a></li>
-                            <li><a href="<?php echo getSiteUrl('terms'); ?>" class="footer-link"><?php echo safeTranslate('terms', 'Умови'); ?></a></li>
-                        </ul>
+                    <!-- Touch Navigation Blocks -->
+                    <div class="col-lg-8 col-md-12 mb-4">
+                        <div class="touch-links-container">
+                            <!-- Navigation Block -->
+                            <div class="touch-block navigation-block">
+                                <div class="touch-header" data-target="navigation-links">
+                                    <div class="touch-icon">
+                                        <i class="fas fa-compass"></i>
+                                    </div>
+                                    <h6 class="touch-title"><?php echo safeTranslate('navigation', 'Навігація'); ?></h6>
+                                    <div class="touch-arrow">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                                <div class="touch-content" id="navigation-links">
+                                    <div class="links-grid">
+                                        <a href="<?php echo getSiteUrl(); ?>" class="touch-link">
+                                            <i class="fas fa-home"></i>
+                                            <span><?php echo safeTranslate('home', 'Головна'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('ads'); ?>" class="touch-link">
+                                            <i class="fas fa-bullhorn"></i>
+                                            <span><?php echo safeTranslate('ads', 'Оголошення'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('categories'); ?>" class="touch-link">
+                                            <i class="fas fa-th-large"></i>
+                                            <span><?php echo safeTranslate('categories', 'Категорії'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('services'); ?>" class="touch-link">
+                                            <i class="fas fa-cogs"></i>
+                                            <span><?php echo safeTranslate('services', 'Послуги'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('about'); ?>" class="touch-link">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span><?php echo safeTranslate('about', 'Про нас'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('contact'); ?>" class="touch-link">
+                                            <i class="fas fa-envelope"></i>
+                                            <span><?php echo safeTranslate('contact', 'Контакти'); ?></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Services Block -->
+                            <div class="touch-block services-block">
+                                <div class="touch-header" data-target="services-links">
+                                    <div class="touch-icon">
+                                        <i class="fas fa-rocket"></i>
+                                    </div>
+                                    <h6 class="touch-title"><?php echo safeTranslate('services', 'Послуги'); ?></h6>
+                                    <div class="touch-arrow">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                                <div class="touch-content" id="services-links">
+                                    <div class="links-grid">
+                                        <a href="<?php echo getSiteUrl('advertising'); ?>" class="touch-link">
+                                            <i class="fas fa-ad"></i>
+                                            <span><?php echo safeTranslate('advertising', 'Реклама'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('marketing'); ?>" class="touch-link">
+                                            <i class="fas fa-chart-line"></i>
+                                            <span><?php echo safeTranslate('marketing', 'Маркетинг'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('design'); ?>" class="touch-link">
+                                            <i class="fas fa-paint-brush"></i>
+                                            <span><?php echo safeTranslate('design', 'Дизайн'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('consulting'); ?>" class="touch-link">
+                                            <i class="fas fa-handshake"></i>
+                                            <span><?php echo safeTranslate('consulting', 'Консалтинг'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('analytics'); ?>" class="touch-link">
+                                            <i class="fas fa-analytics"></i>
+                                            <span><?php echo safeTranslate('analytics', 'Аналітика'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('seo'); ?>" class="touch-link">
+                                            <i class="fas fa-search"></i>
+                                            <span><?php echo safeTranslate('seo', 'SEO'); ?></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Support Block -->
+                            <div class="touch-block support-block">
+                                <div class="touch-header" data-target="support-links">
+                                    <div class="touch-icon">
+                                        <i class="fas fa-life-ring"></i>
+                                    </div>
+                                    <h6 class="touch-title"><?php echo safeTranslate('support', 'Підтримка'); ?></h6>
+                                    <div class="touch-arrow">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                                <div class="touch-content" id="support-links">
+                                    <div class="links-grid">
+                                        <a href="<?php echo getSiteUrl('help'); ?>" class="touch-link">
+                                            <i class="fas fa-question-circle"></i>
+                                            <span><?php echo safeTranslate('help', 'Допомога'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('faq'); ?>" class="touch-link">
+                                            <i class="fas fa-comments"></i>
+                                            <span><?php echo safeTranslate('faq', 'FAQ'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('privacy'); ?>" class="touch-link">
+                                            <i class="fas fa-shield-alt"></i>
+                                            <span><?php echo safeTranslate('privacy', 'Приватність'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('terms'); ?>" class="touch-link">
+                                            <i class="fas fa-file-contract"></i>
+                                            <span><?php echo safeTranslate('terms', 'Умови'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('support'); ?>" class="touch-link">
+                                            <i class="fas fa-headset"></i>
+                                            <span><?php echo safeTranslate('support_center', 'Центр підтримки'); ?></span>
+                                        </a>
+                                        <a href="<?php echo getSiteUrl('feedback'); ?>" class="touch-link">
+                                            <i class="fas fa-star"></i>
+                                            <span><?php echo safeTranslate('feedback', 'Відгуки'); ?></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Newsletter Subscription -->
@@ -274,6 +366,144 @@
             padding: 80px 0 30px;
         }
         
+        /* Touch Links Container */
+        .touch-links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .touch-block {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .touch-block:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .touch-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 25px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .touch-header:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .touch-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .touch-header:hover .touch-icon {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .touch-title {
+            flex: 1;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .touch-arrow {
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .touch-block.active .touch-arrow {
+            transform: rotate(180deg);
+            color: white;
+        }
+        
+        .touch-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .touch-block.active .touch-content {
+            max-height: 300px;
+            padding: 20px 25px;
+        }
+        
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        
+        .touch-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .touch-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .touch-link:hover::before {
+            left: 100%;
+        }
+        
+        .touch-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .touch-link i {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .touch-link:hover i {
+            transform: scale(1.2) rotate(5deg);
+        }
+        
         /* Brand Section with Cat */
         .footer-brand-section {
             text-align: center;
@@ -300,87 +530,150 @@
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
         }
         
-        /* Animated Cat */
+        /* Realistic Animated Cat */
         .cat-container {
             position: relative;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
         }
         
         .cat-body {
             position: relative;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cat-body:hover {
+            transform: scale(1.05);
         }
         
         .cat-head {
-            width: 40px;
-            height: 35px;
-            background: #ff8c00;
-            border-radius: 50% 50% 40% 40%;
+            width: 45px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff9f43 0%, #ff8c00 50%, #ff6b00 100%);
+            border-radius: 60% 60% 45% 45%;
             position: relative;
             margin-bottom: -5px;
-            animation: catBreathe 3s ease-in-out infinite;
+            animation: catBreathe 4s ease-in-out infinite;
+            box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.3),
+                       inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cat-head::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 20px;
+            background: linear-gradient(135deg, #ffb74d 0%, #ffa726 100%);
+            border-radius: 50% 50% 40% 40%;
+            box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.4);
         }
         
         .cat-ears {
             position: absolute;
-            top: -8px;
+            top: -10px;
             width: 100%;
         }
         
         .ear {
-            width: 12px;
-            height: 15px;
-            background: #ff8c00;
-            border-radius: 50% 50% 0 50%;
+            width: 14px;
+            height: 18px;
+            background: linear-gradient(135deg, #ff9f43 0%, #ff8c00 50%, #ff6b00 100%);
+            border-radius: 60% 60% 0 60%;
             position: absolute;
-            animation: earTwitch 4s ease-in-out infinite;
+            animation: earTwitch 5s ease-in-out infinite;
+            box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.3),
+                       inset 0 -1px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .ear::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 10px;
+            background: linear-gradient(135deg, #ff8a65 0%, #ff7043 100%);
+            border-radius: 50% 50% 0 50%;
         }
         
         .ear.left {
-            left: 5px;
-            transform: rotate(-20deg);
+            left: 3px;
+            transform: rotate(-25deg);
+            animation-delay: 0.2s;
         }
         
         .ear.right {
-            right: 5px;
-            transform: rotate(20deg);
+            right: 3px;
+            transform: rotate(25deg);
+            animation-delay: 0.7s;
         }
         
         .cat-eyes {
             position: absolute;
-            top: 12px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
         
         .eye {
-            width: 6px;
+            width: 8px;
             height: 8px;
-            background: #000;
+            background: radial-gradient(circle at 30% 30%, #66bb6a, #2e7d32, #000);
             border-radius: 50%;
-            animation: catBlink 3s ease-in-out infinite;
+            animation: catBlink 4s ease-in-out infinite;
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+        }
+        
+        .eye::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
         }
         
         .cat-nose {
             position: absolute;
-            top: 20px;
+            top: 22px;
             left: 50%;
             transform: translateX(-50%);
-            width: 4px;
-            height: 3px;
-            background: #ff6b9d;
-            border-radius: 50%;
+            width: 5px;
+            height: 4px;
+            background: linear-gradient(135deg, #ff8a80 0%, #ff5722 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3),
+                       0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cat-nose::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1px;
+            height: 2px;
+            background: rgba(0, 0, 0, 0.4);
         }
         
         .cat-mouth {
             position: absolute;
-            top: 24px;
+            top: 27px;
             left: 50%;
             transform: translateX(-50%);
-            width: 8px;
-            height: 4px;
-            border: 1px solid #000;
+            width: 10px;
+            height: 5px;
+            border: 2px solid rgba(0, 0, 0, 0.6);
             border-top: none;
             border-radius: 0 0 50% 50%;
         }
@@ -1252,6 +1545,32 @@
                     ripple.style.animation = 'ripple 0.6s linear';
                 });
             }
+            
+            // Touch blocks functionality
+            const touchHeaders = document.querySelectorAll('.touch-header');
+            touchHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const touchBlock = this.closest('.touch-block');
+                    const isActive = touchBlock.classList.contains('active');
+                    
+                    // Close all other blocks
+                    document.querySelectorAll('.touch-block').forEach(block => {
+                        if (block !== touchBlock) {
+                            block.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current block
+                    touchBlock.classList.toggle('active', !isActive);
+                    
+                    // Add ripple effect
+                    this.style.background = 'rgba(255, 255, 255, 0.2)';
+                    setTimeout(() => {
+                        this.style.background = '';
+                    }, 200);
+                });
+            });
             
             // Cat click interaction
             const catContainer = document.querySelector('.cat-container');

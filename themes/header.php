@@ -282,16 +282,254 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             border-radius: 25px;
             background: var(--current-gradient);
             color: white;
-            text-decoration: none;
+            border: none;
             font-weight: 600;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
         }
         
         .join-btn:hover {
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Join Modal */
+        .join-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .join-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .join-modal {
+            background: var(--theme-bg);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: scale(0.7) translateY(50px);
+            transition: all 0.3s ease;
+            border: 1px solid var(--theme-border);
+        }
+        
+        .join-modal-overlay.show .join-modal {
+            transform: scale(1) translateY(0);
+        }
+        
+        .modal-header {
+            background: var(--current-gradient);
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: modalShimmer 3s ease-in-out infinite;
+        }
+        
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .title-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        .modal-title h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .modal-description {
+            text-align: center;
+            color: var(--theme-text);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        
+        .join-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .join-option {
+            display: flex;
+            align-items: center;
+            padding: 25px;
+            border-radius: 15px;
+            background: var(--theme-bg-secondary);
+            border: 2px solid var(--theme-border);
+            text-decoration: none;
+            color: var(--theme-text);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .join-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-color: var(--theme-accent);
+            color: var(--theme-text);
+            text-decoration: none;
+        }
+        
+        .user-option:hover {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1));
+        }
+        
+        .partner-option:hover {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 193, 7, 0.1));
+        }
+        
+        .option-decoration {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 4px;
+            height: 100%;
+            background: var(--current-gradient);
+            transition: all 0.3s ease;
+        }
+        
+        .join-option:hover .option-decoration {
+            left: 0;
+        }
+        
+        .option-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--current-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .join-option:hover .option-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option-content {
+            flex: 1;
+        }
+        
+        .option-content h4 {
+            margin: 0 0 8px 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--theme-text);
+        }
+        
+        .option-content p {
+            margin: 0;
+            color: var(--theme-muted);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        
+        .option-arrow {
+            color: var(--theme-muted);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .join-option:hover .option-arrow {
+            color: var(--theme-accent);
+            transform: translateX(5px);
+        }
+        
+        .option-shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .join-option:hover .option-shine {
+            left: 100%;
+        }
+        
+        @keyframes modalShimmer {
+            0%, 100% { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
+            50% { transform: translateX(-50%) translateY(-50%) rotate(180deg); }
         }
         
         /* Touch Menu */
@@ -465,14 +703,14 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             border-radius: 30px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            text-decoration: none;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             font-weight: 700;
             font-size: 1.1rem;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
         }
         
         .menu-join-btn:hover {
@@ -900,6 +1138,49 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             .user-info {
                 display: none; /* Приховуємо на дуже маленьких екранах */
             }
+            
+            /* Join Modal Mobile */
+            .join-modal {
+                width: 95%;
+                margin: 20px;
+            }
+            
+            .modal-header {
+                padding: 20px 25px;
+            }
+            
+            .modal-title h3 {
+                font-size: 1.2rem;
+            }
+            
+            .title-icon {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .modal-body {
+                padding: 25px 20px;
+            }
+            
+            .join-option {
+                padding: 20px;
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .option-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .option-arrow {
+                transform: rotate(90deg);
+            }
+            
+            .join-option:hover .option-arrow {
+                transform: rotate(90deg) translateY(-5px);
+            }
         }
         
         /* Scroll styles for touch menu */
@@ -1006,10 +1287,10 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
             </div>
             <div class="header-actions">
                 <!-- Join Button -->
-                <a href="<?php echo getSiteUrl('pages/register.php'); ?>" class="join-btn">
+                <button class="join-btn" onclick="openJoinModal()">
                     <i class="fas fa-plus"></i>
                     <span><?php echo safeTranslate('join', 'Приєднатись'); ?></span>
-                </a>
+                </button>
                 
                 <!-- User Info (if logged in) -->
                 <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>
@@ -1077,11 +1358,11 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         <!-- Join Button -->
         <?php if (!function_exists('isLoggedIn') || !isLoggedIn()): ?>
         <div class="menu-section join-section">
-            <a href="<?php echo getSiteUrl('pages/register.php'); ?>" class="menu-join-btn">
+            <button class="menu-join-btn" onclick="openJoinModal()">
                 <i class="fas fa-plus"></i>
                 <span><?php echo safeTranslate('join', 'Приєднатись'); ?></span>
                 <div class="join-btn-decoration"></div>
-            </a>
+            </button>
         </div>
         <?php endif; ?>
         
@@ -1165,6 +1446,61 @@ $currentLang = $_SESSION['current_language'] ?? 'uk';
         </div>
     </div>
 
+    <!-- Join Modal -->
+    <div class="join-modal-overlay" id="joinModalOverlay">
+        <div class="join-modal" id="joinModal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div class="title-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3><?php echo safeTranslate('join_us', 'Приєднайтесь до нас'); ?></h3>
+                </div>
+                <button class="modal-close" id="joinModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <p class="modal-description"><?php echo safeTranslate('choose_type', 'Оберіть тип користувача:'); ?></p>
+                
+                <div class="join-options">
+                    <!-- User Option -->
+                    <a href="<?php echo getSiteUrl('pages/user/register.php'); ?>" class="join-option user-option">
+                        <div class="option-decoration"></div>
+                        <div class="option-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="option-content">
+                            <h4><?php echo safeTranslate('i_am_user', 'Я користувач'); ?></h4>
+                            <p><?php echo safeTranslate('user_desc', 'Хочу розміщувати оголошення на сайті'); ?></p>
+                        </div>
+                        <div class="option-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="option-shine"></div>
+                    </a>
+                    
+                    <!-- Partner Option -->
+                    <a href="<?php echo getSiteUrl('pages/partner/register.php'); ?>" class="join-option partner-option">
+                        <div class="option-decoration"></div>
+                        <div class="option-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="option-content">
+                            <h4><?php echo safeTranslate('i_am_partner', 'Я партнер'); ?></h4>
+                            <p><?php echo safeTranslate('partner_desc', 'Хочу замовляти у вас рекламу'); ?></p>
+                        </div>
+                        <div class="option-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="option-shine"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content Container -->
     <div class="main-content">
 
@@ -1207,8 +1543,68 @@ function changeLanguage(lang) {
     });
 }
 
+// Load saved settings from localStorage
+function loadSavedSettings() {
+    const savedTheme = localStorage.getItem('user_theme');
+    const savedGradient = localStorage.getItem('user_gradient');
+    
+    if (savedTheme) {
+        applyTheme(savedTheme);
+        // Update active theme button
+        const themeOptions = document.querySelectorAll('.theme-option');
+        themeOptions.forEach(opt => {
+            opt.classList.toggle('active', opt.dataset.theme === savedTheme);
+        });
+    }
+    
+    if (savedGradient) {
+        const gradients = {
+            'gradient-1': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'gradient-2': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'gradient-3': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'gradient-4': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'gradient-5': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'gradient-6': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            'gradient-7': 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+            'gradient-8': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+            'gradient-9': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+            'gradient-10': 'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
+            'gradient-11': 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+            'gradient-12': 'linear-gradient(135deg, #0abde3 0%, #006ba6 100%)',
+            'gradient-13': 'linear-gradient(135deg, #ff9ff3 0%, #f368e0 100%)',
+            'gradient-14': 'linear-gradient(135deg, #54a0ff 0%, #2e86de 100%)',
+            'gradient-15': 'linear-gradient(135deg, #5f27cd 0%, #341f97 100%)',
+            'gradient-16': 'linear-gradient(135deg, #00d2d3 0%, #54a0ff 100%)',
+            'gradient-17': 'linear-gradient(135deg, #ff9ff3 0%, #ff6b9d 100%)',
+            'gradient-18': 'linear-gradient(135deg, #c44569 0%, #f8b500 100%)',
+            'gradient-19': 'linear-gradient(135deg, #40407a 0%, #706fd3 100%)',
+            'gradient-20': 'linear-gradient(135deg, #33d9b2 0%, #218c74 100%)',
+            'gradient-21': 'linear-gradient(135deg, #ff5722 0%, #ff9800 100%)',
+            'gradient-22': 'linear-gradient(135deg, #e91e63 0%, #9c27b0 100%)',
+            'gradient-23': 'linear-gradient(135deg, #2196f3 0%, #21cbf3 100%)',
+            'gradient-24': 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)',
+            'gradient-25': 'linear-gradient(135deg, #ff4081 0%, #ff6ec7 100%)',
+            'gradient-26': 'linear-gradient(135deg, #673ab7 0%, #9c27b0 100%)',
+            'gradient-27': 'linear-gradient(135deg, #009688 0%, #4caf50 100%)',
+            'gradient-28': 'linear-gradient(135deg, #795548 0%, #8d6e63 100%)',
+            'gradient-29': 'linear-gradient(135deg, #607d8b 0%, #90a4ae 100%)',
+            'gradient-30': 'linear-gradient(135deg, #37474f 0%, #263238 100%)'
+        };
+        
+        applyGradient(savedGradient, gradients[savedGradient]);
+        // Update active gradient button
+        const gradientCircles = document.querySelectorAll('.gradient-circle');
+        gradientCircles.forEach(opt => {
+            opt.classList.toggle('active', opt.dataset.gradient === savedGradient);
+        });
+    }
+}
+
 // Touch Menu Functionality
 document.addEventListener('DOMContentLoaded', function() {
+    // Load saved settings first
+    loadSavedSettings();
+    
     const touchMenuBtn = document.getElementById('touchMenuBtn');
     const touchMenu = document.getElementById('touchMenu');
     const touchMenuOverlay = document.getElementById('touchMenuOverlay');
@@ -1347,6 +1743,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Join Modal functionality
+    const joinModalOverlay = document.getElementById('joinModalOverlay');
+    const joinModal = document.getElementById('joinModal');
+    const joinModalClose = document.getElementById('joinModalClose');
+    
+    // Close modal when clicking overlay
+    if (joinModalOverlay) {
+        joinModalOverlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeJoinModal();
+            }
+        });
+    }
+    
+    // Close modal when clicking X button
+    if (joinModalClose) {
+        joinModalClose.addEventListener('click', closeJoinModal);
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && joinModalOverlay.classList.contains('show')) {
+            closeJoinModal();
+        }
+    });
+    
     // Set active nav item
     const currentPage = window.location.pathname;
     const navItems = document.querySelectorAll('.nav-item');
@@ -1362,6 +1784,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // Change theme
 function changeTheme(theme) {
     const loading = showLoadingIndicator('Зміна теми...');
+    
+    // Save to localStorage immediately
+    localStorage.setItem('user_theme', theme);
     
     fetch('<?php echo getSiteUrl('ajax/change_theme.php'); ?>', {
         method: 'POST',
@@ -1384,11 +1809,15 @@ function changeTheme(theme) {
                 console.log('Theme changed to:', theme);
             }, 400);
         } else {
+            // Still apply theme from localStorage if server fails
+            applyTheme(theme);
             loading.remove();
             console.error('Theme change failed:', data.message);
         }
     })
     .catch(error => {
+        // Still apply theme from localStorage if server fails
+        applyTheme(theme);
         loading.remove();
         console.error('Error changing theme:', error);
     });
@@ -1423,6 +1852,9 @@ function applyTheme(theme) {
 // Change gradient
 function changeGradient(gradient) {
     const loading = showLoadingIndicator('Зміна градієнта...');
+    
+    // Save to localStorage immediately
+    localStorage.setItem('user_gradient', gradient);
     
     // Градієнти (30 штук)
     const gradients = {
@@ -1479,11 +1911,15 @@ function changeGradient(gradient) {
                 console.log('Gradient changed to:', gradient);
             }, 400);
         } else {
+            // Still apply gradient from localStorage if server fails
+            applyGradient(gradient, gradients[gradient]);
             loading.remove();
             console.error('Gradient change failed:', data.message);
         }
     })
     .catch(error => {
+        // Still apply gradient from localStorage if server fails
+        applyGradient(gradient, gradients[gradient]);
         loading.remove();
         console.error('Error changing gradient:', error);
     });
@@ -1511,6 +1947,30 @@ function applyGradient(gradientKey, gradientValue) {
     }
     if (joinBtn) {
         joinBtn.style.background = gradientValue;
+    }
+}
+
+// Join Modal Functions
+function openJoinModal() {
+    const overlay = document.getElementById('joinModalOverlay');
+    if (overlay) {
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        
+        // Close touch menu if open
+        const touchMenu = document.getElementById('touchMenu');
+        const touchMenuOverlay = document.getElementById('touchMenuOverlay');
+        if (touchMenu && touchMenu.classList.contains('open')) {
+            closeMenu();
+        }
+    }
+}
+
+function closeJoinModal() {
+    const overlay = document.getElementById('joinModalOverlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
     }
 }
 

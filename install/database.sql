@@ -146,6 +146,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `failed_login_attempts` int(11) DEFAULT 0,
     `blocked_until` timestamp NULL DEFAULT NULL,
     `balance` decimal(10,2) DEFAULT 0.00,
+    `company` varchar(255) DEFAULT NULL COMMENT 'Company name for partners',
+    `website` varchar(500) DEFAULT NULL COMMENT 'Company website for partners',
     `ban_reason` text DEFAULT NULL,
     `ban_until` datetime DEFAULT NULL,
     `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,

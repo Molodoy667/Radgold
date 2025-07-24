@@ -43,13 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'user_type' => 'partner',
                 'status' => 'active',
                 'newsletter' => $agreeNewsletter,
+                'company' => $company,
+                'website' => $website,
                 'created_at' => date('Y-m-d H:i:s')
             ];
             
             if (registerUser($userData)) {
-                // Додаткова інформація про компанію
                 $partnerId = getLastInsertId();
-                savePartnerInfo($partnerId, $company, $website);
                 
                 $success = 'Реєстрація успішна! Перенаправляємо в особистий кабінет...';
                 // Відправка вітального email

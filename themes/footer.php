@@ -406,7 +406,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--current-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -414,11 +414,13 @@
             transition: all 0.3s ease;
             font-size: 1.2rem;
             color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
         .touch-header:hover .touch-icon {
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--current-gradient);
             transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
         
         .touch-title {
@@ -499,10 +501,19 @@
             width: 20px;
             text-align: center;
             transition: all 0.3s ease;
+            background: var(--current-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .touch-link:hover i {
             transform: scale(1.2) rotate(5deg);
+            background: var(--current-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: brightness(1.2);
         }
         
         /* Brand Section with Cat */
@@ -925,17 +936,11 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
+            background: var(--current-gradient);
             opacity: 0;
             transition: all 0.3s ease;
             transform: scale(0);
         }
-        
-        .social-link.facebook::before { background: #3b5998; }
-        .social-link.twitter::before { background: #1da1f2; }
-        .social-link.instagram::before { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-        .social-link.linkedin::before { background: #0077b5; }
-        .social-link.youtube::before { background: #ff0000; }
-        .social-link.telegram::before { background: #0088cc; }
         
         .social-link:hover {
             transform: scale(1.1) translateY(-3px);

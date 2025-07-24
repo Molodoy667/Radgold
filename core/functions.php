@@ -131,6 +131,7 @@ function getCurrentUser() {
 // Функція входу користувача
 function loginUser($email, $password, $userType = 'user', $remember = false) {
     try {
+        $db = Database::getInstance();
         $user = safeQuerySingle("SELECT * FROM users WHERE email = ? AND user_type = ? AND status = 'active'", [$email, $userType]);
         
         if ($user && password_verify($password, $user['password'])) {
@@ -146,17 +147,26 @@ function loginUser($email, $password, $userType = 'user', $remember = false) {
             $_SESSION['user_type'] = $user['user_type'];
             $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
             
-            // Запам'ятати користувача
+            // Запам'ятати користувача (якщо таблиця існує)
             if ($remember) {
-                $token = bin2hex(random_bytes(32));
-                $expires = time() + (30 * 24 * 60 * 60); // 30 днів
-                
-                setcookie('remember_token', $token, $expires, '/', '', true, true);
-                
-                $tokenStmt = $db->prepare("INSERT INTO remember_tokens (user_id, token, expires_at) VALUES (?, ?, ?)");
-                $expiresDate = date('Y-m-d H:i:s', $expires);
-                $tokenStmt->bind_param("iss", $user['id'], $token, $expiresDate);
-                $tokenStmt->execute();
+                try {
+                    $token = bin2hex(random_bytes(32));
+                    $expires = time() + (30 * 24 * 60 * 60); // 30 днів
+                    
+                    setcookie('remember_token', $token, $expires, '/', '', true, true);
+                    
+                    // Перевірка чи існує таблиця remember_tokens
+                    $checkTable = $db->query("SHOW TABLES LIKE 'remember_tokens'");
+                    if ($checkTable && $checkTable->num_rows > 0) {
+                        $tokenStmt = $db->prepare("INSERT INTO remember_tokens (user_id, token, expires_at) VALUES (?, ?, ?)");
+                        $expiresDate = date('Y-m-d H:i:s', $expires);
+                        $tokenStmt->bind_param("iss", $user['id'], $token, $expiresDate);
+                        $tokenStmt->execute();
+                    }
+                } catch (Exception $e) {
+                    // Remember token не критичний, продовжуємо без нього
+                    error_log("Remember token error: " . $e->getMessage());
+                }
             }
             
             return $user;
@@ -179,14 +189,18 @@ function registerUser($userData) {
             return false;
         }
         
+        // Підготовка полів для вставки
+        $company = isset($userData['company']) ? $userData['company'] : null;
+        $website = isset($userData['website']) ? $userData['website'] : null;
+        
         $stmt = $db->prepare("
-            INSERT INTO users (first_name, last_name, email, phone, password, user_type, status, newsletter, created_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (first_name, last_name, email, phone, password, user_type, status, newsletter, company, website, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         
         $newsletter = $userData['newsletter'] ? 1 : 0;
         
-        $stmt->bind_param("sssssssss", 
+        $stmt->bind_param("sssssssssss", 
             $userData['first_name'],
             $userData['last_name'],
             $userData['email'],
@@ -195,6 +209,8 @@ function registerUser($userData) {
             $userData['user_type'],
             $userData['status'],
             $newsletter,
+            $company,
+            $website,
             $userData['created_at']
         );
         
@@ -202,6 +218,17 @@ function registerUser($userData) {
     } catch (Exception $e) {
         error_log("Registration error: " . $e->getMessage());
         return false;
+    }
+}
+
+// Отримання ID останньої вставки
+function getLastInsertId() {
+    try {
+        $db = Database::getInstance();
+        return $db->insert_id;
+    } catch (Exception $e) {
+        error_log("getLastInsertId error: " . $e->getMessage());
+        return 0;
     }
 }
 

@@ -1,6 +1,6 @@
 <?php
 // Устанавливаем кодировку
-header('Content-Type: text/html; charset=windows-1251');
+header('Content-Type: text/html; charset=UTF-8');
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/core/Router.php';

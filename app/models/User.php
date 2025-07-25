@@ -16,4 +16,9 @@ class User {
         $stmt->execute([$login]);
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
+
+    public static function create($data, $db) {
+        $stmt = $db->prepare("INSERT INTO users (email, login, password, role, created_at) VALUES (?, ?, ?, ?, NOW())");
+        return $stmt->execute([$data['email'], $data['login'], $data['password'], $data['role'] ?? 'user']);
+    }
 }

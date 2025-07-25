@@ -63,7 +63,7 @@ game_marketplace/
    ```php
    return [
        'host' => 'localhost',
-       'dbname' => 'marketplace',
+       'dbname' => 'game_marketplace',
        'user' => 'your_username',
        'password' => 'your_password',
        'charset' => 'cp1251',

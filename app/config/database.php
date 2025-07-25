@@ -1,7 +1,7 @@
 <?php
 return [
     'host' => 'localhost',
-    'dbname' => 'marketplace',
+    'dbname' => 'game_marketplace',
     'user' => 'root',
     'password' => '',
     'charset' => 'cp1251',

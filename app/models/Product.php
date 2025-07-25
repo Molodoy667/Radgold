@@ -43,4 +43,17 @@ class Product {
         $stmt->execute([$type]);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    public static function create($data, $db) {
+        $stmt = $db->prepare("INSERT INTO products (user_id, type, game, description, price, currency, status, created_at) 
+                             VALUES (?, ?, ?, ?, ?, ?, 'active', NOW())");
+        return $stmt->execute([
+            $data['user_id'], 
+            $data['type'], 
+            $data['game'], 
+            $data['description'], 
+            $data['price'], 
+            $data['currency'] ?? 'RUB'
+        ]);
+    }
 }

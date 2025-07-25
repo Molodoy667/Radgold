@@ -183,9 +183,9 @@ class {$className} {
             
             try {
                 $this->rollbackMigration($migration);
-                echo "✅ Миграция {$migration} откачена\n";
+                echo "✅ Миграция {$migration} откачена успешно\n";
             } catch (Exception $e) {
-                echo "❌ Ошибка при откате {$migration}: " . $e->getMessage() . "\n";
+                echo "❌ Ошибка при откате миграции {$migration}: " . $e->getMessage() . "\n";
                 exit(1);
             }
         }
@@ -244,13 +244,15 @@ class {$className} {
             echo "\n";
         }
         
-        echo "Всего выполнено: " . count($ranMigrations) . "\n";
-        echo "Ожидает выполнения: " . count($pendingMigrations) . "\n";
+        if (empty($ranMigrations) && empty($pendingMigrations)) {
+            echo "📁 Миграции не найдены\n";
+        }
     }
 }
 
 // Обработка аргументов командной строки
 $command = $argv[1] ?? 'run';
+
 $migrator = new DatabaseMigrator();
 
 switch ($command) {
@@ -266,17 +268,17 @@ switch ($command) {
         $migrator->createMigration($name);
         break;
     case 'rollback':
-        $steps = $argv[2] ?? 1;
+        $steps = (int)($argv[2] ?? 1);
         $migrator->rollback($steps);
         break;
     case 'status':
         $migrator->status();
         break;
     default:
-        echo "Использование:\n";
-        echo "  php scripts/migrate.php run          - Выполнить все миграции\n";
-        echo "  php scripts/migrate.php create name  - Создать новую миграцию\n";
-        echo "  php scripts/migrate.php rollback [n] - Откатить последние n миграций\n";
-        echo "  php scripts/migrate.php status       - Показать статус миграций\n";
+        echo "📖 Использование:\n";
+        echo "  php scripts/migrate.php run          - выполнить все миграции\n";
+        echo "  php scripts/migrate.php create name  - создать новую миграцию\n";
+        echo "  php scripts/migrate.php rollback [n] - откатить последние n миграций\n";
+        echo "  php scripts/migrate.php status       - показать статус миграций\n";
         break;
 }

@@ -187,8 +187,4 @@ class Validator {
     public function getData() {
         return $this->data;
     }
-    
-    public function getValue($field) {
-        return $this->data[$field] ?? '';
-    }
 }

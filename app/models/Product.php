@@ -1,0 +1,1 @@
+<?php namespace App\Models; class Product { public static function findAll($db) { $stmt = $db->prepare("SELECT p.*, u.login as seller_name FROM products p JOIN users u ON p.user_id = u.id WHERE p.status = \"active\" ORDER BY p.created_at DESC"); $stmt->execute(); return $stmt->fetchAll(\PDO::FETCH_ASSOC); } }

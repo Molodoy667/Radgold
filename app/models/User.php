@@ -1,0 +1,1 @@
+<?php namespace App\Models; class User { public static function findByLogin($login, $db) { $stmt = $db->prepare("SELECT * FROM users WHERE login = ? LIMIT 1"); $stmt->execute([$login]); return $stmt->fetch(\PDO::FETCH_ASSOC); } }

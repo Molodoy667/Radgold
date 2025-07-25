@@ -1,9 +1,45 @@
 <?php 
-$metaTags = getMetaTags();
-$themeSettings = getThemeSettings();
-$currentTheme = $themeSettings['current_theme'] ?? 'light';
-$currentGradient = $themeSettings['current_gradient'] ?? 'gradient-1';
-$gradients = generateGradients();
+// Безпечне отримання налаштувань з fallback значеннями
+try {
+    $metaTags = function_exists('getMetaTags') ? getMetaTags() : [
+        'title' => 'AdBoard Pro',
+        'description' => 'Рекламна компанія та дошка оголошень',
+        'keywords' => 'реклама, оголошення',
+        'author' => 'AdBoard Pro',
+        'favicon' => 'images/favicon.svg',
+        'logo' => 'images/default_logo.svg'
+    ];
+    
+    $themeSettings = function_exists('getThemeSettings') ? getThemeSettings() : [];
+    $currentTheme = $themeSettings['current_theme'] ?? 'light';
+    $currentGradient = $themeSettings['current_gradient'] ?? 'gradient-1';
+    $gradients = function_exists('generateGradients') ? generateGradients() : [
+        'gradient-1' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    ];
+} catch (Exception $e) {
+    // Fallback values if database is not available
+    $metaTags = [
+        'title' => 'AdBoard Pro',
+        'description' => 'Рекламна компанія та дошка оголошень',
+        'keywords' => 'реклама, оголошення',
+        'author' => 'AdBoard Pro',
+        'favicon' => 'images/favicon.svg',
+        'logo' => 'images/default_logo.svg'
+    ];
+    $currentTheme = 'light';
+    $currentGradient = 'gradient-1';
+    $gradients = ['gradient-1' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'];
+}
+
+// Helper function for safe URL generation
+function getSiteUrl($path = '') {
+    $baseUrl = defined('SITE_URL') ? SITE_URL : 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+    return $baseUrl . ($path ? '/' . ltrim($path, '/') : '');
+}
+
+function getSiteName() {
+    return defined('SITE_NAME') ? SITE_NAME : 'AdBoard Pro';
+}
 ?>
 <!DOCTYPE html>
 <html lang="uk" data-theme="<?php echo $currentTheme; ?>" data-gradient="<?php echo $currentGradient; ?>">
@@ -13,26 +49,26 @@ $gradients = generateGradients();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <!-- SEO Meta Tags -->
-    <title><?php echo sanitize($metaTags['title']); ?></title>
-    <meta name="description" content="<?php echo sanitize($metaTags['description']); ?>">
-    <meta name="keywords" content="<?php echo sanitize($metaTags['keywords']); ?>">
-    <meta name="author" content="<?php echo sanitize($metaTags['author']); ?>">
+    <title><?php echo function_exists('sanitize') ? sanitize($metaTags['title']) : htmlspecialchars($metaTags['title']); ?></title>
+    <meta name="description" content="<?php echo function_exists('sanitize') ? sanitize($metaTags['description']) : htmlspecialchars($metaTags['description']); ?>">
+    <meta name="keywords" content="<?php echo function_exists('sanitize') ? sanitize($metaTags['keywords']) : htmlspecialchars($metaTags['keywords']); ?>">
+    <meta name="author" content="<?php echo function_exists('sanitize') ? sanitize($metaTags['author']) : htmlspecialchars($metaTags['author']); ?>">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="<?php echo SITE_URL; ?>">
+    <link rel="canonical" href="<?php echo defined('SITE_URL') ? SITE_URL : 'http://localhost'; ?>">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="<?php echo sanitize($metaTags['title']); ?>">
-    <meta property="og:description" content="<?php echo sanitize($metaTags['description']); ?>">
-    <meta property="og:image" content="<?php echo SITE_URL . '/' . $metaTags['logo']; ?>">
-    <meta property="og:url" content="<?php echo SITE_URL; ?>">
+    <meta property="og:title" content="<?php echo function_exists('sanitize') ? sanitize($metaTags['title']) : htmlspecialchars($metaTags['title']); ?>">
+    <meta property="og:description" content="<?php echo function_exists('sanitize') ? sanitize($metaTags['description']) : htmlspecialchars($metaTags['description']); ?>">
+    <meta property="og:image" content="<?php echo (defined('SITE_URL') ? SITE_URL : 'http://localhost') . '/' . $metaTags['logo']; ?>">
+    <meta property="og:url" content="<?php echo defined('SITE_URL') ? SITE_URL : 'http://localhost'; ?>">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="<?php echo SITE_NAME; ?>">
+    <meta property="og:site_name" content="<?php echo defined('SITE_NAME') ? SITE_NAME : 'AdBoard Pro'; ?>">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?php echo sanitize($metaTags['title']); ?>">
-    <meta name="twitter:description" content="<?php echo sanitize($metaTags['description']); ?>">
-    <meta name="twitter:image" content="<?php echo SITE_URL . '/' . $metaTags['logo']; ?>">
+    <meta name="twitter:title" content="<?php echo function_exists('sanitize') ? sanitize($metaTags['title']) : htmlspecialchars($metaTags['title']); ?>">
+    <meta name="twitter:description" content="<?php echo function_exists('sanitize') ? sanitize($metaTags['description']) : htmlspecialchars($metaTags['description']); ?>">
+    <meta name="twitter:image" content="<?php echo (defined('SITE_URL') ? SITE_URL : 'http://localhost') . '/' . $metaTags['logo']; ?>">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?php echo $metaTags['favicon']; ?>">
@@ -89,14 +125,18 @@ $gradients = generateGradients();
         }
     </style>
 </head>
-<body class="<?php echo $currentTheme; ?>-theme">
+<body class="<?php echo $currentTheme; ?>-theme"
+      data-animations="<?php echo getSiteSetting('enable_animations', true) ? 'true' : 'false'; ?>"
+      data-particles="<?php echo getSiteSetting('enable_particles', false) ? 'true' : 'false'; ?>"
+      data-smooth-scroll="<?php echo getSiteSetting('smooth_scroll', true) ? 'true' : 'false'; ?>"
+      data-tooltips="<?php echo getSiteSetting('enable_tooltips', true) ? 'true' : 'false'; ?>">
     
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="<?php echo SITE_URL; ?>">
-                <img src="<?php echo $metaTags['logo']; ?>" alt="<?php echo SITE_NAME; ?>" height="40" class="me-2">
-                <span class="fw-bold"><?php echo SITE_NAME; ?></span>
+            <a class="navbar-brand d-flex align-items-center" href="<?php echo getSiteUrl(); ?>">
+                <img src="<?php echo $metaTags['logo']; ?>" alt="<?php echo getSiteName(); ?>" height="40" class="me-2">
+                <span class="fw-bold"><?php echo getSiteName(); ?></span>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -106,47 +146,77 @@ $gradients = generateGradients();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>"><i class="fas fa-home me-1"></i>Головна</a>
+                        <a class="nav-link" href="<?php echo getSiteUrl(); ?>"><i class="fas fa-home me-1"></i><?php echo function_exists('__') ? __('home') : 'Головна'; ?></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>/ads"><i class="fas fa-bullhorn me-1"></i>Оголошення</a>
+                        <a class="nav-link" href="<?php echo getSiteUrl('pages/ads.php'); ?>"><i class="fas fa-bullhorn me-1"></i><?php echo function_exists('__') ? __('categories') : 'Оголошення'; ?></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>/services"><i class="fas fa-cogs me-1"></i>Послуги</a>
+                        <a class="nav-link" href="<?php echo getSiteUrl('services'); ?>"><i class="fas fa-cogs me-1"></i>Послуги</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>/about"><i class="fas fa-info-circle me-1"></i>Про нас</a>
+                        <a class="nav-link" href="<?php echo getSiteUrl('about'); ?>"><i class="fas fa-info-circle me-1"></i>Про нас</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>/contact"><i class="fas fa-envelope me-1"></i>Контакти</a>
+                        <a class="nav-link" href="<?php echo getSiteUrl('contact'); ?>"><i class="fas fa-envelope me-1"></i>Контакти</a>
                     </li>
                 </ul>
                 
                 <ul class="navbar-nav">
-                    <?php if (isLoggedIn()): ?>
+                    <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i><?php echo sanitize($_SESSION['username']); ?>
+                                <i class="fas fa-user me-1"></i><?php echo function_exists('sanitize') ? sanitize($_SESSION['username'] ?? 'User') : htmlspecialchars($_SESSION['username'] ?? 'User'); ?>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/profile"><i class="fas fa-user me-2"></i>Профіль</a></li>
-                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/my-ads"><i class="fas fa-list me-2"></i>Мої оголошення</a></li>
-                                <?php if (isAdmin()): ?>
+                                <li><a class="dropdown-item" href="<?php echo getSiteUrl('profile'); ?>"><i class="fas fa-user me-2"></i>Профіль</a></li>
+                                <li><a class="dropdown-item" href="<?php echo getSiteUrl('my-ads'); ?>"><i class="fas fa-list me-2"></i><?php echo function_exists('__') ? __('my_ads') : 'Мої оголошення'; ?></a></li>
+                                <?php if (function_exists('isAdmin') && isAdmin()): ?>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/admin"><i class="fas fa-cog me-2"></i>Адміністрування</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo getSiteUrl('admin'); ?>"><i class="fas fa-cog me-2"></i><?php echo function_exists('__') ? __('admin_panel') : 'Адміністрування'; ?></a></li>
                                 <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/logout"><i class="fas fa-sign-out-alt me-2"></i>Вихід</a></li>
+                                <li><a class="dropdown-item" href="<?php echo getSiteUrl('logout'); ?>"><i class="fas fa-sign-out-alt me-2"></i><?php echo function_exists('__') ? __('logout') : 'Вихід'; ?></a></li>
                             </ul>
                         </li>
                     <?php else: ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo SITE_URL; ?>/login"><i class="fas fa-sign-in-alt me-1"></i>Вхід</a>
+                            <a class="nav-link" href="<?php echo getSiteUrl('login'); ?>"><i class="fas fa-sign-in-alt me-1"></i><?php echo function_exists('__') ? __('login') : 'Вхід'; ?></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo SITE_URL; ?>/register"><i class="fas fa-user-plus me-1"></i>Реєстрація</a>
+                            <a class="nav-link" href="<?php echo getSiteUrl('register'); ?>"><i class="fas fa-user-plus me-1"></i><?php echo function_exists('__') ? __('register') : 'Реєстрація'; ?></a>
                         </li>
                     <?php endif; ?>
+                    
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-globe me-1"></i>
+                            <?php 
+                            $currentLang = $_SESSION['current_language'] ?? getSiteSetting('language', 'uk');
+                            $langFlags = ['uk' => '🇺🇦', 'ru' => '🇷🇺', 'en' => '🇺🇸'];
+                            $langNames = ['uk' => 'UA', 'ru' => 'RU', 'en' => 'EN'];
+                            echo ($langFlags[$currentLang] ?? '🌐') . ' ' . ($langNames[$currentLang] ?? 'Language');
+                            ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item <?php echo $currentLang === 'uk' ? 'active' : ''; ?>" href="#" onclick="changeLanguage('uk')">
+                                    🇺🇦 Українська
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item <?php echo $currentLang === 'ru' ? 'active' : ''; ?>" href="#" onclick="changeLanguage('ru')">
+                                    🇷🇺 Російська
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item <?php echo $currentLang === 'en' ? 'active' : ''; ?>" href="#" onclick="changeLanguage('en')">
+                                    🇺🇸 English
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     
                     <!-- Theme Toggle Button -->
                     <li class="nav-item">
@@ -206,3 +276,30 @@ $gradients = generateGradients();
 
     <!-- Main Content Container -->
     <div class="main-content">
+
+<script>
+// Функція зміни мови
+function changeLanguage(lang) {
+    fetch('<?php echo getSiteUrl('change_language'); ?>', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'language=' + lang
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Перезавантажуємо сторінку для застосування нової мови
+            location.reload();
+        } else {
+            alert('Помилка зміни мови: ' + (data.message || 'Невідома помилка'));
+        }
+    })
+    .catch(error => {
+        console.error('Error changing language:', error);
+        alert('Помилка зміни мови');
+    });
+}
+</script>

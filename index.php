@@ -1,5 +1,12 @@
 <?php
 // Головний файл сайту
+
+// Перевірка чи сайт встановлений
+if (!file_exists('.installed')) {
+    header('Location: install/');
+    exit();
+}
+
 require_once 'core/config.php';
 require_once 'core/database.php';
 require_once 'core/functions.php';
@@ -16,6 +23,14 @@ switch ($route) {
         
     case 'ads':
         $page = 'pages/ads.php';
+        break;
+        
+    case 'ad-detail':
+        $page = 'pages/ad-detail.php';
+        break;
+        
+    case 'create-ad':
+        $page = 'pages/create-ad.php';
         break;
         
     case 'services':
@@ -44,10 +59,15 @@ switch ($route) {
         break;
         
     case 'admin':
+        if (!isLoggedIn()) {
+            redirect(SITE_URL . '/admin/login.php');
+        }
         if (!isAdmin()) {
             redirect(SITE_URL . '/login');
         }
-        $page = 'admin/dashboard.php';
+        // Підключаємо адмін header замість звичайного
+        require_once 'admin/dashboard.php';
+        exit;
         break;
         
     default:

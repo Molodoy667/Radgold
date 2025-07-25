@@ -1,0 +1,47 @@
+# Composer
+/vendor/
+composer.lock
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.example
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Cache
+cache/
+tmp/
+
+# Uploads
+storage/uploads/
+storage/temp/
+
+# Database
+*.sql
+!database/dump.sql
+
+# Config (sensitive data)
+app/config/database.php
+!app/config/database.php.example
+
+# Node modules (if using npm)
+node_modules/
+package-lock.json
+
+# Build files
+dist/
+build/

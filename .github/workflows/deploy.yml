@@ -1,0 +1,126 @@
+name: Deploy Game Marketplace
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        ports:
+          - 3306:3306
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        extensions: mbstring, intl, mysql, pdo_mysql, gd, zip
+        coverage: none
+    
+    - name: Validate composer.json
+      run: composer validate --strict
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+    
+    - name: Run PHP syntax check
+      run: find . -name "*.php" -exec php -l {} \;
+    
+    - name: Run tests
+      run: |
+        php -r "
+        require_once 'vendor/autoload.php';
+        require_once 'app/core/Environment.php';
+        \App\Core\Environment::load();
+        
+        // Простые тесты
+        echo 'Testing database connection...' . PHP_EOL;
+        try {
+          \$config = require 'app/config/database.php';
+          \$dsn = \"mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4\";
+          \$pdo = new PDO(\$dsn, 'root', 'root');
+          echo 'Database connection: OK' . PHP_EOL;
+        } catch (Exception \$e) {
+          echo 'Database connection: FAILED - ' . \$e->getMessage() . PHP_EOL;
+          exit(1);
+        }
+        
+        echo 'Testing core classes...' . PHP_EOL;
+        \$classes = [
+          'App\\Core\\Session',
+          'App\\Core\\Cache',
+          'App\\Core\\Logger',
+          'App\\Core\\Validator'
+        ];
+        
+        foreach (\$classes as \$class) {
+          if (class_exists(\$class)) {
+            echo \$class . ': OK' . PHP_EOL;
+          } else {
+            echo \$class . ': FAILED' . PHP_EOL;
+            exit(1);
+          }
+        }
+        
+        echo 'All tests passed!' . PHP_EOL;
+        "
+      env:
+        DB_HOST: 127.0.0.1
+        DB_NAME: test_db
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_CHARSET: utf8mb4
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/game-marketplace:latest
+          ${{ secrets.DOCKER_USERNAME }}/game-marketplace:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production server..."
+        # Здесь можно добавить команды для деплоя
+        # Например, SSH на сервер и запуск docker-compose
+        echo "Deployment completed!"

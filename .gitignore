@@ -1,81 +1,47 @@
-# AdBoard Pro - Git Ignore File
-
-# Configuration files (containing sensitive data)
-core/config.php
-
-# Installation marker
-.installed
-
-# Upload directories
-uploads/*
-!uploads/avatars/
-uploads/avatars/*
-!uploads/avatars/.gitkeep
-cache/
-logs/
-
-# Temporary files
-*.tmp
-*.temp
-.DS_Store
-Thumbs.db
-
-# IDE and editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Node modules (if using npm for any tools)
-node_modules/
-
-# Composer dependencies (if using composer)
-vendor/
+# Composer
+/vendor/
+composer.lock
 
 # Environment files
 .env
 .env.local
 .env.production
+.env.example
 
-# Database backups
-*.sql
-*.db
-backup/
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Error logs
-error_log
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
 *.log
+logs/
 
-# PHP-specific
-*.phar
+# Cache
+cache/
+tmp/
 
-# System files
-.htaccess.bak
-robots.txt.bak
+# Uploads
+storage/uploads/
+storage/temp/
 
-# Backup files
-*.bak
-*.backup
-*.old
+# Database
+*.sql
+!database/dump.sql
 
-# Runtime data
-pids
-*.pid
-*.seed
+# Config (sensitive data)
+app/config/database.php
+!app/config/database.php.example
 
-# Coverage directory used by tools like istanbul
-coverage/
+# Node modules (if using npm)
+node_modules/
+package-lock.json
 
-# Testing
-phpunit.xml
-.phpunit.result.cache
-
-# Documentation builds
-docs/_build/
-
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+# Build files
+dist/
+build/

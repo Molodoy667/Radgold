@@ -1,8 +1,8 @@
 -- Game Marketplace Database Dump
 -- Кодировка: utf8mb4
 
-CREATE DATABASE IF NOT EXISTS game_marketplace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE game_marketplace;
+CREATE DATABASE IF NOT EXISTS iteiyzke_market CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE iteiyzke_market;
 
 -- Таблица пользователей
 CREATE TABLE users (

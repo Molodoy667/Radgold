@@ -67,6 +67,6 @@ class Router {
     private function getDb() {
         $config = require __DIR__ . '/../config/database.php';
         $dsn = "mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}";
-        return new \PDO($dsn, $config['user'], $config['password']);
+        return new \PDO($dsn, $config['user'], $config['password'], $config['options'] ?? []);
     }
 }

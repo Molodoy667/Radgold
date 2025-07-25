@@ -6,6 +6,7 @@ composer.lock
 .env
 .env.local
 .env.production
+.env.example
 
 # IDE files
 .vscode/

@@ -36,7 +36,7 @@
 </head>
 <body class="bg-background text-foreground">
     <!-- Лоадер страницы -->
-    <div id="page-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-background">
+    <div id="page-loader" class="page-loader">
         <div class="loader-spinner"></div>
     </div>
 
@@ -224,36 +224,15 @@
     <?php endif; ?>
 
     <script>
-        console.log('Layout script loaded');
-        
-        // Немедленное скрытие лоадера при загрузке DOM
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Content Loaded - checking loader');
-            setTimeout(function() {
-                const loader = document.getElementById('page-loader');
-                console.log('Fallback check - loader:', loader);
-                if (loader && getComputedStyle(loader).display !== 'none') {
-                    console.log('Fallback hiding loader');
-                    loader.style.transition = 'opacity 0.3s ease-out';
-                    loader.style.opacity = '0';
-                    setTimeout(function() {
-                        loader.style.display = 'none';
-                        console.log('Fallback - loader hidden completely');
-                    }, 300);
-                }
-            }, 500);
-        });
-        
-        // Дополнительный fallback при полной загрузке
+        // Финальный fallback - принудительное скрытие лоадера
         window.addEventListener('load', function() {
-            console.log('Window loaded - final loader check');
             setTimeout(function() {
                 const loader = document.getElementById('page-loader');
-                if (loader && getComputedStyle(loader).display !== 'none') {
-                    console.log('Final fallback - forcing loader hide');
+                if (loader && getComputedStyle(loader).visibility !== 'hidden') {
+                    console.log('Финальный fallback - принудительное скрытие лоадера');
                     loader.style.display = 'none';
                 }
-            }, 2000);
+            }, 4000);
         });
     </script>
 </body>

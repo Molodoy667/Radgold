@@ -100,8 +100,30 @@
 }
 
 /* Лоадер */
-#page-loader {
-  transition: opacity 0.3s ease-out;
+.page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+  /* Автоматическое скрытие через CSS анимацию */
+  animation: hideLoader 0.5s ease-out 1.5s forwards;
+}
+
+@keyframes hideLoader {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 .loader-spinner {

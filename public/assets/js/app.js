@@ -2,20 +2,15 @@
  * GameMarket Pro - Main JavaScript Application
  */
 
-// Немедленная попытка скрыть лоадер
+// Резервное скрытие лоадера (если CSS анимация не сработала)
 (function() {
-    console.log('Immediate loader check');
-    const loader = document.getElementById('page-loader');
-    if (loader) {
-        console.log('Immediate - loader found, hiding in 200ms');
-        setTimeout(() => {
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.style.display = 'none';
-                console.log('Immediate - loader hidden');
-            }, 300);
-        }, 200);
-    }
+    setTimeout(() => {
+        const loader = document.getElementById('page-loader');
+        if (loader && getComputedStyle(loader).visibility !== 'hidden') {
+            console.log('Резервное скрытие лоадера');
+            loader.style.display = 'none';
+        }
+    }, 3000);
 })();
 
 class App {
@@ -231,24 +226,15 @@ class App {
     }
 }
 
-    // Скрытие лоадера страницы
+    // Скрытие лоадера страницы (резервная функция)
     hidePageLoader() {
         const loader = document.getElementById('page-loader');
-        console.log('Attempting to hide loader:', loader);
-        
-        if (loader) {
-            console.log('Loader found, hiding...');
-            // Задержка для плавной анимации
-            setTimeout(() => {
-                loader.style.opacity = '0';
-                console.log('Loader opacity set to 0');
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    console.log('Loader hidden completely');
-                }, 300);
-            }, 100);
-        } else {
-            console.log('Loader element not found');
+        if (loader && getComputedStyle(loader).visibility !== 'hidden') {
+            // CSS анимация не сработала, принудительно скрываем
+            loader.style.animation = 'none';
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
+            console.log('Принудительное скрытие лоадера через JS');
         }
     }
 }

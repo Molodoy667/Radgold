@@ -224,17 +224,36 @@
     <?php endif; ?>
 
     <script>
-        // Fallback для скрытия лоадера если JavaScript не работает
-        window.addEventListener('load', function() {
+        console.log('Layout script loaded');
+        
+        // Немедленное скрытие лоадера при загрузке DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - checking loader');
             setTimeout(function() {
                 const loader = document.getElementById('page-loader');
-                if (loader && loader.style.display !== 'none') {
+                console.log('Fallback check - loader:', loader);
+                if (loader && getComputedStyle(loader).display !== 'none') {
+                    console.log('Fallback hiding loader');
+                    loader.style.transition = 'opacity 0.3s ease-out';
                     loader.style.opacity = '0';
                     setTimeout(function() {
                         loader.style.display = 'none';
+                        console.log('Fallback - loader hidden completely');
                     }, 300);
                 }
-            }, 1000);
+            }, 500);
+        });
+        
+        // Дополнительный fallback при полной загрузке
+        window.addEventListener('load', function() {
+            console.log('Window loaded - final loader check');
+            setTimeout(function() {
+                const loader = document.getElementById('page-loader');
+                if (loader && getComputedStyle(loader).display !== 'none') {
+                    console.log('Final fallback - forcing loader hide');
+                    loader.style.display = 'none';
+                }
+            }, 2000);
         });
     </script>
 </body>

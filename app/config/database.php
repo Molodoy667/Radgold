@@ -8,9 +8,9 @@ return [
             'driver' => 'mysql',
             'host' => $_ENV['DB_HOST'] ?? 'localhost',
             'port' => $_ENV['DB_PORT'] ?? '3306',
-            'database' => $_ENV['DB_NAME'] ?? 'gamemarket_pro',
-            'username' => $_ENV['DB_USER'] ?? 'root',
-            'password' => $_ENV['DB_PASSWORD'] ?? '',
+            'database' => $_ENV['DB_NAME'] ?? 'iteiyzke_market',
+            'username' => $_ENV['DB_USER'] ?? 'novado',
+            'password' => $_ENV['DB_PASSWORD'] ?? 'Q05021998@',
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'options' => [

@@ -224,13 +224,17 @@
     <?php endif; ?>
 
     <script>
-        // Инициализация после загрузки страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            // Скрыть лоадер
-            document.getElementById('page-loader').style.display = 'none';
-            
-            // Инициализация компонентов
-            App.init();
+        // Fallback для скрытия лоадера если JavaScript не работает
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const loader = document.getElementById('page-loader');
+                if (loader && loader.style.display !== 'none') {
+                    loader.style.opacity = '0';
+                    setTimeout(function() {
+                        loader.style.display = 'none';
+                    }, 300);
+                }
+            }, 1000);
         });
     </script>
 </body>

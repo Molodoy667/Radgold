@@ -17,6 +17,7 @@ class App {
         this.initMobileMenu();
         this.initUserMenu();
         this.initNotifications();
+        this.hidePageLoader();
     }
 
     bindEvents() {
@@ -216,6 +217,21 @@ class App {
 
 // Глобальные функции
 window.logout = () => window.app?.logout();
+
+    // Скрытие лоадера страницы
+    hidePageLoader() {
+        const loader = document.getElementById('page-loader');
+        if (loader) {
+            // Задержка для плавной анимации
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 300);
+            }, 100);
+        }
+    }
+}
 
 // Инициализация при загрузке DOM
 document.addEventListener('DOMContentLoaded', () => {

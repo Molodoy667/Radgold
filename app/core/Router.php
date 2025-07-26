@@ -1,123 +1,145 @@
 <?php
+
 namespace App\Core;
 
-class Router {
-    private $routes = [
-        // Главная страница
-        '/' => ['ProductController', 'index'],
-        
-        // Авторизация
-        '/login' => ['AuthController', 'login'],
-        '/logout' => ['AuthController', 'logout'],
-        '/register' => ['AuthController', 'register'],
-        '/auth/login' => ['AuthController', 'login'],
-        '/auth/register' => ['AuthController', 'register'],
-        
-        // Товары
-        '/products' => ['ProductController', 'index'],
-        '/products/filter' => ['ProductController', 'filter'],
-        '/products/create' => ['ProductController', 'create'],
-        '/products/buy' => ['ProductController', 'buy'],
-        
-        // Личный кабинет
-        '/profile' => ['UserController', 'profile'],
-        '/settings' => ['UserController', 'settings'],
-        '/my-products' => ['UserController', 'myProducts'],
-        '/my-purchases' => ['UserController', 'myPurchases'],
-        '/my-sales' => ['UserController', 'mySales'],
-        '/favorites' => ['UserController', 'favorites'],
-        '/toggle-favorite' => ['UserController', 'toggleFavorite'],
-        
-        // Чат
-        '/chat' => ['UserController', 'chat'],
-        '/conversation' => ['UserController', 'conversation'],
-        '/get-messages' => ['UserController', 'getMessages'],
-        
-        // Диспуты и отзывы
-        '/disputes' => ['UserController', 'disputes'],
-        '/create-dispute' => ['UserController', 'createDispute'],
-        '/reviews' => ['UserController', 'reviews'],
-        '/create-review' => ['UserController', 'createReview'],
-        
-        // Админ панель
-        '/admin' => ['AdminController', 'dashboard'],
-        '/admin/users' => ['AdminController', 'users'],
-        '/admin/products' => ['AdminController', 'products'],
-        '/admin/disputes' => ['AdminController', 'disputes'],
-        '/admin/reviews' => ['AdminController', 'reviews'],
-        '/admin/settings' => ['AdminController', 'settings'],
-    ];
+use PDO;
 
-    public function run() {
+class Router
+{
+    private PDO $db;
+    private array $routes = [];
+    
+    public function __construct(PDO $db)
+    {
+        $this->db = $db;
+        $this->defineRoutes();
+    }
+
+    private function defineRoutes(): void
+    {
+        // Главная страница и каталог
+        $this->routes = [
+            'GET /' => ['ProductController', 'index'],
+            'GET /catalog' => ['ProductController', 'catalog'],
+            'GET /product/{id}' => ['ProductController', 'show'],
+            
+            // Аутентификация
+            'GET /login' => ['AuthController', 'loginForm'],
+            'POST /login' => ['AuthController', 'login'],
+            'GET /register' => ['AuthController', 'registerForm'],
+            'POST /register' => ['AuthController', 'register'],
+            'POST /logout' => ['AuthController', 'logout'],
+            
+            // Личный кабинет
+            'GET /profile' => ['UserController', 'profile'],
+            'GET /my-products' => ['UserController', 'myProducts'],
+            'GET /my-purchases' => ['UserController', 'myPurchases'],
+            'GET /favorites' => ['UserController', 'favorites'],
+            'GET /settings' => ['UserController', 'settings'],
+            
+            // Управление товарами
+            'GET /products/create' => ['ProductController', 'createForm'],
+            'POST /products/create' => ['ProductController', 'create'],
+            'GET /products/{id}/edit' => ['ProductController', 'editForm'],
+            'POST /products/{id}/edit' => ['ProductController', 'update'],
+            'POST /products/{id}/delete' => ['ProductController', 'delete'],
+            
+            // Покупки и аренда
+            'POST /products/{id}/buy' => ['PurchaseController', 'buy'],
+            'POST /products/{id}/rent' => ['RentalController', 'rent'],
+            
+            // Избранное
+            'POST /favorites/toggle' => ['FavoriteController', 'toggle'],
+            
+            // Чат и сообщения
+            'GET /messages' => ['MessageController', 'index'],
+            'GET /messages/{userId}' => ['MessageController', 'conversation'],
+            'POST /messages/send' => ['MessageController', 'send'],
+            
+            // Отзывы
+            'POST /reviews/create' => ['ReviewController', 'create'],
+            
+            // Споры
+            'GET /disputes' => ['DisputeController', 'index'],
+            'POST /disputes/create' => ['DisputeController', 'create'],
+            
+            // API эндпоинты
+            'GET /api/products/filter' => ['Api\\ProductController', 'filter'],
+            'GET /api/messages/unread' => ['Api\\MessageController', 'unread'],
+            
+            // Админ панель
+            'GET /admin' => ['AdminController', 'dashboard'],
+            'GET /admin/users' => ['AdminController', 'users'],
+            'GET /admin/products' => ['AdminController', 'products'],
+            'GET /admin/disputes' => ['AdminController', 'disputes'],
+            'POST /admin/users/{id}/ban' => ['AdminController', 'banUser'],
+            'POST /admin/products/{id}/approve' => ['AdminController', 'approveProduct'],
+        ];
+    }
+
+    public function run(): void
+    {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
-        
-        $db = $this->getDb();
-        
-        // Обработка статических маршрутов
-        if (isset($this->routes[$uri])) {
-            $this->executeRoute($this->routes[$uri], $db);
+        $routeKey = $method . ' ' . $uri;
+
+        // Поиск прямого совпадения
+        if (isset($this->routes[$routeKey])) {
+            $this->executeRoute($this->routes[$routeKey], []);
             return;
         }
-        
-        // Обработка динамических маршрутов
-        if (preg_match('/^\/products\/(\d+)$/', $uri, $matches)) {
-            $this->executeRoute(['ProductController', 'show'], $db, [$matches[1]]);
-            return;
+
+        // Поиск динамических маршрутов
+        foreach ($this->routes as $route => $handler) {
+            if ($this->matchRoute($route, $routeKey, $params)) {
+                $this->executeRoute($handler, $params);
+                return;
+            }
         }
-        
-        if (preg_match('/^\/conversation\/(\d+)$/', $uri, $matches)) {
-            $this->executeRoute(['UserController', 'conversation'], $db, [$matches[1]]);
-            return;
-        }
-        
-        if (preg_match('/^\/admin\/users\/(\d+)\/(ban|unban|role)$/', $uri, $matches)) {
-            $this->executeRoute(['AdminController', $matches[2]], $db, [$matches[1]]);
-            return;
-        }
-        
-        if (preg_match('/^\/admin\/products\/(\d+)\/(approve|reject|ban)$/', $uri, $matches)) {
-            $this->executeRoute(['AdminController', $matches[2]], $db, [$matches[1]]);
-            return;
-        }
-        
-        // 404
+
+        // 404 страница
         $this->show404();
     }
-    
-    private function executeRoute($route, $db, $params = []) {
-        list($controllerName, $method) = $route;
+
+    private function matchRoute(string $pattern, string $route, &$params): bool
+    {
+        // Конвертируем паттерн в regex
+        $pattern = preg_replace('/\{(\w+)\}/', '(?P<$1>[^/]+)', $pattern);
+        $pattern = str_replace('/', '\/', $pattern);
+        $pattern = '/^' . $pattern . '$/';
+
+        if (preg_match($pattern, $route, $matches)) {
+            $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+            return true;
+        }
+
+        return false;
+    }
+
+    private function executeRoute(array $handler, array $params): void
+    {
+        [$controllerName, $method] = $handler;
         $controllerClass = "App\\Controllers\\{$controllerName}";
-        
+
         if (!class_exists($controllerClass)) {
             $this->show404();
             return;
         }
-        
-        $controller = new $controllerClass();
-        
+
+        $controller = new $controllerClass($this->db);
+
         if (!method_exists($controller, $method)) {
             $this->show404();
             return;
         }
-        
-        // Вызываем метод контроллера с параметрами
-        if (!empty($params)) {
-            call_user_func_array([$controller, $method], array_merge([$db], $params));
-        } else {
-            $controller->$method($db);
-        }
+
+        // Вызов метода контроллера с параметрами
+        call_user_func_array([$controller, $method], $params);
     }
-    
-    private function show404() {
-        header('HTTP/1.0 404 Not Found');
-        echo '<h1>404 - Страница не найдена</h1>';
-        echo '<p><a href="/products">Вернуться к каталогу</a></p>';
-    }
-    
-    private function getDb() {
-        $config = require __DIR__ . '/../config/database.php';
-        $dsn = "mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}";
-        return new \PDO($dsn, $config['user'], $config['password']);
+
+    private function show404(): void
+    {
+        http_response_code(404);
+        require_once __DIR__ . '/../views/errors/404.php';
     }
 }

@@ -1,212 +1,265 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="windows-1251">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Каталог - Game Marketplace</title>
-    <link rel="stylesheet" href="/assets/css/theme.css">
-    <link rel="stylesheet" href="/assets/css/products.css">
-    <script src="/assets/js/theme.js"></script>
-    <script src="/assets/js/filter.js"></script>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <h1>🎮 Game Marketplace</h1>
-            </div>
-            <nav class="nav">
-                <a href="/products" class="active">Каталог</a>
-                <?php if (isset($_SESSION['user'])): ?>
-                    <a href="/profile">Личный кабинет</a>
-                    <a href="/chat">Сообщения</a>
-                    <a href="/logout">Выйти</a>
-                <?php else: ?>
-                    <a href="/login">Вход</a>
-                    <a href="/register">Регистрация</a>
-                <?php endif; ?>
-            </nav>
-            <div class="header-actions">
-                <?php if (isset($_SESSION['user'])): ?>
-                    <a href="/products/create" class="btn-primary">Добавить товар</a>
-                <?php endif; ?>
-                <button onclick="toggleTheme()" class="btn-theme">🌙</button>
+<?php
+ob_start();
+?>
+
+<div class="main-content">
+    <!-- Hero секция -->
+    <section class="hero-section bg-gradient-to-br from-primary/20 to-secondary/20 py-20">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-6">
+                    GameMarket Pro
+                </h1>
+                <p class="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
+                    Современный маркетплейс для игровых аккаунтов, услуг бустинга и внутриигрового контента
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                    <a href="/catalog" class="btn-primary group text-lg px-8 py-4">
+                        <i class="icon-grid mr-2"></i>
+                        Смотреть каталог
+                        <div class="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </a>
+                    <?php if (!$user): ?>
+                        <a href="/register" class="btn-secondary text-lg px-8 py-4">
+                            <i class="icon-user mr-2"></i>
+                            Начать продавать
+                        </a>
+                    <?php endif; ?>
+                </div>
+                
+                <!-- Статистика -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+                    <div class="text-center">
+                        <div class="text-3xl md:text-4xl font-bold text-primary mb-2"><?= number_format($totalUsers) ?>+</div>
+                        <div class="text-muted-foreground">Активных пользователей</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl md:text-4xl font-bold text-primary mb-2">500+</div>
+                        <div class="text-muted-foreground">Товаров в каталоге</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl md:text-4xl font-bold text-primary mb-2">24/7</div>
+                        <div class="text-muted-foreground">Поддержка пользователей</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </header>
+    </section>
 
-    <main class="main-content">
-        <div class="container">
-            <div class="filters-section">
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label for="gameFilter">Игра</label>
-                        <select id="gameFilter">
-                            <option value="">Все игры</option>
-                            <?php foreach ($games as $game): ?>
-                                <option value="<?= htmlspecialchars($game) ?>"><?= htmlspecialchars($game) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label for="typeFilter">Тип</label>
-                        <select id="typeFilter">
-                            <option value="">Все типы</option>
-                            <?php foreach ($types as $type): ?>
-                                <option value="<?= htmlspecialchars($type) ?>"><?= htmlspecialchars($type) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label for="minPrice">Мин. цена</label>
-                        <input type="number" id="minPrice" placeholder="0" min="0">
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label for="maxPrice">Макс. цена</label>
-                        <input type="number" id="maxPrice" placeholder="∞" min="0">
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label for="searchInput">Поиск</label>
-                        <input type="text" id="searchInput" placeholder="Поиск товаров...">
-                    </div>
-                    
-                    <div class="filter-group">
-                        <button onclick="applyFilters()" class="btn-primary">Применить</button>
-                        <button onclick="clearFilters()" class="btn-secondary">Сбросить</button>
-                    </div>
-                </div>
+    <!-- Популярные игры -->
+    <section class="py-16 bg-card">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Популярные игры</h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <?php 
+                $games = [
+                    ['name' => 'Valorant', 'image' => '🎯', 'count' => '150+'],
+                    ['name' => 'CS:GO', 'image' => '🔫', 'count' => '200+'],
+                    ['name' => 'Dota 2', 'image' => '⚔️', 'count' => '120+'],
+                    ['name' => 'WoW', 'image' => '🏰', 'count' => '80+'],
+                    ['name' => 'LoL', 'image' => '🌟', 'count' => '100+'],
+                ];
+                foreach ($games as $game): ?>
+                    <a href="/catalog?game=<?= strtolower($game['name']) ?>" class="card card-product text-center p-6 hover:scale-105 transition-transform">
+                        <div class="text-4xl mb-4"><?= $game['image'] ?></div>
+                        <h3 class="font-semibold text-lg mb-2"><?= $game['name'] ?></h3>
+                        <p class="text-muted-foreground text-sm"><?= $game['count'] ?> товаров</p>
+                    </a>
+                <?php endforeach; ?>
             </div>
+        </div>
+    </section>
 
-            <div class="products-section">
-                <div class="products-header">
-                    <h2>Найдено товаров: <span id="productsCount"><?= count($products) ?></span></h2>
-                    <div class="sort-controls">
-                        <select id="sortSelect" onchange="applyFilters()">
-                            <option value="newest">Сначала новые</option>
-                            <option value="oldest">Сначала старые</option>
-                            <option value="price_asc">Цена: по возрастанию</option>
-                            <option value="price_desc">Цена: по убыванию</option>
-                            <option value="rating">По рейтингу</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="productsList" class="products-grid">
-                    <?php foreach ($products as $product): ?>
-                        <div class="product-card" data-game="<?= htmlspecialchars($product['game']) ?>" data-type="<?= htmlspecialchars($product['type']) ?>" data-price="<?= $product['price'] ?>">
-                            <div class="product-image">
-                                <img src="<?= $product['images'] ? '/storage/products/' . $product['images'] : '/assets/images/default-product.jpg' ?>" alt="<?= htmlspecialchars($product['title']) ?>">
-                                <div class="product-type-badge"><?= htmlspecialchars($product['type']) ?></div>
+    <!-- Рекомендуемые товары -->
+    <?php if (!empty($featuredProducts)): ?>
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Рекомендуемые товары</h2>
+                <p class="text-muted-foreground text-lg">Лучшие предложения от проверенных продавцов</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <?php foreach ($featuredProducts as $product): ?>
+                    <div class="card card-product">
+                        <div class="relative mb-4">
+                            <div class="w-full h-48 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center">
+                                <span class="text-4xl">
+                                    <?php 
+                                    $gameIcons = [
+                                        'valorant' => '🎯',
+                                        'csgo' => '🔫',
+                                        'dota2' => '⚔️',
+                                        'wow' => '🏰',
+                                        'genshin' => '🌸',
+                                        'default' => '🎮'
+                                    ];
+                                    echo $gameIcons[$product['game']] ?? $gameIcons['default'];
+                                    ?>
+                                </span>
                             </div>
-                            
-                            <div class="product-info">
-                                <h3 class="product-title"><?= htmlspecialchars($product['title']) ?></h3>
-                                <p class="product-game"><?= htmlspecialchars($product['game']) ?></p>
-                                <p class="product-description"><?= htmlspecialchars(substr($product['description'], 0, 100)) ?>...</p>
-                                
-                                <div class="product-meta">
-                                    <div class="seller-info">
-                                        <span class="seller-name"><?= htmlspecialchars($product['seller_name']) ?></span>
-                                        <?php if ($product['seller_rating']): ?>
-                                            <span class="seller-rating">⭐ <?= number_format($product['seller_rating'], 1) ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                    
-                                    <div class="product-stats">
-                                        <span class="views">👁 <?= $product['views'] ?></span>
-                                        <?php if ($product['rating']): ?>
-                                            <span class="rating">⭐ <?= number_format($product['rating'], 1) ?></span>
-                                        <?php endif; ?>
-                                    </div>
+                            <div class="absolute top-2 left-2 px-2 py-1 bg-primary text-white text-xs rounded-full">
+                                <?= ucfirst($product['type']) ?>
+                            </div>
+                            <?php if ($product['visibility'] === 'featured'): ?>
+                                <div class="absolute top-2 right-2 px-2 py-1 bg-yellow-500 text-white text-xs rounded-full">
+                                    ⭐ VIP
                                 </div>
-                                
-                                <div class="product-price">
-                                    <span class="price"><?= number_format($product['price'], 0) ?> ₽</span>
-                                    <?php if (isset($_SESSION['user'])): ?>
-                                        <button onclick="toggleFavorite(<?= $product['id'] ?>)" class="btn-favorite <?= isset($_SESSION['user']) && \App\Models\Favorite::isFavorite($_SESSION['user']['id'], $product['id'], $GLOBALS['db']) ? 'active' : '' ?>">
-                                            ❤
-                                        </button>
-                                    <?php endif; ?>
-                                </div>
-                                
-                                <div class="product-actions">
-                                    <a href="/products/<?= $product['id'] ?>" class="btn-secondary">Подробнее</a>
-                                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['id'] != $product['user_id']): ?>
-                                        <button onclick="buyProduct(<?= $product['id'] ?>)" class="btn-primary">Купить</button>
-                                    <?php endif; ?>
-                                </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <h3 class="font-semibold text-lg mb-2 line-clamp-2"><?= htmlspecialchars($product['title']) ?></h3>
+                        <p class="text-muted-foreground text-sm mb-4 line-clamp-3"><?= htmlspecialchars($product['short_description'] ?? $product['description']) ?></p>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <span class="text-2xl font-bold text-primary"><?= number_format($product['price'], 0) ?> ₽</span>
+                                <?php if ($product['original_price'] && $product['original_price'] > $product['price']): ?>
+                                    <span class="text-sm text-muted-foreground line-through ml-2"><?= number_format($product['original_price'], 0) ?> ₽</span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-yellow-500 mr-1">⭐</span>
+                                <span class="text-sm"><?= number_format($product['seller_rating'], 1) ?></span>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm text-muted-foreground">
+                                by <?= htmlspecialchars($product['seller_name']) ?>
+                            </div>
+                            <div class="flex space-x-2">
+                                <?php if ($user): ?>
+                                    <button onclick="toggleFavorite(<?= $product['id'] ?>)" class="btn-icon btn-icon-sm">
+                                        <i class="icon-heart"></i>
+                                    </button>
+                                <?php endif; ?>
+                                <a href="/product/<?= $product['id'] ?>" class="btn-primary px-4 py-2 text-sm">
+                                    Подробнее
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="/catalog" class="btn-secondary">
+                    Смотреть все товары
+                    <i class="icon-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
-                <div id="loadingSpinner" class="loading-spinner" style="display: none;">
-                    <div class="spinner"></div>
-                    <p>Загрузка товаров...</p>
+    <!-- Преимущества платформы -->
+    <section class="py-16 bg-card">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Почему выбирают нас?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-2xl text-white mx-auto mb-4">
+                        🛡️
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Безопасность</h3>
+                    <p class="text-muted-foreground">Все сделки проходят через систему гарантий. Ваши средства в безопасности до получения товара.</p>
                 </div>
-
-                <div id="noProducts" class="no-products" style="display: none;">
-                    <h3>Товары не найдены</h3>
-                    <p>Попробуйте изменить фильтры поиска</p>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-2xl text-white mx-auto mb-4">
+                        ⚡
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Быстрота</h3>
+                    <p class="text-muted-foreground">Автоматическая доставка цифровых товаров. Получайте аккаунты мгновенно после оплаты.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-2xl text-white mx-auto mb-4">
+                        🎯
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Качество</h3>
+                    <p class="text-muted-foreground">Только проверенные продавцы и товары. Система отзывов и рейтингов гарантирует качество.</p>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
 
-    <script>
-        function buyProduct(productId) {
-            if (!confirm('Вы уверены, что хотите купить этот товар?')) {
-                return;
-            }
+    <!-- Призыв к действию -->
+    <section class="py-16 bg-gradient-to-r from-primary to-secondary">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Готовы начать?</h2>
+            <p class="text-xl text-white/90 mb-8">Присоединяйтесь к тысячам игроков, которые уже используют нашу платформу</p>
             
-            fetch('/products/buy', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `product_id=${productId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Покупка успешно совершена!');
-                    location.reload();
-                } else {
-                    alert(data.error || 'Ошибка при покупке');
-                }
-            })
-            .catch(error => {
-                alert('Ошибка сети');
-            });
-        }
+            <?php if ($user): ?>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/products/create" class="btn-secondary">
+                        <i class="icon-plus mr-2"></i>
+                        Добавить товар
+                    </a>
+                    <a href="/catalog" class="btn-secondary">
+                        <i class="icon-search mr-2"></i>
+                        Найти товар
+                    </a>
+                </div>
+            <?php else: ?>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/register" class="bg-white text-primary px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        <i class="icon-user mr-2"></i>
+                        Зарегистрироваться
+                    </a>
+                    <a href="/login" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-primary transition-colors">
+                        <i class="icon-login mr-2"></i>
+                        Войти
+                    </a>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
+</div>
 
-        function toggleFavorite(productId) {
-            fetch('/toggle-favorite', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `product_id=${productId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const btn = event.target;
-                    if (data.action === 'added') {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-            });
+<script>
+// Добавляем недостающие иконки
+document.addEventListener('DOMContentLoaded', function() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .icon-arrow-right::before { content: "→"; }
+        .icon-plus::before { content: "+"; }
+        .icon-search::before { content: "🔍"; }
+        
+        .line-clamp-2 {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
-    </script>
-</body>
-</html>
+        
+        .line-clamp-3 {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        
+        .btn-icon-sm {
+            width: 2rem;
+            height: 2rem;
+            font-size: 0.875rem;
+        }
+    `;
+    document.head.appendChild(style);
+});
+
+<?php if ($user): ?>
+function toggleFavorite(productId) {
+    // TODO: Реализовать добавление в избранное
+    console.log('Toggle favorite for product:', productId);
+    App.notification.show('Функция будет добавлена в следующих обновлениях', 'info');
+}
+<?php endif; ?>
+</script>
+
+<?php
+$content = ob_get_clean();
+require_once __DIR__ . '/../layouts/main.php';
+?>

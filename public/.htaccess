@@ -1,0 +1,75 @@
+# GameMarket Pro - Apache Configuration
+# Настройки для корректной работы роутинга
+
+# Включаем модуль перезаписи URL
+RewriteEngine On
+
+# Устанавливаем кодировку UTF-8 по умолчанию
+AddDefaultCharset UTF-8
+
+# Устанавливаем Content-Type для статических файлов
+<Files "*.css">
+    Header set Content-Type "text/css; charset=UTF-8"
+</Files>
+
+<Files "*.js">
+    Header set Content-Type "application/javascript; charset=UTF-8"
+</Files>
+
+# Безопасность - скрываем служебные файлы
+<Files ".htaccess">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.md">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "composer.*">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Направляем все запросы к несуществующим файлам на index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Кэширование статических ресурсов
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+</IfModule>
+
+# Сжатие файлов
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# Заголовки безопасности
+<IfModule mod_headers.c>
+    # Предотвращение XSS атак
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Предотвращение MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Защита от clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # Безопасные referrer заголовки
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

@@ -17,20 +17,26 @@ abstract class Controller
 
     protected function view(string $template, array $data = []): void
     {
-        extract($data);
-        
-        // Добавляем общие переменные
-        $appName = $this->config['app_name'];
-        $user = $_SESSION['user'] ?? null;
-        
-        // Подключаем шаблон
-        $templatePath = __DIR__ . "/../views/{$template}.php";
-        
-        if (!file_exists($templatePath)) {
-            throw new \Exception("Template not found: {$template}");
+        // Используем глобальную функцию view из bootstrap
+        if (function_exists('view')) {
+            view($template, $data);
+        } else {
+            // Fallback если bootstrap не загружен
+            extract($data);
+            
+            // Добавляем общие переменные
+            $appName = $this->config['app_name'];
+            $user = $_SESSION['user'] ?? null;
+            
+            // Подключаем шаблон
+            $templatePath = __DIR__ . "/../views/{$template}.php";
+            
+            if (!file_exists($templatePath)) {
+                throw new \Exception("Template not found: {$template}");
+            }
+            
+            require $templatePath;
         }
-        
-        require $templatePath;
     }
 
     protected function json(array $data, int $status = 200): void

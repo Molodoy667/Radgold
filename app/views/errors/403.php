@@ -5,11 +5,11 @@ ob_start();
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20 py-12 px-4">
     <div class="max-w-md w-full text-center">
         <div class="mb-8">
-            <div class="text-8xl mb-4">😕</div>
-            <h1 class="text-4xl font-bold text-foreground mb-2">404</h1>
-            <h2 class="text-xl text-muted-foreground mb-4">Страница не найдена</h2>
+            <div class="text-8xl mb-4">🚫</div>
+            <h1 class="text-4xl font-bold text-foreground mb-2">403</h1>
+            <h2 class="text-xl text-muted-foreground mb-4">Доступ запрещен</h2>
             <p class="text-muted-foreground">
-                К сожалению, запрашиваемая страница не существует или была перемещена.
+                У вас нет прав для доступа к этой странице.
             </p>
         </div>
         
@@ -19,7 +19,7 @@ ob_start();
                 На главную
             </a>
             <div class="text-sm text-muted-foreground">
-                или <a href="/catalog" class="text-primary hover:text-primary/80">посмотрите наш каталог</a>
+                или <a href="/login" class="text-primary hover:text-primary/80">войдите в аккаунт</a>
             </div>
         </div>
     </div>

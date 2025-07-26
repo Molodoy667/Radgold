@@ -180,7 +180,13 @@
 
         // Установка схемы БД
         function installSchema($pdo) {
-            $schemaFile = __DIR__ . '/../database/schema.sql';
+            // Сначала пробуем исправленную схему
+            $schemaFile = __DIR__ . '/../database/schema_fixed.sql';
+            
+            if (!file_exists($schemaFile)) {
+                // Если нет исправленной, используем обычную
+                $schemaFile = __DIR__ . '/../database/schema.sql';
+            }
             
             if (!file_exists($schemaFile)) {
                 return ['success' => false, 'message' => 'Файл схемы БД не найден: ' . $schemaFile];
@@ -191,20 +197,35 @@
                 // Убираем команды USE и CREATE DATABASE из schema.sql
                 $sql = preg_replace('/^(DROP DATABASE|CREATE DATABASE|USE)\s+.*;$/mi', '', $sql);
                 
-                // Разбиваем на отдельные запросы
-                $queries = array_filter(array_map('trim', explode(';', $sql)));
+                // Разбиваем на отдельные запросы по точке с запятой
+                $queries = array_filter(array_map('trim', preg_split('/;(\s*$)/m', $sql)));
                 
                 $executed = 0;
+                $errors = [];
+                
                 foreach ($queries as $query) {
-                    if (!empty($query)) {
-                        $pdo->exec($query);
-                        $executed++;
+                    $query = trim($query);
+                    if (!empty($query) && !preg_match('/^(--|\/\*)/i', $query)) {
+                        try {
+                            $pdo->exec($query);
+                            $executed++;
+                        } catch (PDOException $e) {
+                            // Игнорируем ошибки "таблица уже существует"
+                            if (strpos($e->getMessage(), 'already exists') === false) {
+                                $errors[] = "Запрос: " . substr($query, 0, 100) . "... Ошибка: " . $e->getMessage();
+                            }
+                        }
                     }
                 }
                 
-                return ['success' => true, 'message' => "Схема БД установлена. Выполнено запросов: $executed"];
-            } catch (PDOException $e) {
-                return ['success' => false, 'message' => 'Ошибка установки схемы: ' . $e->getMessage()];
+                if (empty($errors)) {
+                    return ['success' => true, 'message' => "Схема БД установлена успешно. Выполнено запросов: $executed"];
+                } else {
+                    return ['success' => false, 'message' => 'Ошибки при установке схемы: ' . implode('; ', $errors)];
+                }
+                
+            } catch (Exception $e) {
+                return ['success' => false, 'message' => 'Общая ошибка установки схемы: ' . $e->getMessage()];
             }
         }
 
@@ -247,9 +268,16 @@
                 $class = $testResult['success'] ? 'success' : 'error';
                 echo "<div class='status $class'>{$testResult['message']}</div>";
                 
-                if ($testResult['success']) {
-                    echo '<a href="?step=install&' . http_build_query($config) . '" class="btn">Установить схему БД</a>';
-                }
+                                 if ($testResult['success']) {
+                     echo '<div style="margin-top: 15px;">';
+                     echo '<a href="?step=install&' . http_build_query($config) . '" class="btn">Установить схему БД</a> ';
+                     echo '<a href="?step=install&clean=1&' . http_build_query($config) . '" class="btn" style="background: #dc3545;">Чистая установка (очистить БД)</a>';
+                     echo '</div>';
+                     echo '<div style="margin-top: 10px; font-size: 0.9em; color: #666;">';
+                     echo '<strong>Обычная установка:</strong> Попытается создать таблицы без удаления существующих<br>';
+                     echo '<strong>Чистая установка:</strong> Удалит все существующие таблицы и создаст новые';
+                     echo '</div>';
+                 }
             }
             ?>
             
@@ -299,12 +327,40 @@
                 'charset' => 'utf8mb4'
             ];
             
+            // Опция для очистки базы данных
+            $cleanInstall = $_GET['clean'] ?? false;
+            
             // Создаем БД
             $dbResult = createDatabase($config);
             $class = $dbResult['success'] ? 'success' : 'error';
             echo "<div class='status $class'>{$dbResult['message']}</div>";
             
             if ($dbResult['success']) {
+                // Если выбрана чистая установка, очищаем БД
+                if ($cleanInstall) {
+                    try {
+                        echo '<div class="status warning">Очистка базы данных...</div>';
+                        
+                        // Отключаем проверку внешних ключей
+                        $dbResult['pdo']->exec('SET FOREIGN_KEY_CHECKS = 0');
+                        
+                        // Получаем список всех таблиц
+                        $tables = $dbResult['pdo']->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+                        
+                        // Удаляем все таблицы
+                        foreach ($tables as $table) {
+                            $dbResult['pdo']->exec("DROP TABLE IF EXISTS `$table`");
+                        }
+                        
+                        // Включаем проверку внешних ключей
+                        $dbResult['pdo']->exec('SET FOREIGN_KEY_CHECKS = 1');
+                        
+                        echo '<div class="status success">База данных очищена</div>';
+                    } catch (PDOException $e) {
+                        echo '<div class="status warning">Предупреждение при очистке БД: ' . $e->getMessage() . '</div>';
+                    }
+                }
+                
                 // Устанавливаем схему
                 $schemaResult = installSchema($dbResult['pdo']);
                 $class = $schemaResult['success'] ? 'success' : 'error';

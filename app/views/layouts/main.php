@@ -61,7 +61,7 @@
                     <i class="icon-grid"></i>
                     Каталог
                 </a>
-                <?php if ($user): ?>
+                <?php if (isset($user) && $user): ?>
                     <a href="/profile" class="nav-link">
                         <i class="icon-user"></i>
                         Профиль
@@ -82,17 +82,17 @@
                     <i class="icon-moon hidden dark:block"></i>
                 </button>
 
-                <?php if ($user): ?>
+                <?php if (isset($user) && $user): ?>
                     <!-- Баланс пользователя -->
                     <div class="hidden sm:flex items-center space-x-2 px-3 py-1 bg-card rounded-lg border">
                         <i class="icon-wallet text-primary"></i>
-                        <span class="font-medium"><?= number_format($user['balance'], 2) ?> ₽</span>
+                        <span class="font-medium"><?= number_format($user['balance'] ?? 0, 2) ?> ₽</span>
                     </div>
 
                     <!-- Меню пользователя -->
                     <div class="relative">
                         <button id="user-menu-button" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-card transition-colors">
-                            <img src="<?= $user['avatar'] ?: '/assets/images/default-avatar.svg' ?>" 
+                            <img src="<?= ($user['avatar'] ?? '') ?: '/assets/images/default-avatar.svg' ?>" 
                                  alt="Аватар" 
                                  class="w-8 h-8 rounded-full object-cover">
                             <i class="icon-chevron-down w-4 h-4"></i>
@@ -140,12 +140,12 @@
             <div class="container mx-auto px-4 py-4 space-y-2">
                 <a href="/" class="block py-2 px-4 rounded-lg hover:bg-accent transition-colors">Главная</a>
                 <a href="/catalog" class="block py-2 px-4 rounded-lg hover:bg-accent transition-colors">Каталог</a>
-                <?php if ($user): ?>
+                <?php if (isset($user) && $user): ?>
                     <a href="/profile" class="block py-2 px-4 rounded-lg hover:bg-accent transition-colors">Профиль</a>
                     <a href="/messages" class="block py-2 px-4 rounded-lg hover:bg-accent transition-colors">Сообщения</a>
                     <hr class="my-2 border-border">
                     <div class="px-4 py-2 text-sm text-muted-foreground">
-                        Баланс: <?= number_format($user['balance'], 2) ?> ₽
+                        Баланс: <?= number_format($user['balance'] ?? 0, 2) ?> ₽
                     </div>
                 <?php else: ?>
                     <a href="/login" class="block py-2 px-4 rounded-lg hover:bg-accent transition-colors">Вход</a>

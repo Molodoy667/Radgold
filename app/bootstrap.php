@@ -92,7 +92,24 @@ if (!function_exists('view')) {
         $templatePath = APP_PATH . '/views/' . $template . '.php';
         
         if (file_exists($templatePath)) {
-            include $templatePath;
+            // Если это не layout, то рендерим с layout
+            if (strpos($template, 'layouts/') !== 0) {
+                // Получаем контент шаблона
+                ob_start();
+                include $templatePath;
+                $content = ob_get_clean();
+                
+                // Рендерим с main layout
+                $layoutPath = APP_PATH . '/views/layouts/main.php';
+                if (file_exists($layoutPath)) {
+                    include $layoutPath;
+                } else {
+                    echo $content;
+                }
+            } else {
+                // Это layout, рендерим напрямую
+                include $templatePath;
+            }
         } else {
             throw new Exception("View template not found: $template");
         }

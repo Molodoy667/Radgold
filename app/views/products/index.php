@@ -30,7 +30,7 @@ ob_start();
                 <!-- Статистика -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
                     <div class="text-center">
-                        <div class="text-3xl md:text-4xl font-bold text-primary mb-2"><?= number_format($totalUsers) ?>+</div>
+                        <div class="text-3xl md:text-4xl font-bold text-primary mb-2"><?= number_format($totalUsers ?? 100) ?>+</div>
                         <div class="text-muted-foreground">Активных пользователей</div>
                     </div>
                     <div class="text-center">

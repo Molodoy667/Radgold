@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Тест - GameMarket Pro</title>
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <style>
+        .test-section {
+            margin: 2rem 0;
+            padding: 2rem;
+            border: 1px solid rgb(var(--color-border));
+            border-radius: 0.5rem;
+            background: rgb(var(--color-card));
+        }
+        .test-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: rgb(var(--color-primary));
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            🧪 UI Тест GameMarket Pro
+        </h1>
+
+        <!-- Тест переключателя темы -->
+        <div class="test-section">
+            <div class="test-title">🌙 Переключатель темы</div>
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="btn-icon" title="Переключить тему">
+                    <i class="icon-sun dark:hidden"></i>
+                    <i class="icon-moon hidden dark:block"></i>
+                </button>
+                <span>Нажмите для переключения темы</span>
+                <div class="text-sm text-muted-foreground">
+                    Текущая тема: <span id="current-theme">dark</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Тест навигации -->
+        <div class="test-section">
+            <div class="test-title">🧭 Навигация</div>
+            <nav class="flex space-x-4 p-4 bg-card rounded-lg border">
+                <a href="#" class="nav-link">
+                    <i class="icon-home"></i>
+                    Главная
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="icon-grid"></i>
+                    Каталог
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="icon-user"></i>
+                    Профиль
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="icon-message"></i>
+                    Сообщения
+                </a>
+            </nav>
+        </div>
+
+        <!-- Тест иконок -->
+        <div class="test-section">
+            <div class="test-title">🎨 Иконки</div>
+            <div class="grid grid-cols-4 md:grid-cols-8 gap-4">
+                <div class="text-center">
+                    <i class="icon-brand-telegram text-2xl"></i>
+                    <div class="text-xs mt-1">Telegram</div>
+                </div>
+                <div class="text-center">
+                    <i class="icon-brand-discord text-2xl"></i>
+                    <div class="text-xs mt-1">Discord</div>
+                </div>
+                <div class="text-center">
+                    <i class="icon-shopping-cart text-2xl"></i>
+                    <div class="text-xs mt-1">Cart</div>
+                </div>
+                <div class="text-center">
+                    <i class="icon-package text-2xl"></i>
+                    <div class="text-xs mt-1">Package</div>
+                </div>
+                <div class="text-center">
+                    <i class="icon-headphones text-2xl"></i>
+                    <div class="text-xs mt-1">Support</div>
+                </div>
+                <div class="text-center">
+                    <i class="icon-shield-check text-2xl"></i>
+                    <div class="text-xs mt-1">Security</div>
+                </div>
+                <div class="text-center">
+                    <i class="icon-wallet text-2xl"></i>
+                    <div class="text-xs mt-1">Wallet</div>
+                </div>
+                <div class="text-center">
+                    <i class="icon-star text-2xl"></i>
+                    <div class="text-xs mt-1">Star</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Тест кнопок -->
+        <div class="test-section">
+            <div class="test-title">🔘 Кнопки</div>
+            <div class="flex flex-wrap gap-4">
+                <button class="btn-primary">Primary</button>
+                <button class="btn-secondary">Secondary</button>
+                <button class="btn-success">Success</button>
+                <button class="btn-danger">Danger</button>
+                <button class="btn-icon">
+                    <i class="icon-settings"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Тест социальных ссылок -->
+        <div class="test-section">
+            <div class="test-title">📱 Социальные сети</div>
+            <div class="flex space-x-4">
+                <a href="#" class="social-link group" title="Telegram">
+                    <i class="icon-brand-telegram group-hover:scale-110 transition-transform"></i>
+                </a>
+                <a href="#" class="social-link group" title="VKontakte">
+                    <i class="icon-brand-vk group-hover:scale-110 transition-transform"></i>
+                </a>
+                <a href="#" class="social-link group" title="Discord">
+                    <i class="icon-brand-discord group-hover:scale-110 transition-transform"></i>
+                </a>
+                <a href="#" class="social-link group" title="Email">
+                    <i class="icon-mail group-hover:scale-110 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Тест статистики -->
+        <div class="test-section">
+            <div class="test-title">📊 Статистика</div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="stat-item">
+                    <div class="text-2xl font-bold text-primary">10K+</div>
+                    <div class="text-sm text-muted-foreground">Пользователей</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-2xl font-bold text-secondary">5K+</div>
+                    <div class="text-sm text-muted-foreground">Товаров</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-2xl font-bold text-green-500">99.9%</div>
+                    <div class="text-sm text-muted-foreground">Uptime</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-2xl font-bold text-yellow-500">4.9/5</div>
+                    <div class="text-sm text-muted-foreground">Рейтинг</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Тест анимаций -->
+        <div class="test-section">
+            <div class="test-title">✨ Анимации</div>
+            <div class="relative h-32 bg-gradient-to-br from-card to-accent/5 rounded-lg overflow-hidden">
+                <div class="floating-shape bg-primary rounded-full w-16 h-16 absolute top-4 left-4"></div>
+                <div class="floating-shape bg-secondary rounded-full w-12 h-12 absolute bottom-4 right-4"></div>
+                <div class="floating-shape bg-accent rounded-full w-8 h-8 absolute top-1/2 left-1/2"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-lg font-medium">Плавающие элементы</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Тест форм -->
+        <div class="test-section">
+            <div class="test-title">📝 Форма регистрации (тест)</div>
+            <form action="/register" method="POST" class="space-y-4 max-w-md">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <input type="email" name="email" class="input w-full" placeholder="test@example.com" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Имя пользователя</label>
+                    <input type="text" name="username" class="input w-full" placeholder="testuser" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Пароль</label>
+                    <input type="password" name="password" class="input w-full" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary w-full">
+                    <i class="icon-user-plus mr-2"></i>
+                    Зарегистрироваться
+                </button>
+            </form>
+        </div>
+
+        <!-- Информация о тестах -->
+        <div class="test-section">
+            <div class="test-title">ℹ️ Информация</div>
+            <div class="space-y-2 text-sm">
+                <p>• Переключатель темы должен менять цвета</p>
+                <p>• Кнопки должны иметь hover эффекты</p>
+                <p>• Социальные кнопки должны увеличиваться при наведении</p>
+                <p>• Плавающие элементы должны медленно двигаться</p>
+                <p>• Статистика должна приподниматься при hover</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        // Обновление отображения текущей темы
+        function updateThemeDisplay() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            document.getElementById('current-theme').textContent = theme;
+        }
+
+        // Слушаем изменения темы
+        const observer = new MutationObserver(updateThemeDisplay);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+        // Инициализация
+        updateThemeDisplay();
+
+        // Тест уведомлений
+        setTimeout(() => {
+            if (window.App && App.notification) {
+                App.notification.show('UI тест загружен успешно! 🎉', 'success');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

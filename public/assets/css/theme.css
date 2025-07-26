@@ -571,3 +571,25 @@ body {
 .icon-alert-circle::before { content: "⚠"; }
 .icon-brand-vk::before { content: "VK"; }
 .icon-brand-steam::before { content: "ST"; }
+
+/* Новые иконки для футера и интерфейса */
+.icon-brand-telegram::before { content: "📱"; }
+.icon-brand-discord::before { content: "💬"; }
+.icon-shopping-cart::before { content: "🛒"; }
+.icon-package::before { content: "📦"; }
+.icon-headphones::before { content: "🎧"; }
+.icon-help-circle::before { content: "❓"; }
+.icon-shield-check::before { content: "🛡️"; }
+.icon-trending-up::before { content: "📈"; }
+.icon-dollar-sign::before { content: "💰"; }
+.icon-book::before { content: "📚"; }
+.icon-message-circle::before { content: "💬"; }
+.icon-activity::before { content: "📊"; }
+.icon-eye-off::before { content: "👁️"; }
+.icon-file-text::before { content: "📄"; }
+.icon-sun::before { content: "☀️"; }
+.icon-moon::before { content: "🌙"; }
+.icon-menu::before { content: "☰"; }
+.icon-chevron-down::before { content: "▼"; }
+.icon-wallet::before { content: "💳"; }
+.icon-logout::before { content: "🚪"; }

@@ -165,48 +165,170 @@
     </main>
 
     <!-- Футер -->
-    <footer class="bg-card border-t border-border mt-auto">
-        <div class="container mx-auto px-4 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="font-bold text-lg mb-4">GameMarket Pro</h3>
-                    <p class="text-muted-foreground">
-                        Современный маркетплейс для покупки и продажи игровых аккаунтов и услуг.
+    <footer class="bg-gradient-to-br from-card to-accent/5 border-t border-border mt-auto relative overflow-hidden">
+        <!-- Фоновая анимация -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="floating-shape bg-primary rounded-full w-32 h-32 absolute top-10 left-10"></div>
+            <div class="floating-shape bg-secondary rounded-full w-24 h-24 absolute bottom-20 right-20"></div>
+            <div class="floating-shape bg-accent rounded-full w-16 h-16 absolute top-1/2 left-1/2"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 py-12 relative">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <!-- Лого и описание -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center transform hover:rotate-12 transition-transform duration-300">
+                            <span class="text-white font-bold text-lg">GM</span>
+                        </div>
+                        <h3 class="font-bold text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                            GameMarket Pro
+                        </h3>
+                    </div>
+                    <p class="text-muted-foreground mb-6 leading-relaxed">
+                        Современный маркетплейс для покупки и продажи игровых аккаунтов, услуг бустинга и внутриигрового контента. Безопасно, быстро, надежно.
                     </p>
+                    
+                    <!-- Соцсети -->
+                    <div class="flex space-x-4">
+                        <a href="https://t.me/gamemarket_pro" class="social-link group" title="Telegram">
+                            <i class="icon-brand-telegram group-hover:scale-110 transition-transform"></i>
+                        </a>
+                        <a href="https://vk.com/gamemarket_pro" class="social-link group" title="VKontakte">
+                            <i class="icon-brand-vk group-hover:scale-110 transition-transform"></i>
+                        </a>
+                        <a href="https://discord.gg/gamemarket" class="social-link group" title="Discord">
+                            <i class="icon-brand-discord group-hover:scale-110 transition-transform"></i>
+                        </a>
+                        <a href="mailto:support@gamemarket.pro" class="social-link group" title="Email">
+                            <i class="icon-mail group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    </div>
                 </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Для покупателей</h4>
-                    <ul class="space-y-2 text-muted-foreground">
-                        <li><a href="/catalog" class="hover:text-primary transition-colors">Каталог товаров</a></li>
-                        <li><a href="/help/buy" class="hover:text-primary transition-colors">Как купить</a></li>
-                        <li><a href="/help/safety" class="hover:text-primary transition-colors">Безопасность</a></li>
+                
+                <!-- Для покупателей -->
+                <div class="footer-column">
+                    <h4 class="footer-title">
+                        <i class="icon-shopping-cart mr-2"></i>
+                        Для покупателей
+                    </h4>
+                    <ul class="footer-links">
+                        <li><a href="/catalog" class="footer-link">
+                            <i class="icon-grid mr-2"></i>Каталог товаров
+                        </a></li>
+                        <li><a href="/help" class="footer-link">
+                            <i class="icon-help-circle mr-2"></i>Как купить
+                        </a></li>
+                        <li><a href="/about" class="footer-link">
+                            <i class="icon-shield-check mr-2"></i>Безопасность
+                        </a></li>
+                        <li><a href="/disputes" class="footer-link">
+                            <i class="icon-alert-circle mr-2"></i>Споры и жалобы
+                        </a></li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Для продавцов</h4>
-                    <ul class="space-y-2 text-muted-foreground">
-                        <li><a href="/products/create" class="hover:text-primary transition-colors">Добавить товар</a></li>
-                        <li><a href="/help/sell" class="hover:text-primary transition-colors">Как продавать</a></li>
-                        <li><a href="/help/fees" class="hover:text-primary transition-colors">Комиссии</a></li>
+                
+                <!-- Для продавцов -->
+                <div class="footer-column">
+                    <h4 class="footer-title">
+                        <i class="icon-package mr-2"></i>
+                        Для продавцов
+                    </h4>
+                    <ul class="footer-links">
+                        <li><a href="/products/create" class="footer-link">
+                            <i class="icon-plus mr-2"></i>Добавить товар
+                        </a></li>
+                        <li><a href="/help" class="footer-link">
+                            <i class="icon-trending-up mr-2"></i>Как продавать
+                        </a></li>
+                        <li><a href="/help" class="footer-link">
+                            <i class="icon-dollar-sign mr-2"></i>Комиссии
+                        </a></li>
+                        <li><a href="/help" class="footer-link">
+                            <i class="icon-star mr-2"></i>Рейтинг продавца
+                        </a></li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Поддержка</h4>
-                    <ul class="space-y-2 text-muted-foreground">
-                        <li><a href="/help" class="hover:text-primary transition-colors">Справка</a></li>
-                        <li><a href="/contacts" class="hover:text-primary transition-colors">Контакты</a></li>
-                        <li><a href="/disputes" class="hover:text-primary transition-colors">Споры</a></li>
+                
+                <!-- Поддержка -->
+                <div class="footer-column">
+                    <h4 class="footer-title">
+                        <i class="icon-headphones mr-2"></i>
+                        Поддержка
+                    </h4>
+                    <ul class="footer-links">
+                        <li><a href="/help" class="footer-link">
+                            <i class="icon-book mr-2"></i>База знаний
+                        </a></li>
+                        <li><a href="/contact" class="footer-link">
+                            <i class="icon-message-circle mr-2"></i>Связаться с нами
+                        </a></li>
+                        <li><a href="https://t.me/gamemarket_support" class="footer-link">
+                            <i class="icon-brand-telegram mr-2"></i>Техподдержка
+                        </a></li>
+                        <li><a href="/status" class="footer-link">
+                            <i class="icon-activity mr-2"></i>Статус сервиса
+                        </a></li>
                     </ul>
                 </div>
             </div>
-            <hr class="my-8 border-border">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <p class="text-muted-foreground">
-                    © 2024 GameMarket Pro. Все права защищены.
-                </p>
-                <div class="flex space-x-4 mt-4 md:mt-0">
-                    <a href="/privacy" class="text-muted-foreground hover:text-primary transition-colors">Конфиденциальность</a>
-                    <a href="/terms" class="text-muted-foreground hover:text-primary transition-colors">Условия</a>
+            
+            <!-- Разделитель -->
+            <div class="relative my-8">
+                <hr class="border-border">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="bg-card px-4">
+                        <div class="flex space-x-2">
+                            <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                            <div class="w-2 h-2 bg-secondary rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                            <div class="w-2 h-2 bg-accent rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Нижняя часть -->
+            <div class="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
+                <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6">
+                    <p class="text-muted-foreground text-sm">
+                        © 2024 GameMarket Pro. Все права защищены.
+                    </p>
+                    <div class="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <i class="icon-shield-check text-green-500"></i>
+                        <span>SSL зашифровано</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-4 text-sm">
+                    <a href="/privacy" class="footer-bottom-link">
+                        <i class="icon-eye-off mr-1"></i>Конфиденциальность
+                    </a>
+                    <a href="/terms" class="footer-bottom-link">
+                        <i class="icon-file-text mr-1"></i>Условия использования
+                    </a>
+                    <a href="/cookies" class="footer-bottom-link">
+                        <i class="icon-settings mr-1"></i>Политика cookie
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Статистика -->
+            <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="stat-item">
+                    <div class="text-2xl font-bold text-primary">10K+</div>
+                    <div class="text-sm text-muted-foreground">Пользователей</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-2xl font-bold text-secondary">5K+</div>
+                    <div class="text-sm text-muted-foreground">Товаров</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-2xl font-bold text-green-500">99.9%</div>
+                    <div class="text-sm text-muted-foreground">Uptime</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-2xl font-bold text-yellow-500">4.9/5</div>
+                    <div class="text-sm text-muted-foreground">Рейтинг</div>
                 </div>
             </div>
         </div>

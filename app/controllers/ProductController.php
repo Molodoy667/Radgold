@@ -22,9 +22,11 @@ class ProductController extends Controller
     {
         // Главная страница с рекомендуемыми товарами
         $userId = $_SESSION['user']['id'] ?? null;
+        $user = $_SESSION['user'] ?? null;
         
         $this->view('products/index', [
             'title' => 'Главная страница',
+            'user' => $user,
             'totalUsers' => $this->getTotalUsers(),
             'featuredProducts' => $this->productModel->getFeatured(6),
             'recommendedProducts' => $this->productModel->getRecommended($userId, 6),
@@ -71,6 +73,7 @@ class ProductController extends Controller
         
         $this->view('products/catalog', [
             'title' => 'Каталог товаров',
+            'user' => $_SESSION['user'] ?? null,
             'products' => $products,
             'filters' => $filters,
             'games' => $this->productModel->getGames(),
@@ -117,6 +120,7 @@ class ProductController extends Controller
         
         $this->view('products/show', [
             'title' => $product['title'],
+            'user' => $_SESSION['user'] ?? null,
             'product' => $product,
             'isFavorite' => $isFavorite,
             'similarProducts' => array_slice($similarProducts, 0, 3),
@@ -131,6 +135,7 @@ class ProductController extends Controller
         
         $this->view('products/create', [
             'title' => 'Добавить товар',
+            'user' => $_SESSION['user'] ?? null,
             'games' => $this->config['games'],
             'productTypes' => $this->config['product_types'],
             'currencies' => $this->config['currencies'],
@@ -213,6 +218,7 @@ class ProductController extends Controller
         
         $this->view('products/edit', [
             'title' => 'Редактировать товар',
+            'user' => $_SESSION['user'] ?? null,
             'product' => $product,
             'games' => $this->config['games'],
             'productTypes' => $this->config['product_types'],

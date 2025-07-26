@@ -88,6 +88,15 @@ if (!function_exists('redirect')) {
 
 if (!function_exists('view')) {
     function view($template, $data = []) {
+        // Добавляем глобальные переменные
+        if (!isset($data['user'])) {
+            $data['user'] = $_SESSION['user'] ?? null;
+        }
+        if (!isset($data['appName'])) {
+            $appConfig = require APP_PATH . '/config/app.php';
+            $data['appName'] = $appConfig['app_name'] ?? 'GameMarket Pro';
+        }
+        
         extract($data);
         $templatePath = APP_PATH . '/views/' . $template . '.php';
         

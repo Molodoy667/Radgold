@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Основные страницы
+Allow: /catalog
+Allow: /products/
+Allow: /user/
+Allow: /pages/
+
+# Блокировка служебных директорий
+Disallow: /admin/
+Disallow: /api/
+Disallow: /install.php
+Disallow: /test.php
+Disallow: /assets/
+Disallow: /*.json$
+
+# Карта сайта
+Sitemap: https://radgold.online/sitemap.xml
+
+# Основные правила для поисковых систем
+Crawl-delay: 1

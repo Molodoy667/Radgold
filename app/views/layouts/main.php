@@ -27,8 +27,12 @@
     <link rel="icon" type="image/png" href="/assets/images/favicon.png">
     
     <!-- PWA Support -->
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#3b82f6">
     <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GameMarket">
+    <link rel="apple-touch-icon" href="/assets/images/icon-192.png">
 </head>
 <body class="bg-background text-foreground">
     <!-- Лоадер страницы -->

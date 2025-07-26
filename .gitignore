@@ -1,0 +1,81 @@
+# AdBoard Pro - Git Ignore File
+
+# Configuration files (containing sensitive data)
+core/config.php
+
+# Installation marker
+.installed
+
+# Upload directories
+uploads/*
+!uploads/avatars/
+uploads/avatars/*
+!uploads/avatars/.gitkeep
+cache/
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (if using npm for any tools)
+node_modules/
+
+# Composer dependencies (if using composer)
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Database backups
+*.sql
+*.db
+backup/
+
+# Error logs
+error_log
+*.log
+
+# PHP-specific
+*.phar
+
+# System files
+.htaccess.bak
+robots.txt.bak
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Testing
+phpunit.xml
+.phpunit.result.cache
+
+# Documentation builds
+docs/_build/
+
+# PyCharm
+#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+#  be added to the global gitignore or merged into this file.  For a more nuclear
+#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
+#.idea/

@@ -13,10 +13,10 @@
                     Ми допоможемо вашому бізнесу досягти нових висот та знайти цільову аудиторію.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="<?php echo SITE_URL; ?>/ads" class="btn gradient-bg text-white btn-lg hover-scale">
+                    <a href="<?php echo function_exists('getSiteUrl') ? getSiteUrl('ads') : '/ads'; ?>" class="btn gradient-bg text-white btn-lg hover-scale">
                         <i class="fas fa-search me-2"></i>Переглянути оголошення
                     </a>
-                    <a href="<?php echo SITE_URL; ?>/services" class="btn btn-outline-primary btn-lg hover-scale">
+                    <a href="<?php echo function_exists('getSiteUrl') ? getSiteUrl('services') : '/services'; ?>" class="btn btn-outline-primary btn-lg hover-scale">
                         <i class="fas fa-cogs me-2"></i>Наші послуги
                     </a>
                 </div>
@@ -164,7 +164,7 @@
                             <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Геолокація та карти</li>
                             <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Соціальні мережі інтеграція</li>
                         </ul>
-                        <a href="<?php echo SITE_URL; ?>/ads" class="btn gradient-bg text-white">
+                        <a href="<?php echo function_exists('getSiteUrl') ? getSiteUrl('ads') : '/ads'; ?>" class="btn gradient-bg text-white">
                             Переглянути оголошення <i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -191,7 +191,7 @@
                             <li class="mb-2"><i class="fas fa-check text-success me-2"></i>SEO оптимізація</li>
                             <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Медійна реклама</li>
                         </ul>
-                        <a href="<?php echo SITE_URL; ?>/services" class="btn gradient-bg text-white">
+                        <a href="<?php echo function_exists('getSiteUrl') ? getSiteUrl('services') : '/services'; ?>" class="btn gradient-bg text-white">
                             Дізнатися більше <i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -266,10 +266,10 @@
                     </p>
                 </div>
                 <div class="col-lg-4 text-lg-end" data-aos="fade-left">
-                    <a href="<?php echo SITE_URL; ?>/register" class="btn btn-light btn-lg hover-scale me-3">
+                    <a href="<?php echo function_exists('getSiteUrl') ? getSiteUrl('register') : '/register'; ?>" class="btn btn-light btn-lg hover-scale me-3">
                         <i class="fas fa-user-plus me-2"></i>Реєстрація
                     </a>
-                    <a href="<?php echo SITE_URL; ?>/contact" class="btn btn-outline-light btn-lg hover-scale">
+                    <a href="<?php echo function_exists('getSiteUrl') ? getSiteUrl('contact') : '/contact'; ?>" class="btn btn-outline-light btn-lg hover-scale">
                         <i class="fas fa-envelope me-2"></i>Контакти
                     </a>
                 </div>

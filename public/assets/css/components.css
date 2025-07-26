@@ -128,6 +128,8 @@
 .icon-settings::before { content: "⚙️"; }
 .icon-logout::before { content: "🚪"; }
 .icon-menu::before { content: "☰"; }
+.icon-lock::before { content: "🔒"; }
+.icon-login::before { content: "🚪"; }
 
 /* Утилиты для отступов и размеров */
 .container {

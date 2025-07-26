@@ -12,6 +12,9 @@
     <!-- CSS стили -->
     <link rel="stylesheet" href="/assets/css/theme.css">
     <link rel="stylesheet" href="/assets/css/components.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <?php if (isset($additionalCSS)): ?>
         <?php foreach ($additionalCSS as $css): ?>
             <link rel="stylesheet" href="<?= $css ?>">
@@ -58,20 +61,20 @@
             <!-- Основное меню -->
             <div class="hidden md:flex items-center space-x-6">
                 <a href="/" class="nav-link">
-                    <i class="icon-home"></i>
+                    <i class="fas fa-home"></i>
                     Главная
                 </a>
                 <a href="/catalog" class="nav-link">
-                    <i class="icon-grid"></i>
+                    <i class="fas fa-th-large"></i>
                     Каталог
                 </a>
                 <?php if (isset($user) && $user): ?>
                     <a href="/profile" class="nav-link">
-                        <i class="icon-user"></i>
+                        <i class="fas fa-user"></i>
                         Профиль
                     </a>
                     <a href="/messages" class="nav-link relative">
-                        <i class="icon-message"></i>
+                        <i class="fas fa-envelope"></i>
                         Сообщения
                         <span class="unread-badge hidden absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                     </a>
@@ -82,14 +85,14 @@
             <div class="flex items-center space-x-4">
                 <!-- Переключатель темы -->
                 <button id="theme-toggle" class="btn-icon" title="Переключить тему">
-                    <i class="icon-sun dark:hidden"></i>
-                    <i class="icon-moon hidden dark:block"></i>
+                    <i class="fas fa-sun dark:hidden"></i>
+                    <i class="fas fa-moon hidden dark:block"></i>
                 </button>
 
                 <?php if (isset($user) && $user): ?>
                     <!-- Баланс пользователя -->
                     <div class="hidden sm:flex items-center space-x-2 px-3 py-1 bg-card rounded-lg border">
-                        <i class="icon-wallet text-primary"></i>
+                        <i class="fas fa-wallet text-primary"></i>
                         <span class="font-medium"><?= number_format($user['balance'] ?? 0, 2) ?> ₽</span>
                     </div>
 
@@ -104,24 +107,24 @@
                         
                         <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg py-1 z-50">
                             <a href="/profile" class="block px-4 py-2 hover:bg-accent transition-colors">
-                                <i class="icon-user w-4 h-4 mr-2"></i>
+                                <i class="fas fa-user w-4 h-4 mr-2"></i>
                                 Мой профиль
                             </a>
                             <a href="/my-products" class="block px-4 py-2 hover:bg-accent transition-colors">
-                                <i class="icon-package w-4 h-4 mr-2"></i>
+                                <i class="fas fa-box w-4 h-4 mr-2"></i>
                                 Мои товары
                             </a>
-                            <a href="/favorites" class="block px-4 py-2 hover:bg-accent transition-colors">
-                                <i class="icon-heart w-4 h-4 mr-2"></i>
+                            <a href="/my-favorites" class="block px-4 py-2 hover:bg-accent transition-colors">
+                                <i class="fas fa-heart w-4 h-4 mr-2"></i>
                                 Избранное
                             </a>
                             <hr class="my-1 border-border">
-                            <a href="/settings" class="block px-4 py-2 hover:bg-accent transition-colors">
-                                <i class="icon-settings w-4 h-4 mr-2"></i>
+                            <a href="/user/settings" class="block px-4 py-2 hover:bg-accent transition-colors">
+                                <i class="fas fa-cog w-4 h-4 mr-2"></i>
                                 Настройки
                             </a>
                             <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-accent transition-colors text-red-500">
-                                <i class="icon-logout w-4 h-4 mr-2"></i>
+                                <i class="fas fa-sign-out-alt w-4 h-4 mr-2"></i>
                                 Выйти
                             </button>
                         </div>
@@ -134,7 +137,7 @@
 
                 <!-- Мобильное меню -->
                 <button id="mobile-menu-button" class="md:hidden btn-icon">
-                    <i class="icon-menu"></i>
+                    <i class="fas fa-bars"></i>
                 </button>
             </div>
         </nav>
@@ -192,16 +195,22 @@
                     <!-- Соцсети -->
                     <div class="flex space-x-4">
                         <a href="https://t.me/gamemarket_pro" class="social-link group" title="Telegram">
-                            <i class="icon-brand-telegram group-hover:scale-110 transition-transform"></i>
+                            <i class="fab fa-telegram group-hover:scale-110 transition-transform"></i>
                         </a>
                         <a href="https://vk.com/gamemarket_pro" class="social-link group" title="VKontakte">
-                            <i class="icon-brand-vk group-hover:scale-110 transition-transform"></i>
+                            <i class="fab fa-vk group-hover:scale-110 transition-transform"></i>
                         </a>
                         <a href="https://discord.gg/gamemarket" class="social-link group" title="Discord">
-                            <i class="icon-brand-discord group-hover:scale-110 transition-transform"></i>
+                            <i class="fab fa-discord group-hover:scale-110 transition-transform"></i>
                         </a>
                         <a href="mailto:support@gamemarket.pro" class="social-link group" title="Email">
-                            <i class="icon-mail group-hover:scale-110 transition-transform"></i>
+                            <i class="fas fa-envelope group-hover:scale-110 transition-transform"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@gamemarket_pro" class="social-link group" title="YouTube">
+                            <i class="fab fa-youtube group-hover:scale-110 transition-transform"></i>
+                        </a>
+                        <a href="https://twitter.com/gamemarket_pro" class="social-link group" title="Twitter">
+                            <i class="fab fa-twitter group-hover:scale-110 transition-transform"></i>
                         </a>
                     </div>
                 </div>
@@ -209,21 +218,21 @@
                 <!-- Для покупателей -->
                 <div class="footer-column">
                     <h4 class="footer-title">
-                        <i class="icon-shopping-cart mr-2"></i>
+                        <i class="fas fa-shopping-cart mr-2"></i>
                         Для покупателей
                     </h4>
                     <ul class="footer-links">
                         <li><a href="/catalog" class="footer-link">
-                            <i class="icon-grid mr-2"></i>Каталог товаров
+                            <i class="fas fa-th-large mr-2"></i>Каталог товаров
                         </a></li>
                         <li><a href="/help" class="footer-link">
-                            <i class="icon-help-circle mr-2"></i>Как купить
+                            <i class="fas fa-question-circle mr-2"></i>Как купить
                         </a></li>
                         <li><a href="/about" class="footer-link">
-                            <i class="icon-shield-check mr-2"></i>Безопасность
+                            <i class="fas fa-shield-alt mr-2"></i>Безопасность
                         </a></li>
                         <li><a href="/disputes" class="footer-link">
-                            <i class="icon-alert-circle mr-2"></i>Споры и жалобы
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Споры и жалобы
                         </a></li>
                     </ul>
                 </div>
@@ -231,21 +240,21 @@
                 <!-- Для продавцов -->
                 <div class="footer-column">
                     <h4 class="footer-title">
-                        <i class="icon-package mr-2"></i>
+                        <i class="fas fa-box mr-2"></i>
                         Для продавцов
                     </h4>
                     <ul class="footer-links">
                         <li><a href="/products/create" class="footer-link">
-                            <i class="icon-plus mr-2"></i>Добавить товар
+                            <i class="fas fa-plus mr-2"></i>Добавить товар
                         </a></li>
                         <li><a href="/help" class="footer-link">
-                            <i class="icon-trending-up mr-2"></i>Как продавать
+                            <i class="fas fa-chart-line mr-2"></i>Как продавать
                         </a></li>
                         <li><a href="/help" class="footer-link">
-                            <i class="icon-dollar-sign mr-2"></i>Комиссии
+                            <i class="fas fa-percentage mr-2"></i>Комиссии
                         </a></li>
                         <li><a href="/help" class="footer-link">
-                            <i class="icon-star mr-2"></i>Рейтинг продавца
+                            <i class="fas fa-star mr-2"></i>Рейтинг продавца
                         </a></li>
                     </ul>
                 </div>
@@ -253,21 +262,21 @@
                 <!-- Поддержка -->
                 <div class="footer-column">
                     <h4 class="footer-title">
-                        <i class="icon-headphones mr-2"></i>
+                        <i class="fas fa-headset mr-2"></i>
                         Поддержка
                     </h4>
                     <ul class="footer-links">
                         <li><a href="/help" class="footer-link">
-                            <i class="icon-book mr-2"></i>База знаний
+                            <i class="fas fa-book mr-2"></i>База знаний
                         </a></li>
                         <li><a href="/contact" class="footer-link">
-                            <i class="icon-message-circle mr-2"></i>Связаться с нами
+                            <i class="fas fa-comments mr-2"></i>Связаться с нами
                         </a></li>
                         <li><a href="https://t.me/gamemarket_support" class="footer-link">
-                            <i class="icon-brand-telegram mr-2"></i>Техподдержка
+                            <i class="fab fa-telegram mr-2"></i>Техподдержка
                         </a></li>
                         <li><a href="/status" class="footer-link">
-                            <i class="icon-activity mr-2"></i>Статус сервиса
+                            <i class="fas fa-server mr-2"></i>Статус сервиса
                         </a></li>
                     </ul>
                 </div>
@@ -294,20 +303,20 @@
                         © 2024 GameMarket Pro. Все права защищены.
                     </p>
                     <div class="flex items-center space-x-2 text-sm text-muted-foreground">
-                        <i class="icon-shield-check text-green-500"></i>
+                        <i class="fas fa-lock text-green-500"></i>
                         <span>SSL зашифровано</span>
                     </div>
                 </div>
                 
                 <div class="flex flex-wrap items-center gap-4 text-sm">
                     <a href="/privacy" class="footer-bottom-link">
-                        <i class="icon-eye-off mr-1"></i>Конфиденциальность
+                        <i class="fas fa-user-shield mr-1"></i>Конфиденциальность
                     </a>
                     <a href="/terms" class="footer-bottom-link">
-                        <i class="icon-file-text mr-1"></i>Условия использования
+                        <i class="fas fa-file-contract mr-1"></i>Условия использования
                     </a>
                     <a href="/cookies" class="footer-bottom-link">
-                        <i class="icon-settings mr-1"></i>Политика cookie
+                        <i class="fas fa-cookie-bite mr-1"></i>Политика cookie
                     </a>
                 </div>
             </div>

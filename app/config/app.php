@@ -2,7 +2,7 @@
 
 return [
     'app_name' => 'GameMarket Pro',
-    'app_url' => 'http://localhost:8000',
+    'app_url' => 'https://radgold.online',
     'debug' => true,
     'timezone' => 'Europe/Moscow',
     

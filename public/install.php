@@ -255,12 +255,12 @@
             echo '<h2>Шаг 2: Настройка базы данных</h2>';
             
             if ($action === 'test_db') {
-                $config = [
-                    'host' => $_POST['db_host'] ?? 'localhost',
-                    'port' => $_POST['db_port'] ?? '3306',
-                    'database' => $_POST['db_name'] ?? 'gamemarket_pro',
-                    'username' => $_POST['db_user'] ?? '',
-                    'password' => $_POST['db_pass'] ?? '',
+                            $config = [
+                'host' => $_POST['db_host'] ?? 'localhost',
+                'port' => $_POST['db_port'] ?? '3306',
+                'database' => $_POST['db_name'] ?? 'iteiyzke_market',
+                'username' => $_POST['db_user'] ?? 'novado',
+                'password' => $_POST['db_pass'] ?? 'Q05021998@',
                     'charset' => 'utf8mb4'
                 ];
                 
@@ -296,17 +296,17 @@
                 
                 <div class="form-group">
                     <label>Имя БД:</label>
-                    <input type="text" name="db_name" value="<?= htmlspecialchars($_POST['db_name'] ?? 'gamemarket_pro') ?>" required>
+                    <input type="text" name="db_name" value="<?= htmlspecialchars($_POST['db_name'] ?? 'iteiyzke_market') ?>" required>
                 </div>
                 
                 <div class="form-group">
                     <label>Пользователь:</label>
-                    <input type="text" name="db_user" value="<?= htmlspecialchars($_POST['db_user'] ?? '') ?>" required>
+                    <input type="text" name="db_user" value="<?= htmlspecialchars($_POST['db_user'] ?? 'novado') ?>" required>
                 </div>
                 
                 <div class="form-group">
                     <label>Пароль:</label>
-                    <input type="password" name="db_pass" value="<?= htmlspecialchars($_POST['db_pass'] ?? '') ?>">
+                    <input type="password" name="db_pass" value="<?= htmlspecialchars($_POST['db_pass'] ?? 'Q05021998@') ?>">
                 </div>
                 
                 <button type="submit" class="btn">Проверить подключение</button>

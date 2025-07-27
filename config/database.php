@@ -6,9 +6,9 @@
 
 return [
     'host' => 'localhost',
-    'database' => 'marketplace',
-    'username' => 'root',
-    'password' => '',
+    'database' => 'iteiyzke_market',
+    'username' => 'novado',
+    'password' => 'Q05021998@',
     'charset' => 'utf8mb4',
     'options' => [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

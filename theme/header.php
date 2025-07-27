@@ -78,10 +78,12 @@ $schema_type = $schema_type ?? 'WebSite';
     
     <!-- CSS Frameworks -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUa6c3A3z3JqMGWE8qHHmT5W1i1pLbC5t1vKh1ixJfkV1xLQHB8A5VEzI0LR" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" crossorigin="anonymous">
     
     <!-- Custom CSS -->
+    <link rel="stylesheet" href="<?php echo themeUrl('css/gradients.css?v=' . filemtime(THEME_PATH . '/css/gradients.css')); ?>">
     <link rel="stylesheet" href="<?php echo themeUrl('css/style.css?v=' . filemtime(THEME_PATH . '/css/style.css')); ?>">
     
     <!-- CSRF Token для AJAX -->

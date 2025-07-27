@@ -218,6 +218,23 @@
         <i class="fas fa-arrow-up"></i>
     </button>
     
+    <!-- Селектор градиентов -->
+    <div class="gradient-selector">
+        <div class="selector-title">Градиенты</div>
+        <div class="gradient-options">
+            <div class="gradient-option active" data-gradient="ocean" data-name="Ocean" title="Ocean Blue"></div>
+            <div class="gradient-option" data-gradient="sunset" data-name="Sunset" title="Sunset Orange"></div>
+            <div class="gradient-option" data-gradient="purple" data-name="Purple" title="Purple Rain"></div>
+            <div class="gradient-option" data-gradient="forest" data-name="Forest" title="Forest Green"></div>
+            <div class="gradient-option" data-gradient="fire" data-name="Fire" title="Fire Red"></div>
+            <div class="gradient-option" data-gradient="arctic" data-name="Arctic" title="Arctic Blue"></div>
+            <div class="gradient-option" data-gradient="cosmic" data-name="Cosmic" title="Cosmic Purple"></div>
+            <div class="gradient-option" data-gradient="peach" data-name="Peach" title="Peach Pink"></div>
+            <div class="gradient-option" data-gradient="mint" data-name="Mint" title="Mint Green"></div>
+            <div class="gradient-option" data-gradient="royal" data-name="Royal" title="Royal Purple"></div>
+        </div>
+    </div>
+    
     <!-- JavaScript Libraries -->
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" 
@@ -227,6 +244,10 @@
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
             integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Materialize -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" 
             crossorigin="anonymous"></script>
     
     <!-- Intersection Observer Polyfill для старых браузеров -->
@@ -243,6 +264,8 @@
     
     <!-- Основной JavaScript -->
     <script src="<?php echo themeUrl('js/main.js?v=' . filemtime(THEME_PATH . '/js/main.js')); ?>"></script>
+    <script src="<?php echo themeUrl('js/pagination.js?v=' . filemtime(THEME_PATH . '/js/pagination.js')); ?>"></script>
+    <script src="<?php echo themeUrl('js/filters.js?v=' . filemtime(THEME_PATH . '/js/filters.js')); ?>"></script>
     
     <!-- Обработчик кнопки "Наверх" -->
     <script>

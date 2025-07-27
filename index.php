@@ -75,7 +75,8 @@ include 'theme/header.php';
             <div class="col-lg-6" data-animation="animate-slide-right">
                 <div class="hero-image">
                     <img src="<?php echo themeUrl('images/hero-image.jpg'); ?>" 
-                         alt="Marketplace - интернет-покупки" 
+                         alt="Современная торговая площадка Marketplace - удобные онлайн покупки с быстрой доставкой" 
+                         title="Marketplace - ваш надежный партнер для онлайн покупок"
                          class="img-fluid rounded-lg shadow-3d lazy-img"
                          data-src="<?php echo themeUrl('images/hero-image.jpg'); ?>">
                 </div>
@@ -194,7 +195,8 @@ include 'theme/header.php';
                     <div class="card-3d category-card">
                         <div class="category-image">
                             <img src="<?php echo themeUrl('images/categories/electronics.jpg'); ?>" 
-                                 alt="Электроника" 
+                                 alt="Категория Электроника - смартфоны, ноутбуки, планшеты и аксессуары в Marketplace" 
+                                 title="Электроника - широкий выбор цифровой техники по выгодным ценам"
                                  class="img-fluid lazy-img"
                                  data-src="<?php echo themeUrl('images/categories/electronics.jpg'); ?>">
                         </div>
@@ -218,7 +220,8 @@ include 'theme/header.php';
                     <div class="card-3d category-card">
                         <div class="category-image">
                             <img src="<?php echo themeUrl('images/categories/clothing.jpg'); ?>" 
-                                 alt="Одежда и обувь" 
+                                 alt="Категория Одежда и обувь - мужская, женская и детская одежда в Marketplace" 
+                                 title="Одежда и обувь - стильная одежда для всей семьи"
                                  class="img-fluid lazy-img"
                                  data-src="<?php echo themeUrl('images/categories/clothing.jpg'); ?>">
                         </div>
@@ -242,7 +245,8 @@ include 'theme/header.php';
                     <div class="card-3d category-card">
                         <div class="category-image">
                             <img src="<?php echo themeUrl('images/categories/home.jpg'); ?>" 
-                                 alt="Дом и сад" 
+                                 alt="Категория Дом и сад - мебель, декор, садовый инструмент в Marketplace" 
+                                 title="Дом и сад - всё для уютного дома и красивого сада"
                                  class="img-fluid lazy-img"
                                  data-src="<?php echo themeUrl('images/categories/home.jpg'); ?>">
                         </div>
@@ -325,7 +329,8 @@ include 'theme/header.php';
                     </blockquote>
                     <div class="testimonial-author">
                         <img src="<?php echo themeUrl('images/testimonials/user1.jpg'); ?>" 
-                             alt="Алексей К." 
+                             alt="Фото покупателя Алексей К. - отзыв о покупке в Marketplace" 
+                             title="Алексей К. - довольный покупатель Marketplace"
                              class="rounded-circle me-3 lazy-img"
                              data-src="<?php echo themeUrl('images/testimonials/user1.jpg'); ?>"
                              width="50" height="50">
@@ -353,7 +358,8 @@ include 'theme/header.php';
                     </blockquote>
                     <div class="testimonial-author">
                         <img src="<?php echo themeUrl('images/testimonials/user2.jpg'); ?>" 
-                             alt="Мария С." 
+                             alt="Фото продавца Мария С. - отзыв о работе с Marketplace" 
+                             title="Мария С. - успешный продавец на платформе Marketplace"
                              class="rounded-circle me-3 lazy-img"
                              data-src="<?php echo themeUrl('images/testimonials/user2.jpg'); ?>"
                              width="50" height="50">
@@ -381,7 +387,8 @@ include 'theme/header.php';
                     </blockquote>
                     <div class="testimonial-author">
                         <img src="<?php echo themeUrl('images/testimonials/user3.jpg'); ?>" 
-                             alt="Дмитрий В." 
+                             alt="Фото покупателя Дмитрий В. - положительный отзыв о Marketplace" 
+                             title="Дмитрий В. - постоянный клиент Marketplace"
                              class="rounded-circle me-3 lazy-img"
                              data-src="<?php echo themeUrl('images/testimonials/user3.jpg'); ?>"
                              width="50" height="50">

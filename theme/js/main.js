@@ -98,6 +98,59 @@ function initTheme() {
         localStorage.setItem('theme', MarketplaceApp.config.theme);
         document.documentElement.setAttribute('data-theme', MarketplaceApp.config.theme);
     }
+    
+    // Инициализация градиентов
+    initGradients();
+}
+
+/**
+ * Инициализация системы градиентов
+ */
+function initGradients() {
+    console.log('🌈 Initializing gradient system...');
+    
+    // Получение сохраненного градиента
+    const savedGradient = localStorage.getItem('gradient') || 'ocean';
+    MarketplaceApp.config.gradient = savedGradient;
+    
+    // Применение градиента
+    document.documentElement.setAttribute('data-gradient', savedGradient);
+    $('.gradient-option').removeClass('active');
+    $(`.gradient-option[data-gradient="${savedGradient}"]`).addClass('active');
+    
+    // Обработчик выбора градиента
+    $(document).on('click', '.gradient-option', function() {
+        const gradient = $(this).data('gradient');
+        changeGradient(gradient);
+    });
+}
+
+/**
+ * Изменение градиента
+ */
+function changeGradient(gradient) {
+    // Анимация переключения
+    MarketplaceApp.cache.$body.addClass('gradient-transition');
+    
+    setTimeout(() => {
+        MarketplaceApp.config.gradient = gradient;
+        document.documentElement.setAttribute('data-gradient', gradient);
+        localStorage.setItem('gradient', gradient);
+        
+        // Обновление активного градиента
+        $('.gradient-option').removeClass('active');
+        $(`.gradient-option[data-gradient="${gradient}"]`).addClass('active');
+        
+        // Удаление класса анимации
+        setTimeout(() => {
+            MarketplaceApp.cache.$body.removeClass('gradient-transition');
+        }, 500);
+    }, 50);
+    
+    // Отправка события изменения градиента
+    $(document).trigger('gradientChanged', [gradient]);
+    
+    console.log(`🌈 Gradient changed to: ${gradient}`);
 }
 
 /**

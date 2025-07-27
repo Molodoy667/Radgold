@@ -92,3 +92,19 @@ function truncateText($text, $length = 100, $suffix = '...') {
     }
     return $text;
 }
+
+/**
+ * Получение текущего URL
+ */
+function getCurrentUrl() {
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+}
+
+/**
+ * Проверка, является ли текущая страница указанной
+ */
+function isCurrentPage($path) {
+    $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    return $currentPath === $path;
+}

@@ -371,6 +371,92 @@
                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
                                             </a>
 
+                                            <!-- Language & Currency Settings Section -->
+                                            <div class="border-t border-white/20 my-4 pt-4">
+                                                <div class="mb-3">
+                                                    <h3 class="text-white/80 text-sm font-medium mb-3 px-2">{{ __('preferences') }}</h3>
+                                                </div>
+
+                                                @if ($setting->currency_changing && count($headerCurrencies))
+                                                    @php
+                                                        $currency_count = count($headerCurrencies) && count($headerCurrencies) > 1;
+                                                        $current_currency_code = currentCurrencyCode();
+                                                        $current_currency_symbol = currentCurrencySymbol();
+                                                    @endphp
+                                                    <!-- Currency Selector -->
+                                                    <div x-data="{ currencyOpen: false }" class="mb-3">
+                                                        <button @click="currencyOpen = !currencyOpen"
+                                                                class="touch-nav-item nav-item-bounce w-full">
+                                                            <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
+                                                                <i class="fas fa-dollar-sign text-white"></i>
+                                                            </div>
+                                                            <span class="touch-nav-text text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
+                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                               :class="currencyOpen ? 'rotate-90' : ''"></i>
+                                                        </button>
+                                                        
+                                                        @if ($currency_count)
+                                                            <div x-show="currencyOpen" 
+                                                                 x-transition:enter="transition ease-out duration-200"
+                                                                 x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                                                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                                                                 x-transition:leave="transition ease-in duration-150"
+                                                                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                                                                 x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                                                 class="ml-12 mt-2 space-y-1">
+                                                                @foreach ($headerCurrencies as $currency)
+                                                                    <a href="{{ route('changeCurrency', $currency->code) }}"
+                                                                       @click="closePanel()"
+                                                                       class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-200 {{ $current_currency_code === $currency->code ? 'bg-white/15 ring-1 ring-white/20' : '' }}">
+                                                                        <i class="fas fa-coins w-4 h-4 mr-2 text-emerald-400"></i>
+                                                                        <span>{{ $currency->code }} ({{ $currency->symbol }})</span>
+                                                                        @if ($current_currency_code === $currency->code)
+                                                                            <i class="fas fa-check ml-auto text-emerald-400"></i>
+                                                                        @endif
+                                                                    </a>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endif
+
+                                                @if ($language_enable && $setting->language_changing)
+                                                    <!-- Language Selector -->
+                                                    <div x-data="{ languageOpen: false }" class="mb-3">
+                                                        <button @click="languageOpen = !languageOpen"
+                                                                class="touch-nav-item nav-item-bounce w-full">
+                                                            <div class="touch-nav-icon bg-gradient-to-br from-indigo-500 to-indigo-600 icon-pulse">
+                                                                <i class="fas fa-language text-white"></i>
+                                                            </div>
+                                                            <span class="touch-nav-text text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
+                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                               :class="languageOpen ? 'rotate-90' : ''"></i>
+                                                        </button>
+                                                        
+                                                        <div x-show="languageOpen" 
+                                                             x-transition:enter="transition ease-out duration-200"
+                                                             x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                                             x-transition:enter-end="opacity-100 transform translate-y-0"
+                                                             x-transition:leave="transition ease-in duration-150"
+                                                             x-transition:leave-start="opacity-100 transform translate-y-0"
+                                                             x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                                             class="ml-12 mt-2 space-y-1">
+                                                            @foreach ($languages as $lang)
+                                                                <a href="{{ route('changeLanguage', $lang->code) }}"
+                                                                   @click="closePanel()"
+                                                                   class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-200 {{ currentLanguage()->name == $lang->name ? 'bg-white/15 ring-1 ring-white/20' : '' }}">
+                                                                    <i class="fas fa-globe w-4 h-4 mr-2 text-indigo-400"></i>
+                                                                    <span>{{ $lang->name }}</span>
+                                                                    @if (currentLanguage()->name == $lang->name)
+                                                                        <i class="fas fa-check ml-auto text-indigo-400"></i>
+                                                                    @endif
+                                                                </a>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+
                                             <!-- Divider -->
                                              <div class="border-t border-gray-200 dark:border-gray-600 my-4"></div>
 
@@ -490,6 +576,92 @@
                                                  <span class="touch-nav-text text-white">{{ __('contact') }}</span>
                                                  <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
                                              </a>
+
+                                             <!-- Language & Currency Settings Section for Guests -->
+                                             <div class="border-t border-white/20 my-4 pt-4">
+                                                 <div class="mb-3">
+                                                     <h3 class="text-white/80 text-sm font-medium mb-3 px-2">{{ __('preferences') }}</h3>
+                                                 </div>
+
+                                                 @if ($setting->currency_changing && count($headerCurrencies))
+                                                     @php
+                                                         $currency_count = count($headerCurrencies) && count($headerCurrencies) > 1;
+                                                         $current_currency_code = currentCurrencyCode();
+                                                         $current_currency_symbol = currentCurrencySymbol();
+                                                     @endphp
+                                                     <!-- Currency Selector -->
+                                                     <div x-data="{ currencyOpen: false }" class="mb-3">
+                                                         <button @click="currencyOpen = !currencyOpen"
+                                                                 class="touch-nav-item nav-item-bounce w-full">
+                                                             <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
+                                                                 <i class="fas fa-dollar-sign text-white"></i>
+                                                             </div>
+                                                             <span class="touch-nav-text text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
+                                                             <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                                :class="currencyOpen ? 'rotate-90' : ''"></i>
+                                                         </button>
+                                                         
+                                                         @if ($currency_count)
+                                                             <div x-show="currencyOpen" 
+                                                                  x-transition:enter="transition ease-out duration-200"
+                                                                  x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                                                  x-transition:enter-end="opacity-100 transform translate-y-0"
+                                                                  x-transition:leave="transition ease-in duration-150"
+                                                                  x-transition:leave-start="opacity-100 transform translate-y-0"
+                                                                  x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                                                  class="ml-12 mt-2 space-y-1">
+                                                                 @foreach ($headerCurrencies as $currency)
+                                                                     <a href="{{ route('changeCurrency', $currency->code) }}"
+                                                                        @click="closePanel()"
+                                                                        class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-200 {{ $current_currency_code === $currency->code ? 'bg-white/15 ring-1 ring-white/20' : '' }}">
+                                                                         <i class="fas fa-coins w-4 h-4 mr-2 text-emerald-400"></i>
+                                                                         <span>{{ $currency->code }} ({{ $currency->symbol }})</span>
+                                                                         @if ($current_currency_code === $currency->code)
+                                                                             <i class="fas fa-check ml-auto text-emerald-400"></i>
+                                                                         @endif
+                                                                     </a>
+                                                                 @endforeach
+                                                             </div>
+                                                         @endif
+                                                     </div>
+                                                 @endif
+
+                                                 @if ($language_enable && $setting->language_changing)
+                                                     <!-- Language Selector -->
+                                                     <div x-data="{ languageOpen: false }" class="mb-3">
+                                                         <button @click="languageOpen = !languageOpen"
+                                                                 class="touch-nav-item nav-item-bounce w-full">
+                                                             <div class="touch-nav-icon bg-gradient-to-br from-indigo-500 to-indigo-600 icon-pulse">
+                                                                 <i class="fas fa-language text-white"></i>
+                                                             </div>
+                                                             <span class="touch-nav-text text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
+                                                             <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                                :class="languageOpen ? 'rotate-90' : ''"></i>
+                                                         </button>
+                                                         
+                                                         <div x-show="languageOpen" 
+                                                              x-transition:enter="transition ease-out duration-200"
+                                                              x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                                              x-transition:enter-end="opacity-100 transform translate-y-0"
+                                                              x-transition:leave="transition ease-in duration-150"
+                                                              x-transition:leave-start="opacity-100 transform translate-y-0"
+                                                              x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                                              class="ml-12 mt-2 space-y-1">
+                                                             @foreach ($languages as $lang)
+                                                                 <a href="{{ route('changeLanguage', $lang->code) }}"
+                                                                    @click="closePanel()"
+                                                                    class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-200 {{ currentLanguage()->name == $lang->name ? 'bg-white/15 ring-1 ring-white/20' : '' }}">
+                                                                     <i class="fas fa-globe w-4 h-4 mr-2 text-indigo-400"></i>
+                                                                     <span>{{ $lang->name }}</span>
+                                                                     @if (currentLanguage()->name == $lang->name)
+                                                                         <i class="fas fa-check ml-auto text-indigo-400"></i>
+                                                                     @endif
+                                                                 </a>
+                                                             @endforeach
+                                                         </div>
+                                                     </div>
+                                                 @endif
+                                             </div>
                                          </nav>
                                      </div>
                                 </div>
@@ -525,68 +697,6 @@
                         </svg>
                     </span>
                 </button>
-                @if ($setting->currency_changing && count($headerCurrencies))
-                    @php
-                        $currency_count = count($headerCurrencies) && count($headerCurrencies) > 1;
-                        $current_currency_code = currentCurrencyCode();
-                        $current_currency_symbol = currentCurrencySymbol();
-                    @endphp
-                    <span class="relative" x-data="{ currencyDropdown: false }" @click.outside="currencyDropdown = false">
-                        <button @click="currencyDropdown = !currencyDropdown"
-                            class="inline-flex heading-07 tarnsition-all duration-300 hover:text-white py-1.5 gap-1.5 items-center"
-                            :class="currencyDropdown ? 'text-white' : ''" type="button">
-                            <span>
-                                {{ $current_currency_code }}
-                            </span>
-                            <x-svg.arrow-down-icon />
-                        </button>
-
-                        @if ($currency_count)
-                            <div class="currDropdown" x-show="currencyDropdown" x-transition x-cloak
-                                @click.outside="currencyDropdown=false">
-                                <ul
-                                    class="bg-white flex flex-col py-2 rounded-md border border-gray-100 drop-shadow-[drop-shadow(0px_8px_8px_rgba(28,33,38,0.03))_drop-shadow(0px_20px_24px_rgba(28,33,38,0.08))] min-w-[12rem] relative after:absolute after:border after:border-r-transparent after:border-b-transparent after:border-gray-200 after:rounded ltr:after:right-10 rtl:after:left-10 after:bg-white after:top-[-7.8px] after:h-4 after:w-4 after:transform after:rotate-[45deg] after:content-['']">
-                                    @foreach ($headerCurrencies as $currency)
-                                        <li>
-                                            <a href="{{ route('changeCurrency', $currency->code) }}"
-                                                class="hover:bg-primary-50 py-1 px-4 transition-all duration-300 flex text-gray-700 body-md-400 {{ $current_currency_code === $currency->code ? 'bg-primary-50' : '' }}">
-                                                {{ $currency->code }} ({{ $currency->symbol }})
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                    </span>
-                @endif
-
-                @if ($language_enable && $setting->language_changing)
-                    <span class="relative" x-data="{ langDropdown: false }" @click.outside="langDropdown = false">
-                        <button @click="langDropdown = !langDropdown"
-                            class="inline-flex heading-07 tarnsition-all duration-300 hover:text-white py-1.5 gap-1.5 items-center"
-                            :class="langDropdown ? 'text-white' : ''" type="button">
-                            <span>
-                                {{ currentLanguage() ? currentLanguage()->name : 'Default' }}
-                            </span>
-                            <x-svg.arrow-down-icon />
-                        </button>
-                        <!-- Dropdown menu -->
-                        <div class="langDropdown " x-show="langDropdown" x-transition x-cloak
-                            @click.outside="langDropdown=false">
-                            <ul
-                                class="bg-white flex flex-col py-2 rounded-md border border-gray-100 drop-shadow-[drop-shadow(0px_8px_8px_rgba(28,33,38,0.03))_drop-shadow(0px_20px_24px_rgba(28,33,38,0.08))] min-w-[12rem] relative after:absolute after:border after:border-r-transparent after:border-b-transparent after:border-gray-200 after:rounded ltr:after:right-10 rtl:after:left-10 after:bg-white after:top-[-7.8px] after:h-4 after:w-4 after:transform after:rotate-[45deg] after:content-['']">
-                                @foreach ($languages as $lang)
-                                    <li>
-                                        <a href="{{ route('changeLanguage', $lang->code) }}"
-                                            class="hover:bg-primary-50 py-1 px-4 transition-all duration-300 flex text-gray-700 body-md-400 {{ currentLanguage()->name == $lang->name ? 'bg-primary-50' : '' }}">
-                                            {{ $lang->name }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </span>
-                @endif
             </div>
         </div>
     </div>
@@ -849,6 +959,45 @@
 /* Enhanced Touch Nav Text Color - Universal White Text */
 .touch-nav-text {
     color: white !important;
+}
+
+/* Enhanced Mobile Scrolling for Touch Panel */
+.touch-panel-container {
+    /* Smooth scrolling for iOS */
+    -webkit-overflow-scrolling: touch;
+    /* Momentum scrolling */
+    scroll-behavior: smooth;
+}
+
+.touch-panel-container .overflow-y-auto {
+    /* Enhanced scrollbar for webkit browsers */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.touch-panel-container .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+.touch-panel-container .overflow-y-auto::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.touch-panel-container .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    transition: background 0.3s ease;
+}
+
+.touch-panel-container .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Touch panel width optimization for mobile */
+.touch-panel-container {
+    width: min(320px, 85vw);
+    max-width: 320px;
 }
 
 .touch-nav-item .nav-arrow {

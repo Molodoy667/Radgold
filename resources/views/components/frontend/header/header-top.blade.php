@@ -766,6 +766,15 @@
                     </form>
                 </div>
 
+                <!-- Logo (after touch panel) -->
+                <div class="flex-shrink-0 mx-3">
+                    <a href="{{ route('frontend.index') }}" class="block">
+                        <img class="h-8 w-auto max-w-[120px] lg:max-w-[160px]" 
+                             src="{{ $setting->white_logo_url }}" 
+                             alt="{{ $setting->site_name }}">
+                    </a>
+                </div>
+
                 <!-- Simplified Top Navigation -->
                 <div class="flex-1 flex items-center justify-end gap-3 mx-4">
                     <!-- Search -->
@@ -774,8 +783,8 @@
                                 class="nav-icon-button group" 
                                 title="{{ __('search') }}">
                             <div class="nav-icon-wrapper">
-                                <svg class="nav-icon w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                <svg class="nav-icon w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" 
                                           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
@@ -791,12 +800,12 @@
                                 <span id="icon">
                                     <!-- Light Mode Icon (Sun) -->
                                     <svg class="nav-icon w-5 h-5 dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" 
                                               d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                                     </svg>
                                     <!-- Dark Mode Icon (Moon) -->
                                     <svg class="nav-icon w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" 
                                               d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                                     </svg>
                                 </span>
@@ -813,7 +822,7 @@
 @auth('user')
 <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
     <div class="bottom-nav-container bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50 shadow-lg">
-        <div class="bottom-nav-grid grid grid-cols-6 gap-1 px-2 py-2">
+        <div class="bottom-nav-grid grid grid-cols-5 gap-1 px-2 py-0">
             
             <!-- Home -->
             <a href="{{ route('frontend.index') }}" 
@@ -891,29 +900,16 @@
                 </div>
             </div>
 
-            <!-- Dashboard (Личный кабинет) -->
+            <!-- Profile / Account -->
             <a href="{{ route('frontend.dashboard') }}" 
-               class="bottom-nav-item group {{ request()->routeIs('frontend.dashboard') ? 'active' : '' }}">
+               class="bottom-nav-item group {{ request()->routeIs('frontend.dashboard') || request()->routeIs('frontend.account-setting') ? 'active' : '' }}">
                 <div class="bottom-nav-icon-wrapper">
                     <svg class="bottom-nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 </div>
-                <span class="bottom-nav-label">{{ __('dashboard') }}</span>
-            </a>
-
-            <!-- Settings -->
-            <a href="{{ route('frontend.account-setting') }}" 
-               class="bottom-nav-item group {{ request()->routeIs('frontend.account-setting') ? 'active' : '' }}">
-                <div class="bottom-nav-icon-wrapper">
-                    <svg class="bottom-nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </div>
-                <span class="bottom-nav-label">{{ __('settings') }}</span>
+                <span class="bottom-nav-label">{{ __('profile') }}</span>
             </a>
         </div>
     </div>
@@ -1542,13 +1538,14 @@
 
 /* Bottom Navigation Styles */
 .bottom-nav-container {
-    min-height: 70px;
-    max-height: 80px;
+    height: 70px;
+    padding: 8px 0;
 }
 
 .bottom-nav-grid {
     height: 100%;
     align-items: center;
+    justify-items: center;
 }
 
 .bottom-nav-item {
@@ -1556,12 +1553,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 8px 4px;
-    border-radius: 12px;
+    padding: 4px 2px;
+    border-radius: 8px;
     transition: all 0.3s ease;
     position: relative;
-    min-height: 56px;
+    width: 100%;
+    height: 54px;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .bottom-nav-item:hover,
@@ -1596,12 +1595,17 @@
 }
 
 .bottom-nav-label {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 500;
     color: #6b7280;
     transition: all 0.3s ease;
     text-align: center;
-    line-height: 1.2;
+    line-height: 1.1;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50px;
 }
 
 .bottom-nav-item:hover .bottom-nav-label,
@@ -1630,20 +1634,21 @@
 
 /* Special Create Button Styling */
 .create-button {
-    margin-top: -8px;
+    margin-top: -6px;
+    justify-content: flex-start;
 }
 
 .create-button-wrapper {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
     transition: all 0.3s ease;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .create-button:hover .create-button-wrapper {
@@ -1692,9 +1697,20 @@
 }
 
 /* Responsive Adjustments */
-@media (max-width: 320px) {
+@media (max-width: 375px) {
+    .bottom-nav-container {
+        height: 65px;
+        padding: 6px 0;
+    }
+    
+    .bottom-nav-item {
+        height: 50px;
+        padding: 2px 1px;
+    }
+    
     .bottom-nav-label {
-        font-size: 9px;
+        font-size: 8px;
+        max-width: 45px;
     }
     
     .bottom-nav-icon {
@@ -1703,13 +1719,44 @@
     }
     
     .create-button-wrapper {
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
     }
     
     .create-icon {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 320px) {
+    .bottom-nav-container {
+        height: 60px;
+        padding: 4px 0;
+    }
+    
+    .bottom-nav-item {
+        height: 48px;
+    }
+    
+    .bottom-nav-label {
+        font-size: 7px;
+        max-width: 40px;
+    }
+    
+    .bottom-nav-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .create-button-wrapper {
+        width: 34px;
+        height: 34px;
+    }
+    
+    .create-icon {
+        width: 16px;
+        height: 16px;
     }
 }
 

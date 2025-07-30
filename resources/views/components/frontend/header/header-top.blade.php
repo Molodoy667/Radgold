@@ -189,7 +189,7 @@
                              x-transition:leave="transform transition-all ease-in duration-300"
                              x-transition:leave-start="translate-x-0 opacity-100 scale-100"
                              x-transition:leave-end="-translate-x-full opacity-0 scale-95"
-                             class="h-full w-80 bg-gradient-to-br from-blue-500/95 to-purple-600/95 backdrop-blur-xl shadow-2xl border-r border-white/20 panel-content"
+                             class="h-full w-80 bg-gradient-to-br from-blue-500/95 to-purple-600/95 dark:from-gray-800/95 dark:to-gray-900/95 backdrop-blur-xl shadow-2xl border-r border-white/20 dark:border-gray-700/30 panel-content"
                              style="position: relative; z-index: 1000000;">
                              
                                                          @auth('user')
@@ -197,7 +197,7 @@
                                  <div class="h-full flex flex-col">
                                      
                                      <!-- Header with User Info - Glass Style -->
-                                     <div class="p-6 bg-white/12 backdrop-blur-xl border-b border-white/25 glass-header">
+                                     <div class="p-6 bg-white/12 dark:bg-gray-800/30 backdrop-blur-xl border-b border-white/25 dark:border-gray-600/40 glass-header">
                                          <!-- Close button - Glass Pulsing -->
                                          <button @click="closePanel()" 
                                                  class="absolute top-4 right-4 w-10 h-10 rounded-xl
@@ -208,7 +208,7 @@
                                          </button>
 
                                                                                  <!-- User Profile Glass Container -->
-                                         <div class="flex items-center space-x-3 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
+                                         <div class="flex items-center space-x-3 p-3 rounded-xl bg-white/10 dark:bg-gray-700/30 backdrop-blur-md border border-white/20 dark:border-gray-600/30">
                                              <div class="relative">
                                                  <img class="w-16 h-16 rounded-xl object-cover border-2 border-white/30" 
                                                       src="{{ authUser()->image_url }}" 
@@ -371,8 +371,8 @@
                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
                                             </a>
 
-                                            <!-- Language & Currency Settings Section -->
-                                            <div class="border-t border-white/20 my-4 pt-4">
+                                                                                         <!-- Language & Currency Settings Section -->
+                                             <div class="border-t border-white/20 dark:border-gray-600/30 my-4 pt-4">
                                                 <div class="mb-3">
                                                     <h3 class="text-white/80 text-sm font-medium mb-3 px-2">{{ __('preferences') }}</h3>
                                                 </div>
@@ -407,7 +407,7 @@
                                                                 @foreach ($headerCurrencies as $currency)
                                                                     <a href="{{ route('changeCurrency', $currency->code) }}"
                                                                        @click="closePanel()"
-                                                                       class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-200 {{ $current_currency_code === $currency->code ? 'bg-white/15 ring-1 ring-white/20' : '' }}">
+                                                                       class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 dark:bg-gray-600/20 hover:bg-white/10 dark:hover:bg-gray-500/30 rounded-lg transition-all duration-200 {{ $current_currency_code === $currency->code ? 'bg-white/15 dark:bg-gray-500/40 ring-1 ring-white/20 dark:ring-gray-400/30' : '' }}">
                                                                         <i class="fas fa-coins w-4 h-4 mr-2 text-emerald-400"></i>
                                                                         <span>{{ $currency->code }} ({{ $currency->symbol }})</span>
                                                                         @if ($current_currency_code === $currency->code)
@@ -444,7 +444,7 @@
                                                             @foreach ($languages as $lang)
                                                                 <a href="{{ route('changeLanguage', $lang->code) }}"
                                                                    @click="closePanel()"
-                                                                   class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-200 {{ currentLanguage()->name == $lang->name ? 'bg-white/15 ring-1 ring-white/20' : '' }}">
+                                                                   class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 dark:bg-gray-600/20 hover:bg-white/10 dark:hover:bg-gray-500/30 rounded-lg transition-all duration-200 {{ currentLanguage()->name == $lang->name ? 'bg-white/15 dark:bg-gray-500/40 ring-1 ring-white/20 dark:ring-gray-400/30' : '' }}">
                                                                     <i class="fas fa-globe w-4 h-4 mr-2 text-indigo-400"></i>
                                                                     <span>{{ $lang->name }}</span>
                                                                     @if (currentLanguage()->name == $lang->name)
@@ -457,8 +457,8 @@
                                                 @endif
                                             </div>
 
-                                            <!-- Divider -->
-                                             <div class="border-t border-gray-200 dark:border-gray-600 my-4"></div>
+                                                                                         <!-- Divider -->
+                                             <div class="border-t border-white/20 dark:border-gray-600/30 my-4"></div>
 
                                              <!-- Logout -->
                                              <a href="javascript:void(0)"
@@ -478,7 +478,7 @@
                                  <div class="h-full flex flex-col">
                                      
                                      <!-- Header for Guests - Glass Style -->
-                                     <div class="p-6 bg-white/12 backdrop-blur-xl border-b border-white/25 glass-header">
+                                     <div class="p-6 bg-white/12 dark:bg-gray-800/30 backdrop-blur-xl border-b border-white/25 dark:border-gray-600/40 glass-header">
                                          <!-- Close button - Glass Pulsing -->
                                          <button @click="closePanel()" 
                                                  class="absolute top-4 right-4 w-10 h-10 rounded-xl
@@ -489,8 +489,8 @@
                                          </button>
 
                                          <!-- Welcome Message Glass Container -->
-                                         <div class="text-center p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
-                                             <div class="w-16 h-16 mx-auto mb-3 bg-white/20 rounded-xl flex items-center justify-center border border-white/30">
+                                         <div class="text-center p-4 rounded-xl bg-white/10 dark:bg-gray-700/30 backdrop-blur-md border border-white/20 dark:border-gray-600/30">
+                                                                                              <div class="w-16 h-16 mx-auto mb-3 bg-white/20 dark:bg-gray-600/40 rounded-xl flex items-center justify-center border border-white/30 dark:border-gray-500/50">
                                                  <i class="fas fa-user-circle text-white text-2xl"></i>
                                              </div>
                                              <h2 class="text-lg font-semibold text-white">
@@ -503,17 +503,17 @@
                                      </div>
 
                                      <!-- Auth Buttons Glass -->
-                                     <div class="p-4 space-y-3 border-b border-white/20">
+                                     <div class="p-4 space-y-3 border-b border-white/20 dark:border-gray-600/30">
                                          <a href="{{ route('users.login') }}" 
                                             @click="closePanel()"
-                                            class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-white/15 backdrop-blur-md border border-white/30 text-white rounded-lg transition-all duration-300 hover:bg-white/20 hover:scale-105">
+                                            class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-white/15 dark:bg-gray-700/40 backdrop-blur-md border border-white/30 dark:border-gray-600/40 text-white rounded-lg transition-all duration-300 hover:bg-white/20 dark:hover:bg-gray-600/50 hover:scale-105">
                                              <i class="fas fa-sign-in-alt"></i>
                                              <span class="font-medium">{{ __('sign_in') }}</span>
                                          </a>
                                          
                                          <a href="{{ route('frontend.signup') }}" 
                                             @click="closePanel()"
-                                            class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-white/10 backdrop-blur-md border border-white/25 text-white rounded-lg transition-all duration-300 hover:bg-white/15 hover:scale-105">
+                                            class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-white/10 dark:bg-gray-700/30 backdrop-blur-md border border-white/25 dark:border-gray-600/35 text-white rounded-lg transition-all duration-300 hover:bg-white/15 dark:hover:bg-gray-600/40 hover:scale-105">
                                              <i class="fas fa-user-plus"></i>
                                              <span class="font-medium">{{ __('sign_up') }}</span>
                                          </a>
@@ -577,8 +577,8 @@
                                                  <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
                                              </a>
 
-                                             <!-- Language & Currency Settings Section for Guests -->
-                                             <div class="border-t border-white/20 my-4 pt-4">
+                                                                                           <!-- Language & Currency Settings Section for Guests -->
+                                              <div class="border-t border-white/20 dark:border-gray-600/30 my-4 pt-4">
                                                  <div class="mb-3">
                                                      <h3 class="text-white/80 text-sm font-medium mb-3 px-2">{{ __('preferences') }}</h3>
                                                  </div>
@@ -613,7 +613,7 @@
                                                                  @foreach ($headerCurrencies as $currency)
                                                                      <a href="{{ route('changeCurrency', $currency->code) }}"
                                                                         @click="closePanel()"
-                                                                        class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-200 {{ $current_currency_code === $currency->code ? 'bg-white/15 ring-1 ring-white/20' : '' }}">
+                                                                        class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 dark:bg-gray-600/20 hover:bg-white/10 dark:hover:bg-gray-500/30 rounded-lg transition-all duration-200 {{ $current_currency_code === $currency->code ? 'bg-white/15 dark:bg-gray-500/40 ring-1 ring-white/20 dark:ring-gray-400/30' : '' }}">
                                                                          <i class="fas fa-coins w-4 h-4 mr-2 text-emerald-400"></i>
                                                                          <span>{{ $currency->code }} ({{ $currency->symbol }})</span>
                                                                          @if ($current_currency_code === $currency->code)
@@ -650,7 +650,7 @@
                                                              @foreach ($languages as $lang)
                                                                  <a href="{{ route('changeLanguage', $lang->code) }}"
                                                                     @click="closePanel()"
-                                                                    class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-200 {{ currentLanguage()->name == $lang->name ? 'bg-white/15 ring-1 ring-white/20' : '' }}">
+                                                                    class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 dark:bg-gray-600/20 hover:bg-white/10 dark:hover:bg-gray-500/30 rounded-lg transition-all duration-200 {{ currentLanguage()->name == $lang->name ? 'bg-white/15 dark:bg-gray-500/40 ring-1 ring-white/20 dark:ring-gray-400/30' : '' }}">
                                                                      <i class="fas fa-globe w-4 h-4 mr-2 text-indigo-400"></i>
                                                                      <span>{{ $lang->name }}</span>
                                                                      @if (currentLanguage()->name == $lang->name)
@@ -1110,6 +1110,61 @@
     -webkit-backdrop-filter: blur(20px) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Touch Panel Dark Theme Enhancements */
+.dark .touch-panel-container {
+    background: linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.95)) !important;
+    border-right: 1px solid rgba(156, 163, 175, 0.3) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .glass-header {
+    background: rgba(31, 41, 55, 0.4) !important;
+    border-bottom: 1px solid rgba(156, 163, 175, 0.3) !important;
+}
+
+.dark .glass-close-btn {
+    background: rgba(156, 163, 175, 0.2) !important;
+    border: 1px solid rgba(156, 163, 175, 0.4) !important;
+}
+
+.dark .glass-close-btn:hover {
+    background: rgba(156, 163, 175, 0.3) !important;
+    border-color: rgba(156, 163, 175, 0.5) !important;
+}
+
+/* Touch Nav Items Dark Theme */
+.dark .touch-nav-item {
+    background: rgba(55, 65, 81, 0.3) !important;
+    border: 1px solid rgba(75, 85, 99, 0.4) !important;
+}
+
+.dark .touch-nav-item:hover {
+    background: rgba(55, 65, 81, 0.5) !important;
+    border-color: rgba(107, 114, 128, 0.6) !important;
+    transform: translateX(4px) !important;
+}
+
+.dark .touch-nav-item:active {
+    background: rgba(75, 85, 99, 0.6) !important;
+}
+
+/* Dark Theme Text Colors for Touch Panel */
+.dark .touch-nav-text,
+.dark .glass-header h2,
+.dark .glass-header p,
+.dark .glass-header span {
+    color: #f9fafb !important;
+}
+
+/* Dark Theme Icon Colors */
+.dark .touch-nav-icon {
+    background: linear-gradient(135deg, rgba(75, 85, 99, 0.8), rgba(55, 65, 81, 0.9)) !important;
+}
+
+.dark .touch-nav-item:hover .touch-nav-icon {
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.9), rgba(75, 85, 99, 1)) !important;
 }
 
 /* Dark Theme Text Visibility Improvements */

@@ -161,11 +161,52 @@
                         <div class="absolute inset-0 rounded-xl bg-white/30 scale-0 pulse-ring"></div>
                     </button>
 
-                    <!-- Swipe Indicator (shows at screen edge) -->
+                    <!-- Beautiful Pulsing Swipe Indicator -->
                     <div x-show="!panelOpen" 
-                         class="fixed left-0 top-1/2 transform -translate-y-1/2 z-[99998] swipe-indicator">
-                        <div class="w-1 h-16 bg-gradient-to-b from-blue-500 to-purple-600 rounded-r-full opacity-30 hover:opacity-60 transition-opacity duration-300"></div>
-                        <div class="absolute left-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 writing-vertical">Swipe →</div>
+                         x-transition:enter="transition-all ease-out duration-500"
+                         x-transition:enter-start="opacity-0 scale-0 -translate-x-full"
+                         x-transition:enter-end="opacity-100 scale-100 translate-x-0"
+                         x-transition:leave="transition-all ease-in duration-300"
+                         x-transition:leave-start="opacity-100 scale-100 translate-x-0"
+                         x-transition:leave-end="opacity-0 scale-0 -translate-x-full"
+                         class="fixed left-0 top-1/2 transform -translate-y-1/2 z-[999998] swipe-indicator">
+                        
+                        <!-- Main Pulsing Button -->
+                        <button @click="openPanel()" 
+                                class="relative w-12 h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 
+                                       rounded-r-2xl shadow-lg hover:shadow-xl transition-all duration-300
+                                       flex items-center justify-center group overflow-hidden
+                                       hover:w-16 hover:scale-110 active:scale-95
+                                       border-2 border-white/20 hover:border-white/40">
+                            
+                            <!-- Animated Background -->
+                            <div class="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 
+                                        opacity-0 group-hover:opacity-100 transition-opacity duration-500
+                                        animate-gradient-x"></div>
+                            
+                            <!-- Arrow Icon -->
+                            <i class="fas fa-chevron-right text-white text-lg relative z-10 
+                                      group-hover:translate-x-1 transition-transform duration-300
+                                      drop-shadow-sm"></i>
+                            
+                            <!-- Pulse Rings -->
+                            <div class="absolute inset-0 rounded-r-2xl border-2 border-white/30 
+                                        animate-ping opacity-75"></div>
+                            <div class="absolute inset-0 rounded-r-2xl border-2 border-white/20 
+                                        animate-pulse"></div>
+                        </button>
+                        
+                        <!-- Tooltip -->
+                        <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 
+                                    opacity-0 group-hover:opacity-100 transition-all duration-300
+                                    pointer-events-none">
+                            <div class="bg-black/80 text-white text-xs px-2 py-1 rounded 
+                                        whitespace-nowrap backdrop-blur-sm">
+                                {{ __('swipe_or_tap_to_open') }}
+                                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 
+                                            w-2 h-2 bg-black/80 rotate-45"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Touch Panel Overlay -->
@@ -177,8 +218,8 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          @click="closePanel()"
-                         class="fixed inset-0 z-[99999] bg-black/80 touch-panel-overlay"
-                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 99999 !important;">
+                         class="fixed inset-0 z-[999999] bg-black/80 touch-panel-overlay"
+                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important;"
                          
                         <!-- Panel Container -->
                         <div @click.stop class="touch-panel-container"
@@ -190,7 +231,7 @@
                              x-transition:leave-start="translate-x-0 opacity-100 scale-100"
                              x-transition:leave-end="-translate-x-full opacity-0 scale-95"
                              class="h-full w-80 bg-gradient-to-br from-blue-500/95 to-purple-600/95 dark:from-gray-800/95 dark:to-gray-900/95 backdrop-blur-xl shadow-2xl border-r border-white/20 dark:border-gray-700/30 panel-content"
-                             style="position: relative; z-index: 1000000;">
+                             style="position: relative; z-index: 9999999;">
                              
                                                          @auth('user')
                                  <!-- Authenticated User Panel -->
@@ -231,7 +272,7 @@
                                      </div>
 
                                                                          <!-- Navigation Menu -->
-                                     <div class="flex-1 overflow-y-auto py-4 px-4">
+                                     <div class="flex-1 overflow-y-auto py-4 px-4" style="max-height: calc(100vh - 200px); min-height: 400px;">
                                          <nav class="space-y-2">
                                                                                            <!-- Dashboard -->
                                               <a href="{{ route('frontend.dashboard') }}"
@@ -520,7 +561,7 @@
                                      </div>
 
                                                                          <!-- Navigation Menu for Guests -->
-                                     <div class="flex-1 overflow-y-auto py-4 px-4">
+                                     <div class="flex-1 overflow-y-auto py-4 px-4" style="max-height: calc(100vh - 250px); min-height: 300px;">
                                          <nav class="space-y-2">
                                              <!-- Home -->
                                              <a href="{{ route('frontend.index') }}"
@@ -670,6 +711,53 @@
                         
                         <!-- Click outside to close -->
                         <div @click="closePanel()" class="absolute inset-0 -z-10"></div>
+                    </div>
+
+                    <!-- Floating Close Button (shows when panel is open) -->
+                    <div x-show="panelOpen" 
+                         x-transition:enter="transition-all ease-out duration-500 delay-300"
+                         x-transition:enter-start="opacity-0 scale-0 translate-x-full"
+                         x-transition:enter-end="opacity-100 scale-100 translate-x-0"
+                         x-transition:leave="transition-all ease-in duration-200"
+                         x-transition:leave-start="opacity-100 scale-100 translate-x-0"
+                         x-transition:leave-end="opacity-0 scale-0 translate-x-full"
+                         class="fixed right-4 top-1/2 transform -translate-y-1/2 z-[9999999]">
+                        
+                        <button @click="closePanel()" 
+                                class="relative w-14 h-14 bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 
+                                       rounded-full shadow-lg hover:shadow-xl transition-all duration-300
+                                       flex items-center justify-center group overflow-hidden
+                                       hover:scale-110 active:scale-95
+                                       border-2 border-white/20 hover:border-white/40">
+                            
+                            <!-- Animated Background -->
+                            <div class="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 
+                                        opacity-0 group-hover:opacity-100 transition-opacity duration-500
+                                        rounded-full"></div>
+                            
+                            <!-- Close Icon -->
+                            <i class="fas fa-times text-white text-xl relative z-10 
+                                      group-hover:rotate-90 transition-transform duration-300
+                                      drop-shadow-sm"></i>
+                            
+                            <!-- Pulse Rings -->
+                            <div class="absolute inset-0 rounded-full border-2 border-white/30 
+                                        animate-ping opacity-75"></div>
+                            <div class="absolute inset-0 rounded-full border-2 border-white/20 
+                                        animate-pulse"></div>
+                        </button>
+                        
+                        <!-- Tooltip -->
+                        <div class="absolute right-full top-1/2 transform -translate-y-1/2 mr-2 
+                                    opacity-0 group-hover:opacity-100 transition-all duration-300
+                                    pointer-events-none">
+                            <div class="bg-black/80 text-white text-xs px-2 py-1 rounded 
+                                        whitespace-nowrap backdrop-blur-sm">
+                                {{ __('close_panel') }}
+                                <div class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1 
+                                            w-2 h-2 bg-black/80 rotate-45"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Logout Forms -->
@@ -998,6 +1086,67 @@
 .touch-panel-container {
     width: min(320px, 85vw);
     max-width: 320px;
+}
+
+/* Beautiful Gradient Animation */
+@keyframes gradient-x {
+    0%, 100% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(100%);
+    }
+}
+
+.animate-gradient-x {
+    animation: gradient-x 3s ease infinite;
+}
+
+/* Enhanced Swipe Indicator Styles */
+.swipe-indicator button {
+    position: relative;
+    overflow: visible;
+}
+
+.swipe-indicator button::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
+    border-radius: inherit;
+    z-index: -1;
+    animation: rotate-gradient 3s linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes rotate-gradient {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Touch Panel Enhanced Z-Index Management */
+.touch-panel-overlay {
+    z-index: 999999 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+}
+
+.touch-panel-container {
+    z-index: 9999999 !important;
+    position: relative !important;
+}
+
+/* Ensure touch panel is above everything in dark theme */
+.dark .touch-panel-overlay {
+    z-index: 999999 !important;
+    background: rgba(0, 0, 0, 0.9) !important;
+}
+
+.dark .touch-panel-container {
+    z-index: 9999999 !important;
 }
 
 .touch-nav-item .nav-arrow {

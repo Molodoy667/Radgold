@@ -205,15 +205,15 @@
                                  <!-- Authenticated User Panel -->
                                  <div class="h-full flex flex-col">
                                      
-                                     <!-- Header with User Info -->
-                                     <div class="p-6 bg-white/10 backdrop-blur-xl border-b border-white/20">
-                                         <!-- Close button -->
+                                     <!-- Header with User Info - Glass Style -->
+                                     <div class="p-6 bg-white/12 backdrop-blur-xl border-b border-white/25 glass-header">
+                                         <!-- Close button - Glass Pulsing -->
                                          <button @click="closePanel()" 
-                                                 class="absolute top-4 right-4 w-8 h-8 rounded-lg 
-                                                        bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600
+                                                 class="absolute top-4 right-4 w-10 h-10 rounded-xl
+                                                        glass-close-btn
                                                         flex items-center justify-center
-                                                        transition-colors duration-200">
-                                             <i class="fas fa-times text-gray-600 dark:text-gray-400 text-sm"></i>
+                                                        transition-all duration-300">
+                                             <i class="fas fa-times text-white text-sm pulse-icon"></i>
                                          </button>
 
                                                                                  <!-- User Profile -->
@@ -328,15 +328,15 @@
                                  <!-- Guest User Panel -->
                                  <div class="h-full flex flex-col">
                                      
-                                     <!-- Header for Guests -->
-                                     <div class="p-6 bg-white/10 backdrop-blur-xl border-b border-white/20">
-                                         <!-- Close button -->
+                                     <!-- Header for Guests - Glass Style -->
+                                     <div class="p-6 bg-white/12 backdrop-blur-xl border-b border-white/25 glass-header">
+                                         <!-- Close button - Glass Pulsing -->
                                          <button @click="closePanel()" 
-                                                 class="absolute top-4 right-4 w-8 h-8 rounded-lg 
-                                                        bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600
+                                                 class="absolute top-4 right-4 w-10 h-10 rounded-xl
+                                                        glass-close-btn
                                                         flex items-center justify-center
-                                                        transition-colors duration-200">
-                                             <i class="fas fa-times text-gray-600 dark:text-gray-400 text-sm"></i>
+                                                        transition-all duration-300">
+                                             <i class="fas fa-times text-white text-sm pulse-icon"></i>
                                          </button>
 
                                          <!-- Welcome Message -->
@@ -631,33 +631,31 @@
     }
 }
 
-/* Touch Navigation Items */
+/* Touch Navigation Items - Universal Glass Style */
 .touch-nav-item {
     display: flex;
     align-items: center;
     padding: 12px 16px;
     margin: 0 0 8px 0;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    color: white !important;
 }
 
-/* Dark theme support for touch navigation items */
-.dark .touch-nav-item {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: #e5e7eb;
-}
-
-.dark .touch-nav-item:hover {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.35);
+/* Universal glass hover for all themes */
+.touch-nav-item:hover {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 .touch-nav-icon {
@@ -785,34 +783,26 @@
     color: rgba(255, 255, 255, 0.9);
 }
 
-/* Footer Touch Links */
+/* Glass Footer Touch Links - Universal Glass Style */
 .footer-touch-link {
     display: flex;
     align-items: center;
     padding: 12px 16px;
     border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     color: inherit;
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark theme support for footer */
-.dark .footer-touch-link {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #e5e7eb;
-}
-
-.dark .footer-touch-link:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.25);
-}
-
+/* Universal glass effect for all themes */
 .footer-touch-link::before {
     content: '';
     position: absolute;
@@ -820,7 +810,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
     transition: left 0.5s;
 }
 
@@ -829,10 +819,10 @@
 }
 
 .footer-touch-link:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
     transform: translateY(-2px) scale(1.02);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 .footer-touch-link:active {
@@ -1264,5 +1254,85 @@
 /* Smooth transitions for all footer elements */
 .footer-menu-section * {
     transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Glass Header Styles */
+.glass-header {
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.glass-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+/* Glass Close Button */
+.glass-close-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-close-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.4s;
+}
+
+.glass-close-btn:hover::before {
+    left: 100%;
+}
+
+.glass-close-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.glass-close-btn:active {
+    transform: scale(0.95) rotate(90deg);
+}
+
+/* Pulse Icon Animation */
+.pulse-icon {
+    animation: pulseIcon 2s ease-in-out infinite;
+}
+
+@keyframes pulseIcon {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Enhanced Touch Nav Text Color */
+.touch-nav-text {
+    color: white !important;
+}
+
+.touch-nav-item .nav-arrow {
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 </style>

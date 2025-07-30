@@ -22,7 +22,7 @@
 
     }
 </style>
-<div class="header-main py-3 md:py-4 bg-primary-500 dark:bg-primary-800" x-data="{ openModal: false, openCity: false, location: '' }">
+<div class="header-main py-3 md:py-4 bg-primary-500 dark:bg-gray-900/95 dark:backdrop-blur-xl dark:border-b dark:border-gray-700/50" x-data="{ openModal: false, openCity: false, location: '' }">
     <div class="container">
         <div class="flex gap-2 justify-between items-center">
             <a href="{{ route('frontend.index') }}">

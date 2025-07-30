@@ -1,5 +1,5 @@
 <footer
-    class="bg-gray-50 dark:bg-black border-t border-gray-100 dark:border-gray-400">
+    class="bg-white/80 backdrop-blur-xl dark:bg-gray-900/95 border-t border-white/20 dark:border-gray-700/50">
     
 
     
@@ -28,7 +28,7 @@
                 <a href="/" class="mb-4 inline-flex">
                     <img id="logo" src="{{ asset($setting->logo_image) }}" alt="">
                 </a>
-                <p class="mb-4 body-md-400 text-gray-700 dark:text-white max-w-[372px]">
+                <p class="mb-4 body-md-400 text-gray-800 dark:text-white max-w-[372px]">
                     {{ __('adlisting_is_a_trusted_directory_listing_companyrelied_upon_by_millions_of_people') }}</p>
                 <a href="{{ route('frontend.priceplan') }}" class="btn-primary">
                     <span>{{ __('get_membership') }}</span>
@@ -264,3 +264,102 @@
         </div>
     </div>
 </footer>
+
+<style>
+/* Footer Glass Links */
+.footer-main-touch-link,
+.footer-sub-touch-link {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(15px) !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+    color: #1f2937 !important; /* Dark text for light theme */
+}
+
+.dark .footer-main-touch-link,
+.dark .footer-sub-touch-link {
+    color: white !important; /* White text for dark theme */
+}
+
+.footer-main-touch-link:hover,
+.footer-sub-touch-link:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Footer Text Colors - Universal */
+.footer-text,
+.footer-sub-text {
+    color: #1f2937 !important; /* Dark text for light theme */
+    font-weight: 500 !important;
+}
+
+.dark .footer-text,
+.dark .footer-sub-text {
+    color: white !important; /* White text for dark theme */
+}
+
+/* Footer Chevrons */
+.footer-chevron,
+.footer-sub-arrow {
+    color: #6b7280 !important; /* Gray for light theme */
+}
+
+.dark .footer-chevron,
+.dark .footer-sub-arrow {
+    color: rgba(255, 255, 255, 0.8) !important; /* Light gray for dark theme */
+}
+
+/* Footer Icon Containers */
+.footer-icon-container,
+.footer-sub-icon-container {
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Footer Links - Regular */
+.footer-link {
+    color: #4b5563 !important; /* Medium gray for light theme */
+    transition: color 0.3s ease !important;
+}
+
+.footer-link:hover {
+    color: #1f2937 !important; /* Darker gray on hover for light theme */
+}
+
+.dark .footer-link {
+    color: #d1d5db !important; /* Light gray for dark theme */
+}
+
+.dark .footer-link:hover {
+    color: white !important; /* White on hover for dark theme */
+}
+
+/* Footer Widget Titles */
+.widget h3 {
+    color: #111827 !important; /* Very dark for light theme */
+}
+
+.dark .widget h3 {
+    color: white !important; /* White for dark theme */
+}
+
+/* Footer Description Text */
+.widget p {
+    color: #374151 !important; /* Dark gray for light theme */
+}
+
+.dark .widget p {
+    color: #d1d5db !important; /* Light gray for dark theme */
+}
+
+/* Footer Copyright */
+.copyright-area p {
+    color: #6b7280 !important; /* Medium gray for light theme */
+}
+
+.dark .copyright-area p {
+    color: #9ca3af !important; /* Medium light gray for dark theme */
+}
+</style>

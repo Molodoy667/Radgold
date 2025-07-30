@@ -1,4 +1,4 @@
-<div class="header-top bg-primary-800 dark:bg-gray-800 border-b border-primary-600 dark:border-primary-800 text-white/80">
+<div class="header-top bg-primary-800 dark:bg-gray-900/95 dark:backdrop-blur-xl border-b border-primary-600 dark:border-gray-700/50 text-white/80">
     <div class="container">
         <div class="py-1.5 lg:hidden border-b">
             <button type="button" data-modal-target="locationModal" data-modal-toggle="locationModal"

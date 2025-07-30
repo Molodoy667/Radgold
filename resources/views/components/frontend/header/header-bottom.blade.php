@@ -1,7 +1,7 @@
 @php
     $locale = app()->getLocale();
 @endphp
-<div class="header-bottom hidden lg:!block bg-primary-800 dark:bg-gray-800">
+<div class="header-bottom hidden lg:!block bg-primary-800 dark:bg-gray-900/95 dark:backdrop-blur-xl dark:border-b dark:border-gray-700/50">
     <div class="container">
 
         <div class="flex gap-6 items-center">

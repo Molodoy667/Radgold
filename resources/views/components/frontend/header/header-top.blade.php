@@ -58,7 +58,7 @@
                 </div>
             </div>
             <!-- City List Modal End -->
-            <div class="inline-flex lg:hidden flex-wrap gap-3 items-center">
+            <div class="flex lg:hidden items-center w-full justify-between gap-2">
                 <!-- Touch Panel System -->
                 <div x-data="{ 
                     panelOpen: false,
@@ -765,26 +765,159 @@
                         @csrf
                     </form>
                 </div>
-                <button @click="searchbar = !searchbar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M21 21L15.0001 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-                            stroke="var(--gray-100)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </button>
-            </div>
-            <div class="inline-flex gap-4 items-center">
-                <button id="darkModeToggle" class="bg-white text-primary-500 border border-gray-100 p-1 rounded-full">
-                    <span id="icon">
-                        <!-- Custom SVG for Light Mode -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                        </svg>
-                    </span>
-                </button>
+
+                <!-- Main Navigation Bar -->
+                <div class="flex-1 flex items-center justify-between gap-2 lg:gap-4 mx-4">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0">
+                        <a href="{{ route('frontend.index') }}" class="block">
+                            <img class="h-8 w-auto max-w-[140px] lg:max-w-[180px]" 
+                                 src="{{ $setting->white_logo_url }}" 
+                                 alt="{{ $setting->site_name }}">
+                        </a>
+                    </div>
+
+                    <!-- Navigation Icons Container -->
+                    <div class="flex items-center gap-3 lg:gap-4">
+                        
+                        <!-- Messages (только для авторизованных, скрыто на XS) -->
+                        @auth('user')
+                            <div class="nav-icon-container hidden sm:block">
+                                @php
+                                    $unread_message_count = unreadMessageCount();
+                                @endphp
+                                <a href="{{ route('frontend.message') }}" 
+                                   class="nav-icon-button group" 
+                                   title="{{ __('messages') }}">
+                                    <div class="nav-icon-wrapper">
+                                        <i class="fas fa-envelope nav-icon"></i>
+                                        @if ($unread_message_count > 0)
+                                            <span class="nav-badge">{{ $unread_message_count }}</span>
+                                        @endif
+                                    </div>
+                                </a>
+                            </div>
+                        @endauth
+
+                        <!-- Notifications (только для авторизованных, скрыто на XS) -->
+                        @auth('user')
+                            <div class="nav-icon-container hidden sm:block" x-data="{ notiPanel: false }" @click.outside="notiPanel = false">
+                                <button @click="notiPanel = !notiPanel" 
+                                        class="nav-icon-button group" 
+                                        title="{{ __('notifications') }}">
+                                    <div class="nav-icon-wrapper">
+                                        <i class="fas fa-bell nav-icon"></i>
+                                        <span class="nav-badge">3</span>
+                                    </div>
+                                </button>
+                                
+                                <!-- Notification Dropdown -->
+                                <div x-show="notiPanel" 
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 scale-100"
+                                     x-transition:leave-end="opacity-0 scale-95"
+                                     class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                                     style="display: none;">
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">{{ __('notifications') }}</h3>
+                                        <div class="space-y-2">
+                                            <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                                                <p class="text-sm text-gray-600 dark:text-gray-300">{{ __('new_message_received') }}</p>
+                                                <span class="text-xs text-gray-500">{{ __('2_hours_ago') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endauth
+
+                        <!-- Search -->
+                        <div class="nav-icon-container">
+                            <button @click="searchbar = !searchbar" 
+                                    class="nav-icon-button group" 
+                                    title="{{ __('search') }}">
+                                <div class="nav-icon-wrapper">
+                                    <i class="fas fa-search nav-icon"></i>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- User Account / Login -->
+                        @auth('user')
+                            <div class="nav-icon-container" x-data="{ userDropdown: false }" @click.outside="userDropdown = false">
+                                <button @click="userDropdown = !userDropdown" 
+                                        class="nav-icon-button group" 
+                                        title="{{ __('account') }}">
+                                    <div class="nav-icon-wrapper">
+                                        <img class="w-8 h-8 rounded-full object-cover border-2 border-white/30" 
+                                             src="{{ authUser()->image_url }}" 
+                                             alt="{{ authUser()->name }}">
+                                    </div>
+                                </button>
+                                
+                                <!-- User Dropdown -->
+                                <div x-show="userDropdown" 
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 scale-100"
+                                     x-transition:leave-end="opacity-0 scale-95"
+                                     class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                                     style="display: none;">
+                                    <div class="py-2">
+                                        <a href="{{ route('frontend.dashboard') }}" 
+                                           class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <i class="fas fa-tachometer-alt mr-2"></i>{{ __('dashboard') }}
+                                        </a>
+                                        <a href="{{ route('frontend.account-setting') }}" 
+                                           class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <i class="fas fa-cog mr-2"></i>{{ __('settings') }}
+                                        </a>
+                                        <hr class="my-1 border-gray-200 dark:border-gray-600">
+                                        <a href="javascript:void(0)" 
+                                           onclick="document.getElementById('logout-form').submit();"
+                                           class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <i class="fas fa-sign-out-alt mr-2"></i>{{ __('logout') }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="nav-icon-container">
+                                <a href="{{ route('users.login') }}" 
+                                   class="nav-icon-button group" 
+                                   title="{{ __('login') }}">
+                                    <div class="nav-icon-wrapper">
+                                        <i class="fas fa-user nav-icon"></i>
+                                    </div>
+                                </a>
+                            </div>
+                        @endauth
+
+                        <!-- Dark Mode Toggle -->
+                        <div class="nav-icon-container">
+                            <button id="darkModeToggle" 
+                                    class="nav-icon-button group" 
+                                    title="{{ __('toggle_theme') }}">
+                                <div class="nav-icon-wrapper">
+                                    <span id="icon">
+                                        <i class="fas fa-moon nav-icon dark:hidden"></i>
+                                        <i class="fas fa-sun nav-icon hidden dark:block"></i>
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logout Form -->
+                <form id="logout-form" action="{{ route('frontend.logout') }}" method="POST" class="hidden">
+                    @csrf
+                </form>
             </div>
         </div>
     </div>
@@ -1122,6 +1255,95 @@
 @keyframes rotate-gradient {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Navigation Icons Unified Styling */
+.nav-icon-container {
+    position: relative;
+    display: inline-flex;
+}
+
+.nav-icon-button {
+    display: flex;
+    align-items: center;
+    justify-center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-icon-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.nav-icon-button:active {
+    transform: translateY(0);
+}
+
+.nav-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-icon {
+    font-size: 16px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.nav-icon-button:hover .nav-icon {
+    transform: scale(1.1);
+    color: #ffffff;
+}
+
+.nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    animation: pulse 2s infinite;
+}
+
+/* Dark Theme Navigation Icons */
+.dark .nav-icon-button {
+    background: rgba(75, 85, 99, 0.3);
+    border-color: rgba(156, 163, 175, 0.3);
+}
+
+.dark .nav-icon-button:hover {
+    background: rgba(75, 85, 99, 0.5);
+    border-color: rgba(156, 163, 175, 0.5);
+}
+
+/* Logo Responsive Styling */
+.nav-icon-container img {
+    transition: all 0.3s ease;
+}
+
+.nav-icon-container:hover img {
+    transform: scale(1.05);
 }
 
 /* Touch Panel Enhanced Z-Index Management */

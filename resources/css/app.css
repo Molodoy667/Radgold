@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Touch Menu Additional Styles */
+@layer components {
+    /* Enhanced glass effect for touch sidebar */
+    .glass-sidebar {
+        background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.95) 0%, 
+            rgba(255, 255, 255, 0.85) 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    @media (prefers-color-scheme: dark) {
+        .glass-sidebar {
+            background: linear-gradient(135deg, 
+                rgba(17, 24, 39, 0.95) 0%, 
+                rgba(31, 41, 55, 0.85) 100%);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+    }
+    
+    /* Touch interaction improvements */
+    .touch-menu-item {
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+    
+    /* Smooth animations for touch interactions */
+    .touch-sidebar-enter {
+        animation: slideInLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    
+    .touch-sidebar-leave {
+        animation: slideOutLeft 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutLeft {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+    }
+    
+    /* Floating button pulse animation */
+    .floating-menu-btn {
+        animation: gentlePulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes gentlePulse {
+        0%, 100% {
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3),
+                        0 10px 10px -5px rgba(59, 130, 246, 0.04);
+        }
+        50% {
+            box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.4),
+                        0 25px 25px -5px rgba(59, 130, 246, 0.1);
+        }
+    }
+    
+    /* Icon gradient effects */
+    .touch-menu-icon svg {
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+    
+    /* Backdrop blur support detection */
+    @supports not (backdrop-filter: blur(20px)) {
+        .glass-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .glass-sidebar {
+                background: rgba(17, 24, 39, 0.95);
+            }
+        }
+    }
+    
+    /* Enhanced touch targets */
+    @media (max-width: 1024px) {
+        .touch-menu-item {
+            min-height: 56px; /* 44px minimum + padding */
+            padding: 16px;
+        }
+        
+        .touch-menu-icon {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+        }
+    }
+    
+    /* Reduced motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+        .touch-menu-item,
+        .touch-menu-arrow,
+        .floating-menu-btn {
+            animation: none;
+            transition: none;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .touch-menu-item {
+            border: 2px solid;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .touch-menu-active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgb(59, 130, 246);
+        }
+    }
+}

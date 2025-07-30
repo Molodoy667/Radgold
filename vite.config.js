@@ -14,6 +14,8 @@ export default defineConfig({
                 'resources/frontend/css/app.css',
                 'resources/frontend/js/filepond.js',
                 'resources/frontend/js/vue-config.js',
+                'resources/css/app.css',
+                'resources/js/touch-sidebar.js',
             ],
             refresh: true,
         }),

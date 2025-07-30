@@ -186,8 +186,8 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          @click="closePanel()"
-                         class="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm"
-                         style="display: none;">
+                         class="fixed inset-0 z-[999999] bg-black/70 backdrop-blur-md"
+                         style="display: none; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; position: fixed !important;">
                          
                         <!-- Panel Container -->
                         <div @click.stop
@@ -198,7 +198,8 @@
                              x-transition:leave="transform transition-all ease-in duration-300"
                              x-transition:leave-start="translate-x-0 opacity-100 scale-100"
                              x-transition:leave-end="-translate-x-full opacity-0 scale-95"
-                             class="h-full w-80 bg-white dark:bg-gray-800 shadow-2xl border-r border-gray-200 dark:border-gray-700 panel-content">
+                             class="h-full w-80 bg-gray-50 dark:bg-gray-900 shadow-2xl border-r border-gray-200 dark:border-gray-700 panel-content"
+                             style="position: relative; z-index: 1000000;">
                              
                                                          @auth('user')
                                  <!-- Authenticated User Panel -->
@@ -245,9 +246,7 @@
                                               <a href="{{ route('frontend.dashboard') }}"
                                                  @click="closePanel()"
                                                  class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.dashboard') ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : '' }}">
-                                                  <div class="touch-nav-icon bg-blue-500 icon-pulse">
-                                                      <i class="fas fa-tachometer-alt text-white"></i>
-                                                  </div>
+                                                  <i class="fas fa-tachometer-alt text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                   <span class="touch-nav-text">{{ __('overview') }}</span>
                                                   <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                               </a>
@@ -256,9 +255,7 @@
                                              <a href="{{ route('frontend.my.listing') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.my.listing') ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800' : '' }}">
-                                                 <div class="touch-nav-icon bg-orange-500 icon-pulse">
-                                                     <i class="fas fa-list-alt text-white"></i>
-                                                 </div>
+                                                 <i class="fas fa-list-alt text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                  <span class="touch-nav-text">{{ __('my_ads') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
@@ -267,9 +264,7 @@
                                              <a href="{{ route('frontend.post') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.post') ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800' : '' }}">
-                                                 <div class="touch-nav-icon bg-purple-500 icon-pulse">
-                                                     <i class="fas fa-plus-circle text-white"></i>
-                                                 </div>
+                                                 <i class="fas fa-plus-circle text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                  <span class="touch-nav-text">{{ __('post_listing') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
@@ -278,9 +273,7 @@
                                              <a href="{{ route('frontend.message') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce {{ request()->routeIs('message') ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800' : '' }}">
-                                                 <div class="touch-nav-icon bg-indigo-500 icon-pulse">
-                                                     <i class="fas fa-comments text-white"></i>
-                                                 </div>
+                                                 <i class="fas fa-comments text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                  <span class="touch-nav-text">{{ __('message') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
@@ -289,9 +282,7 @@
                                              <a href="{{ route('frontend.favorite.list') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce {{ request()->routeIs('favorite-listing') ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : '' }}">
-                                                 <div class="touch-nav-icon bg-red-500 icon-pulse">
-                                                     <i class="fas fa-heart text-white"></i>
-                                                 </div>
+                                                 <i class="fas fa-heart text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                  <span class="touch-nav-text">{{ __('favorite_ads') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
@@ -300,9 +291,7 @@
                                              <a href="{{ route('frontend.account-setting') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.account-setting') ? 'bg-gray-50 dark:bg-gray-700/20 border-gray-200 dark:border-gray-600' : '' }}">
-                                                 <div class="touch-nav-icon bg-gray-600 icon-pulse">
-                                                     <i class="fas fa-cog text-white"></i>
-                                                 </div>
+                                                 <i class="fas fa-cog text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                  <span class="touch-nav-text">{{ __('account_setting') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
@@ -376,9 +365,7 @@
                                              <a href="{{ route('frontend.index') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce">
-                                                 <div class="touch-nav-icon bg-blue-500 icon-pulse">
-                                                     <i class="fas fa-home text-white"></i>
-                                                 </div>
+                                                 <i class="fas fa-home text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                  <span class="touch-nav-text">{{ __('home') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
@@ -387,10 +374,8 @@
                                              <a href="{{ route('frontend.adlist') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce">
-                                                 <div class="touch-nav-icon bg-green-500 icon-pulse">
-                                                     <i class="fas fa-search text-white"></i>
-                                                 </div>
-                                                 <span class="touch-nav-text">Объявления</span>
+                                                 <i class="fas fa-search text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
+                                                 <span class="touch-nav-text">{{ __('browse_ads') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
@@ -398,9 +383,7 @@
                                              <a href="{{ route('frontend.ads') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce">
-                                                 <div class="touch-nav-icon bg-purple-500 icon-pulse">
-                                                     <i class="fas fa-th-large text-white"></i>
-                                                 </div>
+                                                 <i class="fas fa-th-large text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                  <span class="touch-nav-text">{{ __('categories') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
@@ -409,9 +392,7 @@
                                              <a href="{{ route('frontend.priceplan') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce">
-                                                 <div class="touch-nav-icon bg-orange-500 icon-pulse">
-                                                     <i class="fas fa-tags text-white"></i>
-                                                 </div>
+                                                 <i class="fas fa-tags text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                  <span class="touch-nav-text">{{ __('pricing_plan') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
@@ -420,9 +401,7 @@
                                              <a href="{{ route('frontend.contact') }}"
                                                 @click="closePanel()"
                                                 class="touch-nav-item nav-item-bounce">
-                                                 <div class="touch-nav-icon bg-teal-500 icon-pulse">
-                                                     <i class="fas fa-envelope text-white"></i>
-                                                 </div>
+                                                 <i class="fas fa-envelope text-gray-600 dark:text-gray-400 text-lg icon-pulse mr-3"></i>
                                                  <span class="touch-nav-text">{{ __('contact') }}</span>
                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
@@ -710,22 +689,21 @@
     }
 }
 
-.touch-nav-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 12px;
-    flex-shrink: 0;
+/* Icon styles simplified */
+.touch-nav-item i.icon-pulse {
     transition: all 0.3s ease;
-    position: relative;
+    min-width: 20px;
 }
 
-.touch-nav-item:hover .touch-nav-icon {
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+.touch-nav-item:hover i.icon-pulse {
+    transform: scale(1.2);
+    color: rgb(59, 130, 246) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    .touch-nav-item:hover i.icon-pulse {
+        color: rgb(147, 197, 253) !important;
+    }
 }
 
 .icon-pulse {
@@ -850,5 +828,91 @@
     .touch-nav-item.dark\:hover\:bg-red-900\/20:hover {
         background: rgba(127, 29, 29, 0.2) !important;
     }
+}
+
+/* Touch Footer Styles */
+.touch-footer {
+    z-index: 999999 !important;
+}
+
+.touch-footer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid rgb(229, 231, 235);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+    min-height: 70px;
+}
+
+.touch-footer-item:hover {
+    background: rgb(249, 250, 251);
+    border-color: rgb(209, 213, 219);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.touch-footer-item:active {
+    transform: translateY(0) scale(0.98);
+    background: rgb(243, 244, 246);
+}
+
+@media (prefers-color-scheme: dark) {
+    .touch-footer-item {
+        background: rgb(31, 41, 55);
+        border-color: rgb(75, 85, 99);
+    }
+    
+    .touch-footer-item:hover {
+        background: rgb(55, 65, 81);
+        border-color: rgb(107, 114, 128);
+    }
+    
+    .touch-footer-item:active {
+        background: rgb(75, 85, 99);
+    }
+}
+
+.footer-icon-pulse {
+    animation: footer-icon-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes footer-icon-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.touch-footer-item:hover .footer-icon-pulse {
+    animation-duration: 1s;
+    transform: scale(1.2);
+}
+
+/* Footer shimmer effect */
+.touch-footer-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.touch-footer-item:hover::before {
+    left: 100%;
 }
 </style>

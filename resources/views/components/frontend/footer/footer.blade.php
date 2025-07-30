@@ -1,5 +1,96 @@
 <footer
     class="bg-gray-50 dark:bg-black border-t border-gray-100 dark:border-gray-400">
+    
+    <!-- Mobile Touch Footer -->
+    <div x-data="{ 
+        footerOpen: false,
+        scrollY: 0,
+        lastScrollY: 0,
+        scrollThreshold: 200,
+        
+        init() {
+            this.scrollY = window.scrollY;
+            this.lastScrollY = window.scrollY;
+            window.addEventListener('scroll', () => {
+                this.scrollY = window.scrollY;
+                const scrollingDown = this.scrollY > this.lastScrollY;
+                const scrolledEnough = this.scrollY > this.scrollThreshold;
+                
+                if (scrollingDown && scrolledEnough && !this.footerOpen) {
+                    this.footerOpen = true;
+                }
+                
+                this.lastScrollY = this.scrollY;
+            });
+        }
+    }" 
+    class="lg:hidden">
+        <!-- Touch Footer Panel -->
+        <div x-show="footerOpen"
+             x-transition:enter="transform transition-all ease-out duration-500"
+             x-transition:enter-start="translate-y-full opacity-0"
+             x-transition:enter-end="translate-y-0 opacity-100"
+             x-transition:leave="transform transition-all ease-in duration-300"
+             x-transition:leave-start="translate-y-0 opacity-100"
+             x-transition:leave-end="translate-y-full opacity-0"
+             class="fixed bottom-0 left-0 right-0 z-[99999] touch-footer"
+             style="display: none;">
+             
+            <!-- Footer Content -->
+            <div class="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200 dark:border-gray-700 shadow-2xl">
+                
+                <!-- Close Button -->
+                <div class="flex justify-center py-2">
+                    <button @click="footerOpen = false" 
+                            class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full opacity-60 hover:opacity-100 transition-opacity duration-200"></button>
+                </div>
+                
+                <!-- Quick Links Grid -->
+                <div class="px-4 pb-6">
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        <!-- Quick Links -->
+                        <a href="{{ route('frontend.ads') }}" class="touch-footer-item">
+                            <i class="fas fa-list text-blue-500 text-lg mb-2 footer-icon-pulse"></i>
+                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('listing') }}</span>
+                        </a>
+                        
+                        <a href="{{ route('frontend.about') }}" class="touch-footer-item">
+                            <i class="fas fa-info-circle text-green-500 text-lg mb-2 footer-icon-pulse"></i>
+                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('about_us') }}</span>
+                        </a>
+                        
+                        <a href="{{ route('frontend.contact') }}" class="touch-footer-item">
+                            <i class="fas fa-envelope text-purple-500 text-lg mb-2 footer-icon-pulse"></i>
+                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('contact') }}</span>
+                        </a>
+                        
+                        <a href="{{ route('frontend.blog') }}" class="touch-footer-item">
+                            <i class="fas fa-blog text-orange-500 text-lg mb-2 footer-icon-pulse"></i>
+                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('blog') }}</span>
+                        </a>
+                        
+                        <a href="{{ route('frontend.priceplan') }}" class="touch-footer-item">
+                            <i class="fas fa-tags text-red-500 text-lg mb-2 footer-icon-pulse"></i>
+                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('pricing_plan') }}</span>
+                        </a>
+                        
+                        <a href="{{ route('frontend.faq') }}" class="touch-footer-item">
+                            <i class="fas fa-question-circle text-indigo-500 text-lg mb-2 footer-icon-pulse"></i>
+                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('faqs') }}</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Footer Text -->
+                    <div class="text-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            © {{ date('Y') }} {{ $setting->app_name }}. {{ __('all_rights_reserved') }}.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="container py-16">
         <div class="flex flex-wrap gap-6 items-start">
             <div class="widget max-w-[424px] flex-grow">

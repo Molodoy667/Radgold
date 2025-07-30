@@ -62,6 +62,7 @@
             <!-- Primary Gradient Selector -->
             <div class="mb-4">
                 <h5 class="mb-3">{{ __('primary_gradient') }} ({{ __('main_site_gradient') }})</h5>
+                <p class="text-muted small">Current: {{ $setting->frontend_primary_color ?? 'Not set' }}</p>
                 <div class="gradient-selector" data-target="frontend_primary_color">
                     <div class="row">
                         @php
@@ -100,12 +101,19 @@
                         @endphp
                         
                         @foreach($primaryGradients as $index => $gradient)
+                        @php
+                            $isSelected = ($setting->frontend_primary_color ?? '') == $gradient;
+                            // If no gradient is set, select the first one by default
+                            if (!$setting->frontend_primary_color && $index == 0) {
+                                $isSelected = true;
+                            }
+                        @endphp
                         <div class="col-md-2 col-sm-3 col-4 mb-3">
-                            <div class="gradient-cube {{ $setting->frontend_primary_color == $gradient ? 'selected' : '' }}" 
+                            <div class="gradient-cube {{ $isSelected ? 'selected' : '' }}" 
                                  data-gradient="{{ $gradient }}"
                                  style="background: {{ $gradient }};"
-                                 title="Gradient {{ $index + 1 }}">
-                                @if($setting->frontend_primary_color == $gradient)
+                                 title="Primary Gradient {{ $index + 1 }}">
+                                @if($isSelected)
                                     <i class="fas fa-check text-white"></i>
                                 @endif
                             </div>
@@ -118,6 +126,7 @@
             <!-- Secondary Gradient Selector -->
             <div class="mb-4">
                 <h5 class="mb-3">{{ __('secondary_gradient') }} ({{ __('top_bar_bottom_nav_gradient') }})</h5>
+                <p class="text-muted small">Current: {{ $setting->frontend_secondary_color ?? 'Not set' }}</p>
                 <div class="gradient-selector" data-target="frontend_secondary_color">
                     <div class="row">
                         @php
@@ -156,12 +165,19 @@
                         @endphp
                         
                         @foreach($secondaryGradients as $index => $gradient)
+                        @php
+                            $isSelected = ($setting->frontend_secondary_color ?? '') == $gradient;
+                            // If no gradient is set, select the first one by default
+                            if (!$setting->frontend_secondary_color && $index == 0) {
+                                $isSelected = true;
+                            }
+                        @endphp
                         <div class="col-md-2 col-sm-3 col-4 mb-3">
-                            <div class="gradient-cube {{ $setting->frontend_secondary_color == $gradient ? 'selected' : '' }}" 
+                            <div class="gradient-cube {{ $isSelected ? 'selected' : '' }}" 
                                  data-gradient="{{ $gradient }}"
                                  style="background: {{ $gradient }};"
-                                 title="Gradient {{ $index + 1 }}">
-                                @if($setting->frontend_secondary_color == $gradient)
+                                 title="Secondary Gradient {{ $index + 1 }}">
+                                @if($isSelected)
                                     <i class="fas fa-check text-white"></i>
                                 @endif
                             </div>
@@ -200,9 +216,9 @@
                         <input id="accent_color_id" type="hidden" name="accent_color"
                             value="{{ $setting->accent_color }}">
                         <input id="frontend_primary_color_id" type="hidden" name="frontend_primary_color"
-                            value="{{ $setting->frontend_primary_color }}">
+                            value="{{ $setting->frontend_primary_color ?? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}">
                         <input id="frontend_secondary_color_id" type="hidden" name="frontend_secondary_color"
-                            value="{{ $setting->frontend_secondary_color }}">
+                            value="{{ $setting->frontend_secondary_color ?? 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)' }}">
                     </form>
                     <div class="row">
                         <div class="col-6">

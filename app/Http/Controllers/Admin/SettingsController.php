@@ -43,7 +43,8 @@ class SettingsController extends Controller
      */
     public function theme()
     {
-        return view('admin.settings.pages.theme');
+        $setting = loadSetting();
+        return view('admin.settings.pages.theme', compact('setting'));
     }
 
     /**

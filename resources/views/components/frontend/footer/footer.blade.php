@@ -39,8 +39,6 @@
                  x-transition:enter="transition-all ease-out duration-800 delay-100"
                  x-transition:enter-start="opacity-0 transform translate-y-8"
                  x-transition:enter-end="opacity-100 transform translate-y-0">
-                <h3 class="widget-title heading-06 text-gray-900 dark:text-white mb-3.5">{{ __('quick_links') }}</h3>
-                
                 <!-- Main Quick Links Touch Button -->
                 <div class="footer-menu-section">
                     <button @click="quickLinksOpen = !quickLinksOpen" class="footer-main-touch-link group w-full">
@@ -109,8 +107,6 @@
                  x-transition:enter="transition-all ease-out duration-800 delay-200"
                  x-transition:enter-start="opacity-0 transform translate-y-8"
                  x-transition:enter-end="opacity-100 transform translate-y-0">
-                <h3 class="widget-title heading-06 text-gray-900 dark:text-white mb-3.5">{{ __('supports') }}</h3>
-                
                 <!-- Main Supports Touch Button -->
                 <div class="footer-menu-section">
                     <button @click="supportsOpen = !supportsOpen" class="footer-main-touch-link group w-full">

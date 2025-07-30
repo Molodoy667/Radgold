@@ -216,23 +216,23 @@
                                              <i class="fas fa-times text-white text-sm pulse-icon"></i>
                                          </button>
 
-                                                                                 <!-- User Profile -->
-                                         <div class="flex items-center space-x-3">
+                                                                                 <!-- User Profile Glass Container -->
+                                         <div class="flex items-center space-x-3 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
                                              <div class="relative">
-                                                 <img class="w-16 h-16 rounded-xl object-cover border-2 border-gray-200 dark:border-gray-600" 
+                                                 <img class="w-16 h-16 rounded-xl object-cover border-2 border-white/30" 
                                                       src="{{ authUser()->image_url }}" 
                                                       alt="{{ authUser()->name }}">
                                                  @if (auth('user')->user()->document_verified && auth('user')->user()->document_verified->status == 'approved')
-                                                     <div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800">
+                                                     <div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
                                                          <i class="fas fa-check text-white text-xs"></i>
                                                      </div>
                                                  @endif
                                              </div>
                                              <div class="flex-1 min-w-0">
-                                                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                                                 <h2 class="text-lg font-semibold text-white truncate">
                                                      {{ authUser()->name }}
                                                  </h2>
-                                                 <p class="text-sm text-gray-600 dark:text-gray-400 truncate">
+                                                 <p class="text-sm text-white/80 truncate">
                                                      {{ authUser()->email }}
                                                  </p>
                                              </div>
@@ -339,32 +339,32 @@
                                              <i class="fas fa-times text-white text-sm pulse-icon"></i>
                                          </button>
 
-                                         <!-- Welcome Message -->
-                                         <div class="text-center">
-                                             <div class="w-16 h-16 mx-auto mb-3 bg-blue-500 dark:bg-blue-600 rounded-xl flex items-center justify-center">
+                                         <!-- Welcome Message Glass Container -->
+                                         <div class="text-center p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
+                                             <div class="w-16 h-16 mx-auto mb-3 bg-white/20 rounded-xl flex items-center justify-center border border-white/30">
                                                  <i class="fas fa-user-circle text-white text-2xl"></i>
                                              </div>
-                                             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                             <h2 class="text-lg font-semibold text-white">
                                                  {{ __('welcome') }}!
                                              </h2>
-                                             <p class="text-sm text-gray-600 dark:text-gray-400">
+                                             <p class="text-sm text-white/80">
                                                  Добро пожаловать на платформу
                                              </p>
                                          </div>
                                      </div>
 
-                                     <!-- Auth Buttons -->
-                                     <div class="p-4 space-y-3 border-b border-gray-200 dark:border-gray-700">
+                                     <!-- Auth Buttons Glass -->
+                                     <div class="p-4 space-y-3 border-b border-white/20">
                                          <a href="{{ route('users.login') }}" 
                                             @click="closePanel()"
-                                            class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200">
+                                            class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-white/15 backdrop-blur-md border border-white/30 text-white rounded-lg transition-all duration-300 hover:bg-white/20 hover:scale-105">
                                              <i class="fas fa-sign-in-alt"></i>
                                              <span class="font-medium">{{ __('sign_in') }}</span>
                                          </a>
                                          
                                          <a href="{{ route('frontend.signup') }}" 
                                             @click="closePanel()"
-                                            class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200">
+                                            class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-white/10 backdrop-blur-md border border-white/25 text-white rounded-lg transition-all duration-300 hover:bg-white/15 hover:scale-105">
                                              <i class="fas fa-user-plus"></i>
                                              <span class="font-medium">{{ __('sign_up') }}</span>
                                          </a>
@@ -1327,12 +1327,48 @@
     }
 }
 
-/* Enhanced Touch Nav Text Color */
+/* Enhanced Touch Nav Text Color - Universal White Text */
 .touch-nav-text {
     color: white !important;
 }
 
 .touch-nav-item .nav-arrow {
     color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Glass Header Text Color - Universal White */
+.glass-header h2,
+.glass-header p,
+.glass-header span,
+.glass-header .text-lg,
+.glass-header .text-sm {
+    color: white !important;
+}
+
+/* Footer Glass Text Color - Universal White */
+.footer-main-touch-link .footer-text,
+.footer-sub-touch-link .footer-sub-text {
+    color: white !important;
+}
+
+.footer-chevron,
+.footer-sub-arrow {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Universal Glass Text Override */
+.glass-header *,
+.footer-main-touch-link *,
+.footer-sub-touch-link *,
+.touch-nav-item * {
+    color: white !important;
+}
+
+/* Specific overrides for readability */
+.glass-header .text-gray-900,
+.glass-header .text-gray-600,
+.glass-header .dark\\:text-white,
+.glass-header .dark\\:text-gray-400 {
+    color: white !important;
 }
 </style>

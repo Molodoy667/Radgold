@@ -248,7 +248,7 @@
                          x-transition:leave-end="opacity-0 scale-95"
                          @click="closePanel()"
                          class="fixed inset-0 z-[9999] bg-black/80 touch-panel-overlay"
-                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999 !important;"
+                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999 !important; background: rgba(0, 0, 0, 0.8) !important;"
                          
                         <!-- Panel Container -->
                         <div @click.stop class="touch-panel-container"
@@ -1029,7 +1029,16 @@
     left: 0 !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
-    z-index: 999998 !important;
+    z-index: 9998 !important;
+}
+
+/* Dark theme swipe indicator positioning fix */
+.dark .swipe-indicator {
+    position: fixed !important;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 9998 !important;
 }
 
 @keyframes swipe-hint {
@@ -1411,10 +1420,16 @@
 .dark .touch-panel-overlay {
     z-index: 9999 !important;
     background: rgba(0, 0, 0, 0.9) !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .dark .touch-panel-container {
     z-index: 9999 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .touch-nav-item .nav-arrow {
@@ -1534,6 +1549,10 @@
     background: linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.95)) !important;
     border-right: 1px solid rgba(156, 163, 175, 0.3) !important;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translateX(0) !important;
 }
 
 .dark .glass-header {
@@ -1911,12 +1930,15 @@
 .touch-menu-btn {
     position: relative !important;
     vertical-align: middle !important;
+    top: auto !important;
+    transform: none !important;
 }
 
 .dark .touch-menu-btn {
     position: relative !important;
-    top: 0 !important;
+    top: auto !important;
     vertical-align: middle !important;
+    transform: none !important;
 }
 
 /* Touch panel wrapper positioning */
@@ -1930,6 +1952,39 @@
     display: inline-flex !important;
     align-items: center !important;
     vertical-align: middle !important;
+    position: relative !important;
+    z-index: 9998 !important;
+}
+
+/* Dark theme touch panel visibility fixes */
+.dark .touch-panel-overlay[x-show="true"],
+.dark .touch-panel-container[x-show="true"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Dark theme touch panel animation fixes */
+.dark .touch-panel-container[x-transition\\:enter],
+.dark .touch-panel-container[x-transition\\:enter-start],
+.dark .touch-panel-container[x-transition\\:enter-end] {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Dark theme touch panel force visibility */
+.dark .touch-panel-overlay[x-show],
+.dark .touch-panel-container[x-show] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Dark theme touch panel overlay background fix */
+.dark .touch-panel-overlay {
+    background: rgba(0, 0, 0, 0.9) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
 }
 
 

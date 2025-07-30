@@ -648,6 +648,18 @@
     backdrop-filter: blur(10px);
 }
 
+/* Dark theme support for touch navigation items */
+.dark .touch-nav-item {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #e5e7eb;
+}
+
+.dark .touch-nav-item:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
 .touch-nav-icon {
     width: 40px;
     height: 40px;
@@ -787,6 +799,18 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
+}
+
+/* Dark theme support for footer */
+.dark .footer-touch-link {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e5e7eb;
+}
+
+.dark .footer-touch-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 .footer-touch-link::before {

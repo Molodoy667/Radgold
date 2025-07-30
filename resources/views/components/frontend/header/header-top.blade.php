@@ -766,162 +766,164 @@
                     </form>
                 </div>
 
-                <!-- Main Navigation Bar -->
-                <div class="flex-1 flex items-center justify-between gap-2 lg:gap-4 mx-4">
-                    <!-- Logo -->
-                    <div class="flex-shrink-0">
-                        <a href="{{ route('frontend.index') }}" class="block">
-                            <img class="h-8 w-auto max-w-[140px] lg:max-w-[180px]" 
-                                 src="{{ $setting->white_logo_url }}" 
-                                 alt="{{ $setting->site_name }}">
-                        </a>
+                <!-- Simplified Top Navigation -->
+                <div class="flex-1 flex items-center justify-end gap-3 mx-4">
+                    <!-- Search -->
+                    <div class="nav-icon-container">
+                        <button @click="searchbar = !searchbar" 
+                                class="nav-icon-button group" 
+                                title="{{ __('search') }}">
+                            <div class="nav-icon-wrapper">
+                                <svg class="nav-icon w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                        </button>
                     </div>
 
-                    <!-- Navigation Icons Container -->
-                    <div class="flex items-center gap-3 lg:gap-4">
-                        
-                        <!-- Messages (только для авторизованных, скрыто на XS) -->
-                        @auth('user')
-                            <div class="nav-icon-container hidden sm:block">
-                                @php
-                                    $unread_message_count = unreadMessageCount();
-                                @endphp
-                                <a href="{{ route('frontend.message') }}" 
-                                   class="nav-icon-button group" 
-                                   title="{{ __('messages') }}">
-                                    <div class="nav-icon-wrapper">
-                                        <i class="fas fa-envelope nav-icon"></i>
-                                        @if ($unread_message_count > 0)
-                                            <span class="nav-badge">{{ $unread_message_count }}</span>
-                                        @endif
-                                    </div>
-                                </a>
+                    <!-- Dark Mode Toggle -->
+                    <div class="nav-icon-container">
+                        <button id="darkModeToggle" 
+                                class="nav-icon-button group" 
+                                title="{{ __('toggle_theme') }}">
+                            <div class="nav-icon-wrapper">
+                                <span id="icon">
+                                    <!-- Light Mode Icon (Sun) -->
+                                    <svg class="nav-icon w-5 h-5 dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                    <!-- Dark Mode Icon (Moon) -->
+                                    <svg class="nav-icon w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                    </svg>
+                                </span>
                             </div>
-                        @endauth
-
-                        <!-- Notifications (только для авторизованных, скрыто на XS) -->
-                        @auth('user')
-                            <div class="nav-icon-container hidden sm:block" x-data="{ notiPanel: false }" @click.outside="notiPanel = false">
-                                <button @click="notiPanel = !notiPanel" 
-                                        class="nav-icon-button group" 
-                                        title="{{ __('notifications') }}">
-                                    <div class="nav-icon-wrapper">
-                                        <i class="fas fa-bell nav-icon"></i>
-                                        <span class="nav-badge">3</span>
-                                    </div>
-                                </button>
-                                
-                                <!-- Notification Dropdown -->
-                                <div x-show="notiPanel" 
-                                     x-transition:enter="transition ease-out duration-200"
-                                     x-transition:enter-start="opacity-0 scale-95"
-                                     x-transition:enter-end="opacity-100 scale-100"
-                                     x-transition:leave="transition ease-in duration-150"
-                                     x-transition:leave-start="opacity-100 scale-100"
-                                     x-transition:leave-end="opacity-0 scale-95"
-                                     class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
-                                     style="display: none;">
-                                    <div class="p-4">
-                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">{{ __('notifications') }}</h3>
-                                        <div class="space-y-2">
-                                            <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded">
-                                                <p class="text-sm text-gray-600 dark:text-gray-300">{{ __('new_message_received') }}</p>
-                                                <span class="text-xs text-gray-500">{{ __('2_hours_ago') }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endauth
-
-                        <!-- Search -->
-                        <div class="nav-icon-container">
-                            <button @click="searchbar = !searchbar" 
-                                    class="nav-icon-button group" 
-                                    title="{{ __('search') }}">
-                                <div class="nav-icon-wrapper">
-                                    <i class="fas fa-search nav-icon"></i>
-                                </div>
-                            </button>
-                        </div>
-
-                        <!-- User Account / Login -->
-                        @auth('user')
-                            <div class="nav-icon-container" x-data="{ userDropdown: false }" @click.outside="userDropdown = false">
-                                <button @click="userDropdown = !userDropdown" 
-                                        class="nav-icon-button group" 
-                                        title="{{ __('account') }}">
-                                    <div class="nav-icon-wrapper">
-                                        <img class="w-8 h-8 rounded-full object-cover border-2 border-white/30" 
-                                             src="{{ authUser()->image_url }}" 
-                                             alt="{{ authUser()->name }}">
-                                    </div>
-                                </button>
-                                
-                                <!-- User Dropdown -->
-                                <div x-show="userDropdown" 
-                                     x-transition:enter="transition ease-out duration-200"
-                                     x-transition:enter-start="opacity-0 scale-95"
-                                     x-transition:enter-end="opacity-100 scale-100"
-                                     x-transition:leave="transition ease-in duration-150"
-                                     x-transition:leave-start="opacity-100 scale-100"
-                                     x-transition:leave-end="opacity-0 scale-95"
-                                     class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
-                                     style="display: none;">
-                                    <div class="py-2">
-                                        <a href="{{ route('frontend.dashboard') }}" 
-                                           class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                            <i class="fas fa-tachometer-alt mr-2"></i>{{ __('dashboard') }}
-                                        </a>
-                                        <a href="{{ route('frontend.account-setting') }}" 
-                                           class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                            <i class="fas fa-cog mr-2"></i>{{ __('settings') }}
-                                        </a>
-                                        <hr class="my-1 border-gray-200 dark:border-gray-600">
-                                        <a href="javascript:void(0)" 
-                                           onclick="document.getElementById('logout-form').submit();"
-                                           class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                            <i class="fas fa-sign-out-alt mr-2"></i>{{ __('logout') }}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        @else
-                            <div class="nav-icon-container">
-                                <a href="{{ route('users.login') }}" 
-                                   class="nav-icon-button group" 
-                                   title="{{ __('login') }}">
-                                    <div class="nav-icon-wrapper">
-                                        <i class="fas fa-user nav-icon"></i>
-                                    </div>
-                                </a>
-                            </div>
-                        @endauth
-
-                        <!-- Dark Mode Toggle -->
-                        <div class="nav-icon-container">
-                            <button id="darkModeToggle" 
-                                    class="nav-icon-button group" 
-                                    title="{{ __('toggle_theme') }}">
-                                <div class="nav-icon-wrapper">
-                                    <span id="icon">
-                                        <i class="fas fa-moon nav-icon dark:hidden"></i>
-                                        <i class="fas fa-sun nav-icon hidden dark:block"></i>
-                                    </span>
-                                </div>
-                            </button>
-                        </div>
+                        </button>
                     </div>
                 </div>
-
-                <!-- Logout Form -->
-                <form id="logout-form" action="{{ route('frontend.logout') }}" method="POST" class="hidden">
-                    @csrf
-                </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Bottom Navigation for Authenticated Users -->
+@auth('user')
+<div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
+    <div class="bottom-nav-container bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50 shadow-lg">
+        <div class="bottom-nav-grid grid grid-cols-6 gap-1 px-2 py-2">
+            
+            <!-- Home -->
+            <a href="{{ route('frontend.index') }}" 
+               class="bottom-nav-item group {{ request()->routeIs('frontend.index') ? 'active' : '' }}">
+                <div class="bottom-nav-icon-wrapper">
+                    <svg class="bottom-nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                </div>
+                <span class="bottom-nav-label">{{ __('home') }}</span>
+            </a>
+
+            <!-- Messages -->
+            <a href="{{ route('frontend.message') }}" 
+               class="bottom-nav-item group {{ request()->routeIs('frontend.message') ? 'active' : '' }}">
+                <div class="bottom-nav-icon-wrapper">
+                    @php
+                        $unread_message_count = unreadMessageCount();
+                    @endphp
+                    <svg class="bottom-nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    @if ($unread_message_count > 0)
+                        <span class="bottom-nav-badge">{{ $unread_message_count }}</span>
+                    @endif
+                </div>
+                <span class="bottom-nav-label">{{ __('messages') }}</span>
+            </a>
+
+            <!-- Create Post (Center Button) -->
+            <a href="{{ route('frontend.post') }}" 
+               class="bottom-nav-item group create-button {{ request()->routeIs('frontend.post') ? 'active' : '' }}">
+                <div class="create-button-wrapper">
+                    <svg class="create-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                </div>
+            </a>
+
+            <!-- Notifications -->
+            <div class="bottom-nav-item group" x-data="{ notiOpen: false }" @click.outside="notiOpen = false">
+                <button @click="notiOpen = !notiOpen" class="w-full">
+                    <div class="bottom-nav-icon-wrapper">
+                        <svg class="bottom-nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M15 17h5l-5 5v-5zM7.07 8.25A2.5 2.5 0 0115 7.25c0 4.38 2.5 4.38 2.5 9.25H4.5c0-4.87 2.5-4.87 2.57-9z" />
+                        </svg>
+                        <span class="bottom-nav-badge">3</span>
+                    </div>
+                </button>
+                <span class="bottom-nav-label">{{ __('notifications') }}</span>
+                
+                <!-- Notification Popup -->
+                <div x-show="notiOpen" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                     class="absolute bottom-full right-0 mb-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700"
+                     style="display: none;">
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">{{ __('notifications') }}</h3>
+                        <div class="space-y-2 max-h-60 overflow-y-auto">
+                            <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                                <p class="text-sm text-gray-600 dark:text-gray-300">{{ __('new_message_received') }}</p>
+                                <span class="text-xs text-gray-500">{{ __('2_hours_ago') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard (Личный кабинет) -->
+            <a href="{{ route('frontend.dashboard') }}" 
+               class="bottom-nav-item group {{ request()->routeIs('frontend.dashboard') ? 'active' : '' }}">
+                <div class="bottom-nav-icon-wrapper">
+                    <svg class="bottom-nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <span class="bottom-nav-label">{{ __('dashboard') }}</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="{{ route('frontend.account-setting') }}" 
+               class="bottom-nav-item group {{ request()->routeIs('frontend.account-setting') ? 'active' : '' }}">
+                <div class="bottom-nav-icon-wrapper">
+                    <svg class="bottom-nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <span class="bottom-nav-label">{{ __('settings') }}</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Logout Form -->
+<form id="logout-form" action="{{ route('frontend.logout') }}" method="POST" class="hidden">
+    @csrf
+</form>
+@endauth
 
 @push('js')
     <script>
@@ -1536,6 +1538,179 @@
 
 .dark .touch-nav-item:hover .touch-nav-icon {
     background: linear-gradient(135deg, rgba(107, 114, 128, 0.9), rgba(75, 85, 99, 1)) !important;
+}
+
+/* Bottom Navigation Styles */
+.bottom-nav-container {
+    min-height: 70px;
+    max-height: 80px;
+}
+
+.bottom-nav-grid {
+    height: 100%;
+    align-items: center;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    min-height: 56px;
+    text-decoration: none;
+}
+
+.bottom-nav-item:hover,
+.bottom-nav-item.active {
+    transform: translateY(-2px);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.bottom-nav-item.active {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.bottom-nav-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.bottom-nav-icon {
+    width: 24px;
+    height: 24px;
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.bottom-nav-item:hover .bottom-nav-icon,
+.bottom-nav-item.active .bottom-nav-icon {
+    color: #3b82f6;
+    transform: scale(1.1);
+}
+
+.bottom-nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.bottom-nav-item:hover .bottom-nav-label,
+.bottom-nav-item.active .bottom-nav-label {
+    color: #3b82f6;
+}
+
+.bottom-nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 8px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    animation: pulse 2s infinite;
+}
+
+/* Special Create Button Styling */
+.create-button {
+    margin-top: -8px;
+}
+
+.create-button-wrapper {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 4px;
+}
+
+.create-button:hover .create-button-wrapper {
+    transform: scale(1.1);
+    box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4);
+}
+
+.create-icon {
+    width: 24px;
+    height: 24px;
+    color: white;
+    stroke-width: 3;
+}
+
+/* Dark Theme Bottom Navigation */
+.dark .bottom-nav-container {
+    background: rgba(17, 24, 39, 0.95) !important;
+    border-top-color: rgba(75, 85, 99, 0.5) !important;
+}
+
+.dark .bottom-nav-item:hover,
+.dark .bottom-nav-item.active {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.dark .bottom-nav-icon {
+    color: #9ca3af;
+}
+
+.dark .bottom-nav-item:hover .bottom-nav-icon,
+.dark .bottom-nav-item.active .bottom-nav-icon {
+    color: #60a5fa;
+}
+
+.dark .bottom-nav-label {
+    color: #9ca3af;
+}
+
+.dark .bottom-nav-item:hover .bottom-nav-label,
+.dark .bottom-nav-item.active .bottom-nav-label {
+    color: #60a5fa;
+}
+
+.dark .bottom-nav-badge {
+    border-color: rgba(17, 24, 39, 1);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 320px) {
+    .bottom-nav-label {
+        font-size: 9px;
+    }
+    
+    .bottom-nav-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .create-button-wrapper {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .create-icon {
+        width: 20px;
+        height: 20px;
+    }
 }
 
 /* Dark Theme Text Visibility Improvements */

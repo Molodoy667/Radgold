@@ -1,99 +1,28 @@
 <footer
     class="bg-gray-50 dark:bg-black border-t border-gray-100 dark:border-gray-400">
     
-    <!-- Mobile Touch Footer -->
-    <div x-data="{ 
-        footerOpen: false,
-        scrollY: 0,
-        lastScrollY: 0,
-        scrollThreshold: 200,
-        
-        init() {
-            this.scrollY = window.scrollY;
-            this.lastScrollY = window.scrollY;
-            window.addEventListener('scroll', () => {
-                this.scrollY = window.scrollY;
-                const scrollingDown = this.scrollY > this.lastScrollY;
-                const scrolledEnough = this.scrollY > this.scrollThreshold;
-                
-                if (scrollingDown && scrolledEnough && !this.footerOpen) {
-                    this.footerOpen = true;
-                }
-                
-                this.lastScrollY = this.scrollY;
-            });
-        }
-    }" 
-    class="lg:hidden">
-        <!-- Touch Footer Panel -->
-        <div x-show="footerOpen"
-             x-transition:enter="transform transition-all ease-out duration-500"
-             x-transition:enter-start="translate-y-full opacity-0"
-             x-transition:enter-end="translate-y-0 opacity-100"
-             x-transition:leave="transform transition-all ease-in duration-300"
-             x-transition:leave-start="translate-y-0 opacity-100"
-             x-transition:leave-end="translate-y-full opacity-0"
-             class="fixed bottom-0 left-0 right-0 z-[99999] touch-footer"
-             style="display: none;">
-             
-            <!-- Footer Content -->
-            <div class="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200 dark:border-gray-700 shadow-2xl">
-                
-                <!-- Close Button -->
-                <div class="flex justify-center py-2">
-                    <button @click="footerOpen = false" 
-                            class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full opacity-60 hover:opacity-100 transition-opacity duration-200"></button>
-                </div>
-                
-                <!-- Quick Links Grid -->
-                <div class="px-4 pb-6">
-                    <div class="grid grid-cols-3 gap-4 mb-4">
-                        <!-- Quick Links -->
-                        <a href="{{ route('frontend.ads') }}" class="touch-footer-item">
-                            <i class="fas fa-list text-blue-500 text-lg mb-2 footer-icon-pulse"></i>
-                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('listing') }}</span>
-                        </a>
-                        
-                        <a href="{{ route('frontend.about') }}" class="touch-footer-item">
-                            <i class="fas fa-info-circle text-green-500 text-lg mb-2 footer-icon-pulse"></i>
-                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('about_us') }}</span>
-                        </a>
-                        
-                        <a href="{{ route('frontend.contact') }}" class="touch-footer-item">
-                            <i class="fas fa-envelope text-purple-500 text-lg mb-2 footer-icon-pulse"></i>
-                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('contact') }}</span>
-                        </a>
-                        
-                        <a href="{{ route('frontend.blog') }}" class="touch-footer-item">
-                            <i class="fas fa-blog text-orange-500 text-lg mb-2 footer-icon-pulse"></i>
-                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('blog') }}</span>
-                        </a>
-                        
-                        <a href="{{ route('frontend.priceplan') }}" class="touch-footer-item">
-                            <i class="fas fa-tags text-red-500 text-lg mb-2 footer-icon-pulse"></i>
-                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('pricing_plan') }}</span>
-                        </a>
-                        
-                        <a href="{{ route('frontend.faq') }}" class="touch-footer-item">
-                            <i class="fas fa-question-circle text-indigo-500 text-lg mb-2 footer-icon-pulse"></i>
-                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ __('faqs') }}</span>
-                        </a>
-                    </div>
-                    
-                    <!-- Footer Text -->
-                    <div class="text-center">
-                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                            © {{ date('Y') }} {{ $setting->app_name }}. {{ __('all_rights_reserved') }}.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
     
-    <div class="container py-16">
+    <div class="container py-16" 
+         x-data="{ 
+             visible: false,
+             init() {
+                 const observer = new IntersectionObserver((entries) => {
+                     entries.forEach(entry => {
+                         if (entry.isIntersecting) {
+                             this.visible = true;
+                         }
+                     });
+                 }, { threshold: 0.1 });
+                 observer.observe(this.$el);
+             }
+         }">
         <div class="flex flex-wrap gap-6 items-start">
-            <div class="widget max-w-[424px] flex-grow">
+            <div class="widget max-w-[424px] flex-grow"
+                 x-show="visible"
+                 x-transition:enter="transition-all ease-out duration-800"
+                 x-transition:enter-start="opacity-0 transform translate-y-8"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <a href="/" class="mb-4 inline-flex">
                     <img id="logo" src="{{ asset($setting->logo_image) }}" alt="">
                 </a>
@@ -103,35 +32,52 @@
                     <span>{{ __('get_membership') }}</span>
                 </a>
             </div>
-            <div class="widget flex-grow">
+            <div class="widget flex-grow"
+                 x-show="visible"
+                 x-transition:enter="transition-all ease-out duration-800 delay-100"
+                 x-transition:enter-start="opacity-0 transform translate-y-8"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <h3 class="widget-title heading-06 text-gray-900 dark:text-white mb-3.5">{{ __('quick_links') }}</h3>
                 <ul class="flex flex-col gap-3.5">
-                    <li><a href="{{ route('frontend.ads') }}" class="footer-link dark:text-gray-100 heading-07 capitalize">{{ __('listing') }}</a></li>
-                    <li><a href="{{ route('frontend.promotions') }}" class="footer-link dark:text-gray-100 heading-07 capitalize">{{ __('promotions') }}</a></li>
-                    <li><a href="{{ route('frontend.about') }}" class="footer-link dark:text-gray-100 heading-07">{{ __('about_us') }}</a>
-                    </li>
-                    <li><a href="{{ route('frontend.blog') }}" class="footer-link dark:text-gray-100 heading-07">
-                            {{ __('blog') }}</a>
-                    </li>
-                    <li><a href="{{ route('frontend.priceplan') }}"
-                            class="footer-link dark:text-gray-100 heading-07">{{ __('pricing_plan') }}</a></li>
+                    <li><a href="{{ route('frontend.ads') }}" class="footer-touch-link">
+                        <i class="fas fa-list text-blue-500 mr-2 footer-icon-pulse"></i>{{ __('listing') }}
+                    </a></li>
+                    <li><a href="{{ route('frontend.promotions') }}" class="footer-touch-link">
+                        <i class="fas fa-star text-yellow-500 mr-2 footer-icon-pulse"></i>{{ __('promotions') }}
+                    </a></li>
+                    <li><a href="{{ route('frontend.about') }}" class="footer-touch-link">
+                        <i class="fas fa-info-circle text-green-500 mr-2 footer-icon-pulse"></i>{{ __('about_us') }}
+                    </a></li>
+                    <li><a href="{{ route('frontend.blog') }}" class="footer-touch-link">
+                        <i class="fas fa-blog text-purple-500 mr-2 footer-icon-pulse"></i>{{ __('blog') }}
+                    </a></li>
+                    <li><a href="{{ route('frontend.priceplan') }}" class="footer-touch-link">
+                        <i class="fas fa-tags text-red-500 mr-2 footer-icon-pulse"></i>{{ __('pricing_plan') }}
+                    </a></li>
                 </ul>
             </div>
-            <div class="widget flex-grow">
+            <div class="widget flex-grow"
+                 x-show="visible"
+                 x-transition:enter="transition-all ease-out duration-800 delay-200"
+                 x-transition:enter-start="opacity-0 transform translate-y-8"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <h3 class="widget-title heading-06 text-gray-900 dark:text-white mb-3.5">{{ __('supports') }}</h3>
                 <ul class="flex flex-col gap-3.5">
-                    <li><a href="{{ route('frontend.contact') }}"
-                            class="footer-link dark:text-gray-100 heading-07">{{ __('contact') }}</a></li>
-                    <li><a href="{{ route('frontend.faq') }}"
-                            class="footer-link dark:text-gray-100 heading-07">{{ __('faqs') }}</a>
-                    </li>
-                    <li><a href="{{ route('frontend.terms') }}"
-                            class="footer-link dark:text-gray-100 heading-07">{{ __('terms_condition') }}</a>
-                    </li>
-                    <li><a href="{{ route('frontend.privacy') }}"
-                            class="footer-link dark:text-gray-100 heading-07">{{ __('privacy_policy') }}</a></li>
-                    <li><a href="{{ route('frontend.refund') }}"
-                            class="footer-link dark:text-gray-100 heading-07">{{ __('refund_policy') }}</a></li>
+                    <li><a href="{{ route('frontend.contact') }}" class="footer-touch-link">
+                        <i class="fas fa-envelope text-orange-500 mr-2 footer-icon-pulse"></i>{{ __('contact') }}
+                    </a></li>
+                    <li><a href="{{ route('frontend.faq') }}" class="footer-touch-link">
+                        <i class="fas fa-question-circle text-indigo-500 mr-2 footer-icon-pulse"></i>{{ __('faqs') }}
+                    </a></li>
+                    <li><a href="{{ route('frontend.terms') }}" class="footer-touch-link">
+                        <i class="fas fa-file-contract text-teal-500 mr-2 footer-icon-pulse"></i>{{ __('terms_condition') }}
+                    </a></li>
+                    <li><a href="{{ route('frontend.privacy') }}" class="footer-touch-link">
+                        <i class="fas fa-shield-alt text-pink-500 mr-2 footer-icon-pulse"></i>{{ __('privacy_policy') }}
+                    </a></li>
+                    <li><a href="{{ route('frontend.refund') }}" class="footer-touch-link">
+                        <i class="fas fa-undo text-cyan-500 mr-2 footer-icon-pulse"></i>{{ __('refund_policy') }}
+                    </a></li>
                 </ul>
             </div>
             <div class="widget flex-grow">

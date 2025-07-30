@@ -268,7 +268,7 @@
 <style>
 /* Footer Theme Background */
 .footer-glass-bg {
-    background: rgb(249, 250, 251) !important; /* Light gray for light theme */
+    background-color: var(--primary-500) !important; /* Same as header for light theme */
     backdrop-filter: blur(20px) !important;
 }
 

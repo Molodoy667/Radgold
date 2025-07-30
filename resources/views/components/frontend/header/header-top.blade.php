@@ -274,18 +274,90 @@
                                                  <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
                                              </a>
 
-                                             <!-- Account Settings -->
-                                             <a href="{{ route('frontend.account-setting') }}"
-                                                @click="closePanel()"
-                                                class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.account-setting') ? 'bg-gray-50/20 border-gray-200/30' : '' }}">
-                                                 <div class="touch-nav-icon bg-gradient-to-br from-slate-500 to-slate-600 icon-pulse">
-                                                     <i class="fas fa-user-cog text-white"></i>
-                                                 </div>
-                                                 <span class="touch-nav-text text-white">{{ __('account_setting') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
-                                             </a>
+                                                                                          <!-- Public Profile -->
+                                             <a href="{{ route('frontend.seller.profile', authUser()->username) }}"
+                                               @click="closePanel()"
+                                               class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.seller-dashboard') ? 'bg-green-50/20 border-green-200/30' : '' }}">
+                                                <div class="touch-nav-icon bg-gradient-to-br from-green-500 to-green-600 icon-pulse">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                                <span class="touch-nav-text text-white">{{ __('public_profile') }}</span>
+                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                            </a>
 
-                                             <!-- Divider -->
+                                            <!-- Resubmission Request -->
+                                             <a href="{{ route('frontend.resubmission.list') }}"
+                                               @click="closePanel()"
+                                               class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.resubmission.list') ? 'bg-yellow-50/20 border-yellow-200/30' : '' }}">
+                                                <div class="touch-nav-icon bg-gradient-to-br from-yellow-500 to-yellow-600 icon-pulse">
+                                                    <i class="fas fa-undo text-white"></i>
+                                                </div>
+                                                <span class="touch-nav-text text-white">{{ __('resubmission_request') }}</span>
+                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                            </a>
+
+                                            <!-- Plans & Billing -->
+                                             <a href="{{ route('frontend.plans-billing') }}"
+                                               @click="closePanel()"
+                                               class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.plans-billing') ? 'bg-emerald-50/20 border-emerald-200/30' : '' }}">
+                                                <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
+                                                    <i class="fas fa-credit-card text-white"></i>
+                                                </div>
+                                                <span class="touch-nav-text text-white">{{ __('plans_billing') }}</span>
+                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                            </a>
+
+                                            <!-- Blocked Users -->
+                                             <a href="{{ route('get-blocked.users') }}"
+                                               @click="closePanel()"
+                                               class="touch-nav-item nav-item-bounce {{ request()->routeIs('get-blocked.users') ? 'bg-red-50/20 border-red-200/30' : '' }}">
+                                                <div class="touch-nav-icon bg-gradient-to-br from-red-500 to-red-600 icon-pulse">
+                                                    <i class="fas fa-user-slash text-white"></i>
+                                                </div>
+                                                <span class="touch-nav-text text-white">{{ __('Blocked List') }}</span>
+                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                            </a>
+
+                                            <!-- Affiliate System -->
+                                             <a href="{{ route('frontend.wallet') }}"
+                                               @click="closePanel()"
+                                               class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.wallet') ? 'bg-blue-50/20 border-blue-200/30' : '' }}">
+                                                <div class="touch-nav-icon bg-gradient-to-br from-blue-500 to-blue-600 icon-pulse">
+                                                    <i class="fas fa-share-alt text-white"></i>
+                                                </div>
+                                                <span class="touch-nav-text text-white">
+                                                    @if (authUser()?->affiliate?->affiliate_code != null)
+                                                        {{ __('affiliate_system') }}
+                                                    @else
+                                                        {{ __('become_an_affiliator') }}
+                                                    @endif
+                                                </span>
+                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                            </a>
+
+                                            <!-- Verify Account -->
+                                             <a href="/dashboard/verify-account"
+                                               @click="closePanel()"
+                                               class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.verify.account') ? 'bg-teal-50/20 border-teal-200/30' : '' }}">
+                                                <div class="touch-nav-icon bg-gradient-to-br from-teal-500 to-teal-600 icon-pulse">
+                                                    <i class="fas fa-user-check text-white"></i>
+                                                </div>
+                                                <span class="touch-nav-text text-white">{{ __('verify_account') }}</span>
+                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                            </a>
+
+                                            <!-- Account Settings -->
+                                             <a href="{{ route('frontend.account-setting') }}"
+                                               @click="closePanel()"
+                                               class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.account-setting') ? 'bg-gray-50/20 border-gray-200/30' : '' }}">
+                                                <div class="touch-nav-icon bg-gradient-to-br from-slate-500 to-slate-600 icon-pulse">
+                                                    <i class="fas fa-user-cog text-white"></i>
+                                                </div>
+                                                <span class="touch-nav-text text-white">{{ __('account_setting') }}</span>
+                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                            </a>
+
+                                            <!-- Divider -->
                                              <div class="border-t border-gray-200 dark:border-gray-600 my-4"></div>
 
                                              <!-- Logout -->

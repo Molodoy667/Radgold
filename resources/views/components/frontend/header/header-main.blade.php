@@ -21,8 +21,16 @@
         background-color: {{ $setting->frontend_primary_color }} !important;
 
     }
+
+    /* Header Main Glass for Dark Theme */
+    .dark .header-main-glass {
+        background: rgba(17, 24, 39, 0.9) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    }
 </style>
-<div class="header-main py-3 md:py-4 bg-primary-500 dark:bg-gray-900/95 dark:backdrop-blur-xl dark:border-b dark:border-gray-700/50" x-data="{ openModal: false, openCity: false, location: '' }">
+<div class="header-main py-3 md:py-4 bg-primary-500 dark:bg-gray-900/90 dark:backdrop-blur-xl dark:border-b dark:border-white/20 header-main-glass" x-data="{ openModal: false, openCity: false, location: '' }">
     <div class="container">
         <div class="flex gap-2 justify-between items-center">
             <a href="{{ route('frontend.index') }}">

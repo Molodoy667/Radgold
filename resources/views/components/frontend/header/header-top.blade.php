@@ -255,56 +255,56 @@
                                                                                          <!-- My Ads -->
                                              <a href="{{ route('frontend.my.listing') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item {{ request()->routeIs('frontend.my.listing') ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800' : '' }}">
-                                                 <div class="touch-nav-icon bg-orange-500">
+                                                class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.my.listing') ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800' : '' }}">
+                                                 <div class="touch-nav-icon bg-orange-500 icon-pulse">
                                                      <i class="fas fa-list-alt text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">{{ __('my_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
                                              <!-- Post Listing -->
                                              <a href="{{ route('frontend.post') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item {{ request()->routeIs('frontend.post') ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800' : '' }}">
-                                                 <div class="touch-nav-icon bg-purple-500">
+                                                class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.post') ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800' : '' }}">
+                                                 <div class="touch-nav-icon bg-purple-500 icon-pulse">
                                                      <i class="fas fa-plus-circle text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">{{ __('post_listing') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
                                              <!-- Messages -->
                                              <a href="{{ route('frontend.message') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item {{ request()->routeIs('message') ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800' : '' }}">
-                                                 <div class="touch-nav-icon bg-indigo-500">
+                                                class="touch-nav-item nav-item-bounce {{ request()->routeIs('message') ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800' : '' }}">
+                                                 <div class="touch-nav-icon bg-indigo-500 icon-pulse">
                                                      <i class="fas fa-comments text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">{{ __('message') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
                                              <!-- Favorites -->
                                              <a href="{{ route('frontend.favorite.list') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item {{ request()->routeIs('favorite-listing') ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : '' }}">
-                                                 <div class="touch-nav-icon bg-red-500">
+                                                class="touch-nav-item nav-item-bounce {{ request()->routeIs('favorite-listing') ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : '' }}">
+                                                 <div class="touch-nav-icon bg-red-500 icon-pulse">
                                                      <i class="fas fa-heart text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">{{ __('favorite_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
                                              <!-- Account Settings -->
                                              <a href="{{ route('frontend.account-setting') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item {{ request()->routeIs('frontend.account-setting') ? 'bg-gray-50 dark:bg-gray-700/20 border-gray-200 dark:border-gray-600' : '' }}">
-                                                 <div class="touch-nav-icon bg-gray-600">
+                                                class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.account-setting') ? 'bg-gray-50 dark:bg-gray-700/20 border-gray-200 dark:border-gray-600' : '' }}">
+                                                 <div class="touch-nav-icon bg-gray-600 icon-pulse">
                                                      <i class="fas fa-cog text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">{{ __('account_setting') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
                                              <!-- Divider -->
@@ -354,14 +354,14 @@
 
                                      <!-- Auth Buttons -->
                                      <div class="p-4 space-y-3 border-b border-gray-200 dark:border-gray-700">
-                                         <a href="{{ route('frontend.login') }}" 
+                                         <a href="{{ route('users.login') }}" 
                                             @click="closePanel()"
                                             class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200">
                                              <i class="fas fa-sign-in-alt"></i>
                                              <span class="font-medium">{{ __('sign_in') }}</span>
                                          </a>
                                          
-                                         <a href="{{ route('customer.register') }}" 
+                                         <a href="{{ route('frontend.signup') }}" 
                                             @click="closePanel()"
                                             class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200">
                                              <i class="fas fa-user-plus"></i>
@@ -375,56 +375,56 @@
                                              <!-- Home -->
                                              <a href="{{ route('frontend.index') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item">
-                                                 <div class="touch-nav-icon bg-blue-500">
+                                                class="touch-nav-item nav-item-bounce">
+                                                 <div class="touch-nav-icon bg-blue-500 icon-pulse">
                                                      <i class="fas fa-home text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">{{ __('home') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
                                              <!-- Browse Ads -->
                                              <a href="{{ route('frontend.adlist') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item">
-                                                 <div class="touch-nav-icon bg-green-500">
+                                                class="touch-nav-item nav-item-bounce">
+                                                 <div class="touch-nav-icon bg-green-500 icon-pulse">
                                                      <i class="fas fa-search text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">Объявления</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
                                              <!-- Categories -->
-                                             <a href="{{ route('frontend.categories') }}"
+                                             <a href="{{ route('frontend.ads') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item">
-                                                 <div class="touch-nav-icon bg-purple-500">
+                                                class="touch-nav-item nav-item-bounce">
+                                                 <div class="touch-nav-icon bg-purple-500 icon-pulse">
                                                      <i class="fas fa-th-large text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">{{ __('categories') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
                                              <!-- Pricing -->
                                              <a href="{{ route('frontend.priceplan') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item">
-                                                 <div class="touch-nav-icon bg-orange-500">
+                                                class="touch-nav-item nav-item-bounce">
+                                                 <div class="touch-nav-icon bg-orange-500 icon-pulse">
                                                      <i class="fas fa-tags text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">{{ __('pricing_plan') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
 
                                              <!-- Contact -->
                                              <a href="{{ route('frontend.contact') }}"
                                                 @click="closePanel()"
-                                                class="touch-nav-item">
-                                                 <div class="touch-nav-icon bg-teal-500">
+                                                class="touch-nav-item nav-item-bounce">
+                                                 <div class="touch-nav-icon bg-teal-500 icon-pulse">
                                                      <i class="fas fa-envelope text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text">{{ __('contact') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
+                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
                                              </a>
                                          </nav>
                                      </div>

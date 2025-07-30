@@ -85,49 +85,120 @@
                 <!-- Touch Panel System -->
                 <div x-data="{ 
                     panelOpen: false,
+                    startX: 0,
+                    startY: 0,
+                    currentX: 0,
+                    currentY: 0,
+                    isDragging: false,
+                    
                     openPanel() { 
                         this.panelOpen = true; 
                         document.body.style.overflow = 'hidden';
+                        this.addPulseEffect();
                     },
+                    
                     closePanel() { 
                         this.panelOpen = false; 
                         document.body.style.overflow = '';
+                    },
+                    
+                    handleTouchStart(e) {
+                        this.startX = e.touches[0].clientX;
+                        this.startY = e.touches[0].clientY;
+                        this.isDragging = true;
+                    },
+                    
+                    handleTouchMove(e) {
+                        if (!this.isDragging) return;
+                        
+                        this.currentX = e.touches[0].clientX;
+                        this.currentY = e.touches[0].clientY;
+                        
+                        const deltaX = this.currentX - this.startX;
+                        const deltaY = Math.abs(this.currentY - this.startY);
+                        
+                        // Prevent default scrolling for horizontal swipes
+                        if (Math.abs(deltaX) > deltaY && Math.abs(deltaX) > 15) {
+                            e.preventDefault();
+                        }
+                        
+                        // Open panel with swipe right from left edge (within 40px)
+                        if (!this.panelOpen && this.startX <= 40 && deltaX > 80) {
+                            this.openPanel();
+                            this.isDragging = false;
+                        }
+                        
+                        // Close panel with swipe left
+                        if (this.panelOpen && deltaX < -80) {
+                            this.closePanel();
+                            this.isDragging = false;
+                        }
+                    },
+                    
+                    handleTouchEnd() {
+                        this.isDragging = false;
+                    },
+                    
+                    addPulseEffect() {
+                        const button = this.$el.querySelector('.touch-menu-btn');
+                        if (button) {
+                            button.classList.add('pulse-effect');
+                            setTimeout(() => button.classList.remove('pulse-effect'), 600);
+                        }
                     }
-                }" class="touch-panel-wrapper">
+                }" 
+                @touchstart="handleTouchStart($event)"
+                @touchmove="handleTouchMove($event)" 
+                @touchend="handleTouchEnd()"
+                class="touch-panel-wrapper">
                      
                     <!-- Touch Menu Button -->
                     <button @click="openPanel()" 
-                            class="w-10 h-10 rounded-lg bg-white dark:bg-gray-800 
-                                   border border-gray-200 dark:border-gray-600
-                                   shadow-md hover:shadow-lg dark:shadow-gray-900/30
-                                   flex items-center justify-center
-                                   transition-all duration-200 ease-out
-                                   hover:scale-105 active:scale-95">
-                        <i class="fas fa-bars text-gray-700 dark:text-gray-300"></i>
+                            class="touch-menu-btn w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 
+                                   border border-white/20 shadow-lg hover:shadow-xl
+                                   flex items-center justify-center relative overflow-hidden
+                                   transition-all duration-300 ease-out transform
+                                   hover:scale-110 active:scale-95 hover:rotate-180">
+                        <!-- Icon with rotation animation -->
+                        <i class="fas fa-bars text-white text-lg transition-transform duration-300" 
+                           :class="panelOpen ? 'rotate-90' : ''"></i>
+                        
+                        <!-- Animated background -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        <!-- Pulse effect -->
+                        <div class="absolute inset-0 rounded-xl bg-white/30 scale-0 pulse-ring"></div>
                     </button>
+
+                    <!-- Swipe Indicator (shows at screen edge) -->
+                    <div x-show="!panelOpen" 
+                         class="fixed left-0 top-1/2 transform -translate-y-1/2 z-[99998] swipe-indicator">
+                        <div class="w-1 h-16 bg-gradient-to-b from-blue-500 to-purple-600 rounded-r-full opacity-30 hover:opacity-60 transition-opacity duration-300"></div>
+                        <div class="absolute left-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 writing-vertical">Swipe →</div>
+                    </div>
 
                     <!-- Touch Panel Overlay -->
                     <div x-show="panelOpen" 
-                         x-transition:enter="transition-opacity ease-out duration-300"
-                         x-transition:enter-start="opacity-0"
-                         x-transition:enter-end="opacity-100"
-                         x-transition:leave="transition-opacity ease-in duration-200"
-                         x-transition:leave-start="opacity-100"
-                         x-transition:leave-end="opacity-0"
+                         x-transition:enter="transition-all ease-out duration-400"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition-all ease-in duration-300"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
                          @click="closePanel()"
-                         class="fixed inset-0 z-[99999] bg-black/50"
+                         class="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm"
                          style="display: none;">
                          
                         <!-- Panel Container -->
                         <div @click.stop
                              x-show="panelOpen"
-                             x-transition:enter="transform transition-transform ease-out duration-300"
-                             x-transition:enter-start="-translate-x-full"
-                             x-transition:enter-end="translate-x-0"
-                             x-transition:leave="transform transition-transform ease-in duration-200"
-                             x-transition:leave-start="translate-x-0"
-                             x-transition:leave-end="-translate-x-full"
-                             class="h-full w-80 bg-white dark:bg-gray-800 shadow-xl">
+                             x-transition:enter="transform transition-all ease-out duration-400"
+                             x-transition:enter-start="-translate-x-full opacity-0 scale-95"
+                             x-transition:enter-end="translate-x-0 opacity-100 scale-100"
+                             x-transition:leave="transform transition-all ease-in duration-300"
+                             x-transition:leave-start="translate-x-0 opacity-100 scale-100"
+                             x-transition:leave-end="-translate-x-full opacity-0 scale-95"
+                             class="h-full w-80 bg-white dark:bg-gray-800 shadow-2xl border-r border-gray-200 dark:border-gray-700 panel-content">
                              
                                                          @auth('user')
                                  <!-- Authenticated User Panel -->
@@ -170,16 +241,16 @@
                                                                          <!-- Navigation Menu -->
                                      <div class="flex-1 overflow-y-auto py-4 px-4">
                                          <nav class="space-y-2">
-                                             <!-- Dashboard -->
-                                             <a href="{{ route('frontend.dashboard') }}"
-                                                @click="closePanel()"
-                                                class="touch-nav-item {{ request()->routeIs('frontend.dashboard') ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : '' }}">
-                                                 <div class="touch-nav-icon bg-blue-500">
-                                                     <i class="fas fa-tachometer-alt text-white"></i>
-                                                 </div>
-                                                 <span class="touch-nav-text">{{ __('overview') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500"></i>
-                                             </a>
+                                                                                           <!-- Dashboard -->
+                                              <a href="{{ route('frontend.dashboard') }}"
+                                                 @click="closePanel()"
+                                                 class="touch-nav-item nav-item-bounce {{ request()->routeIs('frontend.dashboard') ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : '' }}">
+                                                  <div class="touch-nav-icon bg-blue-500 icon-pulse">
+                                                      <i class="fas fa-tachometer-alt text-white"></i>
+                                                  </div>
+                                                  <span class="touch-nav-text">{{ __('overview') }}</span>
+                                                  <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 nav-arrow"></i>
+                                              </a>
 
                                                                                          <!-- My Ads -->
                                              <a href="{{ route('frontend.my.listing') }}"
@@ -290,7 +361,7 @@
                                              <span class="font-medium">{{ __('sign_in') }}</span>
                                          </a>
                                          
-                                         <a href="{{ route('frontend.register') }}" 
+                                         <a href="{{ route('customer.register') }}" 
                                             @click="closePanel()"
                                             class="flex items-center justify-center space-x-3 w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200">
                                              <i class="fas fa-user-plus"></i>
@@ -493,6 +564,72 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+/* Touch Menu Button Animations */
+.touch-menu-btn {
+    animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+    0%, 100% { 
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+        transform: scale(1.05);
+    }
+}
+
+.pulse-effect .pulse-ring {
+    animation: pulse-ring 0.6s ease-out;
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* Swipe Indicator */
+.swipe-indicator {
+    animation: swipe-hint 4s ease-in-out infinite;
+}
+
+@keyframes swipe-hint {
+    0%, 80%, 100% {
+        opacity: 0.3;
+        transform: translateY(-50%) translateX(0);
+    }
+    40% {
+        opacity: 0.8;
+        transform: translateY(-50%) translateX(5px);
+    }
+}
+
+.writing-vertical {
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+}
+
+/* Panel Content Animation */
+.panel-content {
+    animation: panel-glow 0.4s ease-out;
+}
+
+@keyframes panel-glow {
+    from {
+        box-shadow: 0 0 0 rgba(59, 130, 246, 0);
+    }
+    to {
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
+    }
+}
+
 /* Touch Navigation Items */
 .touch-nav-item {
     display: flex;
@@ -502,21 +639,58 @@
     border-radius: 12px;
     background: white;
     border: 1px solid rgb(229, 231, 235);
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.touch-nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.touch-nav-item:hover::before {
+    left: 100%;
 }
 
 .touch-nav-item:hover {
     background: rgb(249, 250, 251);
     border-color: rgb(209, 213, 219);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 15px -3px rgb(0 0 0 / 0.1);
 }
 
 .touch-nav-item:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
     background: rgb(243, 244, 246);
+}
+
+/* Navigation Item Bounce Animation */
+.nav-item-bounce {
+    animation: nav-bounce 0.6s ease-out;
+}
+
+@keyframes nav-bounce {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateX(5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* Dark mode */
@@ -545,6 +719,26 @@
     justify-content: center;
     margin-right: 12px;
     flex-shrink: 0;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.touch-nav-item:hover .touch-nav-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon-pulse {
+    animation: icon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes icon-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 .touch-nav-text {
@@ -552,11 +746,34 @@
     font-weight: 500;
     font-size: 15px;
     color: rgb(17, 24, 39);
+    transition: all 0.3s ease;
+}
+
+.touch-nav-item:hover .touch-nav-text {
+    transform: translateX(3px);
+    color: rgb(59, 130, 246);
+}
+
+.nav-arrow {
+    transition: all 0.3s ease;
+}
+
+.touch-nav-item:hover .nav-arrow {
+    transform: translateX(5px) scale(1.2);
+    color: rgb(59, 130, 246) !important;
 }
 
 @media (prefers-color-scheme: dark) {
     .touch-nav-text {
         color: rgb(243, 244, 246);
+    }
+    
+    .touch-nav-item:hover .touch-nav-text {
+        color: rgb(147, 197, 253);
+    }
+    
+    .touch-nav-item:hover .nav-arrow {
+        color: rgb(147, 197, 253) !important;
     }
 }
 

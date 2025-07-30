@@ -67,6 +67,7 @@
                     currentX: 0,
                     currentY: 0,
                     isDragging: false,
+                    touchArea: null,
                     
                     openPanel() { 
                         this.panelOpen = true; 
@@ -80,6 +81,9 @@
                     },
                     
                     handleTouchStart(e) {
+                        // Безпечна перевірка на існування touches
+                        if (!e.touches || !e.touches[0]) return;
+                        
                         this.startX = e.touches[0].clientX;
                         this.startY = e.touches[0].clientY;
                         this.isDragging = true;
@@ -87,6 +91,9 @@
                     
                     handleTouchMove(e) {
                         if (!this.isDragging) return;
+                        
+                        // Безпечна перевірка на існування touches
+                        if (!e.touches || !e.touches[0]) return;
                         
                         this.currentX = e.touches[0].clientX;
                         this.currentY = e.touches[0].clientY;
@@ -130,16 +137,38 @@
                 class="touch-panel-wrapper"
                 x-init="
                     // Add touch area for left edge swipe detection
-                    const touchArea = document.createElement('div');
-                    touchArea.style.cssText = 'position: fixed; top: 0; left: 0; width: 150px; height: 100vh; z-index: 99997; pointer-events: auto;';
-                    touchArea.addEventListener('touchstart', (e) => handleTouchStart(e), { passive: false });
-                    touchArea.addEventListener('touchmove', (e) => handleTouchMove(e), { passive: false });
-                    touchArea.addEventListener('touchend', (e) => handleTouchEnd(e), { passive: false });
-                    document.body.appendChild(touchArea);
+                    this.touchArea = document.createElement('div');
+                    this.touchArea.style.cssText = 'position: fixed; top: 0; left: 0; width: 150px; height: 100vh; z-index: 9997; pointer-events: auto;';
                     
-                    // Cleanup
+                    // Безпечна обробка подій з перевіркою контексту
+                    const handleTouchStartSafe = (e) => {
+                        if (this.handleTouchStart) {
+                            this.handleTouchStart(e);
+                        }
+                    };
+                    
+                    const handleTouchMoveSafe = (e) => {
+                        if (this.handleTouchMove) {
+                            this.handleTouchMove(e);
+                        }
+                    };
+                    
+                    const handleTouchEndSafe = (e) => {
+                        if (this.handleTouchEnd) {
+                            this.handleTouchEnd(e);
+                        }
+                    };
+                    
+                    this.touchArea.addEventListener('touchstart', handleTouchStartSafe, { passive: false });
+                    this.touchArea.addEventListener('touchmove', handleTouchMoveSafe, { passive: false });
+                    this.touchArea.addEventListener('touchend', handleTouchEndSafe, { passive: false });
+                    document.body.appendChild(this.touchArea);
+                    
+                    // Безпечний cleanup
                     this.$el.addEventListener('alpine:destroying', () => {
-                        document.body.removeChild(touchArea);
+                        if (this.touchArea && document.body.contains(this.touchArea)) {
+                            document.body.removeChild(this.touchArea);
+                        }
                     });
                 ">
                      
@@ -218,8 +247,8 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          @click="closePanel()"
-                         class="fixed inset-0 z-[999999] bg-black/80 touch-panel-overlay"
-                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important;"
+                         class="fixed inset-0 z-[9999] bg-black/80 touch-panel-overlay"
+                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999 !important;"
                          
                         <!-- Panel Container -->
                         <div @click.stop class="touch-panel-container"
@@ -231,7 +260,7 @@
                              x-transition:leave-start="translate-x-0 opacity-100 scale-100"
                              x-transition:leave-end="-translate-x-full opacity-0 scale-95"
                              class="h-full w-80 bg-gradient-to-br from-blue-500/95 to-purple-600/95 dark:from-gray-800/95 dark:to-gray-900/95 backdrop-blur-xl shadow-2xl border-r border-white/20 dark:border-gray-700/30 panel-content"
-                             style="position: relative; z-index: 9999999;">
+                             style="position: relative; z-index: 99999;">
                              
                                                          @auth('user')
                                  <!-- Authenticated User Panel -->
@@ -721,7 +750,7 @@
                          x-transition:leave="transition-all ease-in duration-200"
                          x-transition:leave-start="opacity-100 scale-100 translate-x-0"
                          x-transition:leave-end="opacity-0 scale-0 translate-x-full"
-                         class="fixed right-4 top-1/2 transform -translate-y-1/2 z-[9999999]">
+                         class="fixed right-4 top-1/2 transform -translate-y-1/2 z-[9999]">
                         
                         <button @click="closePanel()" 
                                 class="relative w-14 h-14 bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 
@@ -1365,7 +1394,7 @@
 
 /* Touch Panel Enhanced Z-Index Management */
 .touch-panel-overlay {
-    z-index: 999999 !important;
+    z-index: 9999 !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -1374,18 +1403,18 @@
 }
 
 .touch-panel-container {
-    z-index: 9999999 !important;
+    z-index: 9999 !important;
     position: relative !important;
 }
 
 /* Ensure touch panel is above everything in dark theme */
 .dark .touch-panel-overlay {
-    z-index: 999999 !important;
+    z-index: 9999 !important;
     background: rgba(0, 0, 0, 0.9) !important;
 }
 
 .dark .touch-panel-container {
-    z-index: 9999999 !important;
+    z-index: 9999 !important;
 }
 
 .touch-nav-item .nav-arrow {
@@ -1859,23 +1888,23 @@
 
 /* Z-Index Management for Touch Panel - REASONABLE VALUES */
 .touch-panel-overlay {
-    z-index: 99999 !important;
+    z-index: 9999 !important;
 }
 
 .touch-panel-wrapper {
-    z-index: 99998 !important;
+    z-index: 9998 !important;
     position: relative !important;
 }
 
 .touch-panel-container {
-    z-index: 99999 !important;
+    z-index: 9999 !important;
     position: relative !important;
 }
 
 /* Touch button - high but reasonable z-index */
 .touch-menu-btn {
     position: relative !important;
-    z-index: 100000 !important;
+    z-index: 10000 !important;
 }
 
 /* Touch button positioning fixes - CAREFUL APPROACH */

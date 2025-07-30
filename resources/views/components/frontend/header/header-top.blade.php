@@ -778,40 +778,45 @@
                 <!-- Simplified Top Navigation -->
                 <div class="flex-1 flex items-center justify-end gap-3 mx-4">
                     <!-- Search -->
-                    <div class="nav-icon-container">
-                        <button @click="searchbar = !searchbar" 
-                                class="nav-icon-button group" 
-                                title="{{ __('search') }}">
-                            <div class="nav-icon-wrapper">
-                                <svg class="nav-icon w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" 
-                                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                        </button>
-                    </div>
+                    <button @click="searchbar = !searchbar" 
+                            class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 
+                                   border border-white/20 shadow-lg hover:shadow-xl
+                                   flex items-center justify-center relative overflow-hidden
+                                   transition-all duration-300 ease-out transform
+                                   hover:scale-110 active:scale-95 group"
+                            title="{{ __('search') }}">
+                        <!-- Icon -->
+                        <i class="fas fa-search text-white text-lg transition-transform duration-300 group-hover:scale-110"></i>
+                        
+                        <!-- Animated background -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        <!-- Pulse effect -->
+                        <div class="absolute inset-0 bg-white/20 rounded-xl opacity-0 group-active:opacity-100 transition-opacity duration-150"></div>
+                    </button>
 
                     <!-- Dark Mode Toggle -->
-                    <div class="nav-icon-container">
-                        <button id="darkModeToggle" 
-                                class="nav-icon-button group" 
-                                title="{{ __('toggle_theme') }}">
-                            <div class="nav-icon-wrapper">
-                                <span id="icon">
-                                    <!-- Light Mode Icon (Sun) -->
-                                    <svg class="nav-icon w-5 h-5 dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" 
-                                              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                    </svg>
-                                    <!-- Dark Mode Icon (Moon) -->
-                                    <svg class="nav-icon w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" 
-                                              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                                    </svg>
-                                </span>
-                            </div>
-                        </button>
-                    </div>
+                    <button id="darkModeToggle" 
+                            class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 
+                                   border border-white/20 shadow-lg hover:shadow-xl
+                                   flex items-center justify-center relative overflow-hidden
+                                   transition-all duration-300 ease-out transform
+                                   hover:scale-110 active:scale-95 group"
+                            title="{{ __('toggle_theme') }}">
+                        <!-- Icon -->
+                        <span id="icon">
+                            <!-- Light Mode Icon (Sun) -->
+                            <i class="fas fa-sun text-white text-lg dark:hidden transition-transform duration-300 group-hover:scale-110"></i>
+                            <!-- Dark Mode Icon (Moon) -->
+                            <i class="fas fa-moon text-white text-lg hidden dark:block transition-transform duration-300 group-hover:scale-110"></i>
+                        </span>
+                        
+                        <!-- Animated background -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        <!-- Pulse effect -->
+                        <div class="absolute inset-0 bg-white/20 rounded-xl opacity-0 group-active:opacity-100 transition-opacity duration-150"></div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -821,7 +826,7 @@
 <!-- Bottom Navigation for Authenticated Users -->
 @auth('user')
 <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
-    <div class="bottom-nav-container bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50 shadow-lg">
+            <div class="bottom-nav-container bg-primary-800 dark:bg-gray-900/90 dark:backdrop-blur-xl border-t border-white/20 dark:border-white/20 shadow-lg">
         <div class="bottom-nav-grid grid grid-cols-5 gap-1 px-2 py-0">
             
             <!-- Home -->
@@ -991,6 +996,11 @@
 /* Swipe Indicator */
 .swipe-indicator {
     animation: swipe-hint 4s ease-in-out infinite;
+    position: fixed !important;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 999998 !important;
 }
 
 @keyframes swipe-hint {
@@ -1324,6 +1334,15 @@
     animation: pulse 2s infinite;
 }
 
+/* Bottom Navigation Dark Theme Glass */
+.dark .bottom-nav-container {
+    background: rgba(17, 24, 39, 0.9) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
 /* Dark Theme Navigation Icons */
 .dark .nav-icon-button {
     background: rgba(75, 85, 99, 0.3);
@@ -1503,9 +1522,16 @@
     border-color: rgba(156, 163, 175, 0.5) !important;
 }
 
-/* Touch Nav Items Dark Theme */
+/* Touch Nav Items Dark Theme - Active State */
+.dark .touch-nav-item:active {
+    background: rgba(75, 85, 99, 0.6) !important;
+}
+
+/* Dark Theme Glass Effects for Touch Panel Elements */
 .dark .touch-nav-item {
     background: rgba(55, 65, 81, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     border: 1px solid rgba(75, 85, 99, 0.4) !important;
 }
 
@@ -1513,10 +1539,6 @@
     background: rgba(55, 65, 81, 0.5) !important;
     border-color: rgba(107, 114, 128, 0.6) !important;
     transform: translateX(4px) !important;
-}
-
-.dark .touch-nav-item:active {
-    background: rgba(75, 85, 99, 0.6) !important;
 }
 
 /* Dark Theme Text Colors for Touch Panel */
@@ -1584,8 +1606,12 @@
 .bottom-nav-icon {
     width: 24px;
     height: 24px;
-    color: #6b7280;
+    color: rgba(255, 255, 255, 0.8);
     transition: all 0.3s ease;
+}
+
+.dark .bottom-nav-icon {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .bottom-nav-item:hover .bottom-nav-icon,
@@ -1597,7 +1623,7 @@
 .bottom-nav-label {
     font-size: 9px;
     font-weight: 500;
-    color: #6b7280;
+    color: rgba(255, 255, 255, 0.8);
     transition: all 0.3s ease;
     text-align: center;
     line-height: 1.1;
@@ -1606,6 +1632,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 50px;
+}
+
+.dark .bottom-nav-label {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .bottom-nav-item:hover .bottom-nav-label,

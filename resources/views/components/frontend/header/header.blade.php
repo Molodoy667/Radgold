@@ -1,7 +1,6 @@
 <header x-data="data">
     <x-frontend.header.header-top />
     <x-frontend.header.search-bar />
-    <x-frontend.header.header-main />
     <x-frontend.header.header-bottom />
     <x-frontend.header.responsive-header />
 </header>

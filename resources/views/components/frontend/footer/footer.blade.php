@@ -1,5 +1,5 @@
 <footer
-    class="bg-white/80 backdrop-blur-xl dark:bg-gray-900/95 border-t border-white/20 dark:border-gray-700/50">
+    class="footer-glass-bg border-t border-white/20 dark:border-gray-700/50">
     
 
     
@@ -266,34 +266,92 @@
 </footer>
 
 <style>
-/* Footer Glass Links */
+/* Footer Dark Theme Background */
+.footer-glass-bg {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+}
+
+.dark .footer-glass-bg {
+    background: rgba(17, 24, 39, 0.95) !important; /* Dark background for dark theme */
+    backdrop-filter: blur(20px) !important;
+    border-top: 1px solid rgba(75, 85, 99, 0.5) !important;
+}
+
+/* Footer Glass Touch Links - Complete Styling */
 .footer-main-touch-link,
 .footer-sub-touch-link {
+    display: flex !important;
+    align-items: center !important;
+    padding: 16px 20px !important;
+    border-radius: 16px !important;
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     backdrop-filter: blur(15px) !important;
-    border-radius: 12px !important;
-    transition: all 0.3s ease !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-decoration: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    position: relative !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
     color: #1f2937 !important; /* Dark text for light theme */
 }
 
 .dark .footer-main-touch-link,
 .dark .footer-sub-touch-link {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
     color: white !important; /* White text for dark theme */
 }
 
+/* Footer Touch Link Shimmer Effect */
+.footer-main-touch-link::before,
+.footer-sub-touch-link::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+    transition: left 0.5s !important;
+}
+
+.footer-main-touch-link:hover::before,
+.footer-sub-touch-link:hover::before {
+    left: 100% !important;
+}
+
+/* Footer Touch Link Hover Effects */
 .footer-main-touch-link:hover,
 .footer-sub-touch-link:hover {
     background: rgba(255, 255, 255, 0.15) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Footer Text Colors - Universal */
+.dark .footer-main-touch-link:hover,
+.dark .footer-sub-touch-link:hover {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Footer Touch Link Active States */
+.footer-main-touch-link:active,
+.footer-sub-touch-link:active {
+    transform: translateY(0) scale(0.98) !important;
+}
+
+/* Footer Text Styling */
 .footer-text,
 .footer-sub-text {
-    color: #1f2937 !important; /* Dark text for light theme */
+    flex: 1 !important;
     font-weight: 500 !important;
+    font-size: 16px !important;
+    color: #1f2937 !important; /* Dark text for light theme */
+    transition: all 0.3s ease !important;
 }
 
 .dark .footer-text,
@@ -301,10 +359,17 @@
     color: white !important; /* White text for dark theme */
 }
 
-/* Footer Chevrons */
+.footer-main-touch-link:hover .footer-text,
+.footer-sub-touch-link:hover .footer-sub-text {
+    transform: translateX(4px) !important;
+}
+
+/* Footer Chevrons and Arrows */
 .footer-chevron,
 .footer-sub-arrow {
+    font-size: 14px !important;
     color: #6b7280 !important; /* Gray for light theme */
+    transition: all 0.3s ease !important;
 }
 
 .dark .footer-chevron,
@@ -312,10 +377,105 @@
     color: rgba(255, 255, 255, 0.8) !important; /* Light gray for dark theme */
 }
 
+.footer-main-touch-link:hover .footer-chevron,
+.footer-sub-touch-link:hover .footer-sub-arrow {
+    opacity: 1 !important;
+    transform: scale(1.1) !important;
+    color: #374151 !important;
+}
+
+.dark .footer-main-touch-link:hover .footer-chevron,
+.dark .footer-sub-touch-link:hover .footer-sub-arrow {
+    color: white !important;
+}
+
 /* Footer Icon Containers */
 .footer-icon-container,
 .footer-sub-icon-container {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 16px !important;
+    flex-shrink: 0 !important;
+    transition: all 0.3s ease !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.footer-main-touch-link:hover .footer-icon-container,
+.footer-sub-touch-link:hover .footer-sub-icon-container {
+    transform: scale(1.1) rotate(5deg) !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Footer Submenu Styling */
+.footer-submenu {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
+    margin-left: 12px !important;
+    margin-top: 8px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark .footer-submenu {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Footer Sub Touch Links */
+.footer-sub-touch-link {
+    padding: 12px 16px !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    margin-bottom: 4px !important;
+}
+
+.dark .footer-sub-touch-link {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.footer-sub-touch-link:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    transform: translateX(4px) scale(1.02) !important;
+}
+
+.dark .footer-sub-touch-link:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Footer Sub Icon Containers */
+.footer-sub-icon-container {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    margin-right: 12px !important;
+}
+
+/* Footer Icon Pulse Animation */
+.footer-icon-pulse {
+    animation: footerIconPulse 2s ease-in-out infinite !important;
+}
+
+@keyframes footerIconPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
 }
 
 /* Footer Links - Regular */
@@ -361,5 +521,15 @@
 
 .dark .copyright-area p {
     color: #9ca3af !important; /* Medium light gray for dark theme */
+}
+
+/* Footer Menu Section */
+.footer-menu-section {
+    position: relative !important;
+}
+
+/* Smooth Transitions */
+.footer-menu-section * {
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !important;
 }
 </style>

@@ -99,8 +99,8 @@
                             e.preventDefault();
                         }
                         
-                        // Open panel with swipe right from left side (expanded area - within 120px)
-                        if (!this.panelOpen && this.startX <= 120 && deltaX > 60) {
+                        // Open panel with swipe right from left side (entire left half of screen)
+                        if (!this.panelOpen && this.startX <= window.innerWidth / 2 && deltaX > 50) {
                             this.openPanel();
                             this.isDragging = false;
                         }
@@ -130,9 +130,20 @@
                 class="touch-panel-wrapper"
                 x-init="
                     // Add global touch listeners for swipe from anywhere on left side
-                    document.addEventListener('touchstart', handleTouchStart);
-                    document.addEventListener('touchmove', handleTouchMove);
-                    document.addEventListener('touchend', handleTouchEnd);
+                    const handleGlobalTouchStart = (e) => handleTouchStart(e);
+                    const handleGlobalTouchMove = (e) => handleTouchMove(e);
+                    const handleGlobalTouchEnd = (e) => handleTouchEnd(e);
+                    
+                    document.body.addEventListener('touchstart', handleGlobalTouchStart, { passive: false });
+                    document.body.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
+                    document.body.addEventListener('touchend', handleGlobalTouchEnd, { passive: false });
+                    
+                    // Cleanup on destroy
+                    this.$el.addEventListener('alpine:destroying', () => {
+                        document.body.removeEventListener('touchstart', handleGlobalTouchStart);
+                        document.body.removeEventListener('touchmove', handleGlobalTouchMove);
+                        document.body.removeEventListener('touchend', handleGlobalTouchEnd);
+                    });
                 ">
                      
                     <!-- Touch Menu Button -->
@@ -169,11 +180,11 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          @click="closePanel()"
-                         class="fixed inset-0 z-[99999999] bg-black/80"
-                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 99999999 !important;">
+                         class="fixed inset-0 z-[999999999] bg-black/80 touch-panel-overlay"
+                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999999 !important;">
                          
                         <!-- Panel Container -->
-                        <div @click.stop
+                        <div @click.stop class="touch-panel-container"
                              x-show="panelOpen"
                              x-transition:enter="transform transition-all ease-out duration-400"
                              x-transition:enter-start="-translate-x-full opacity-0 scale-95"
@@ -1003,6 +1014,57 @@
 
 .dark .bg-gray-100 {
     background-color: #4b5563 !important;
+}
+
+/* Z-Index Management for Touch Panel */
+.touch-panel-overlay {
+    z-index: 999999999 !important;
+}
+
+/* Force all modal and overlay elements below touch panel */
+.dark [class*="modal"], 
+.dark [class*="dropdown"], 
+.dark [class*="popover"],
+.dark .fixed,
+.dark .absolute,
+.dark .relative {
+    z-index: 999999 !important;
+}
+
+/* Ensure touch panel is always on top */
+.touch-panel-wrapper,
+.touch-panel-overlay,
+.touch-panel-container {
+    z-index: 999999999 !important;
+    position: relative !important;
+}
+
+/* Fix for elements that might overlap */
+.dark nav,
+.dark header,
+.dark footer {
+    z-index: 999998 !important;
+}
+
+/* Swipe button positioning fix */
+.touch-menu-btn {
+    position: relative !important;
+    z-index: 1000000000 !important;
+}
+
+/* Dark theme touch button positioning */
+.dark .touch-menu-btn {
+    position: relative !important;
+    top: 0 !important;
+    transform: none !important;
+    margin: 0 !important;
+}
+
+/* Prevent button displacement on dark theme */
+.dark .touch-panel-wrapper {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
 }
 
 

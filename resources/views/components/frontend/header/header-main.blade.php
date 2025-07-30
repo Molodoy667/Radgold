@@ -1,25 +1,42 @@
 <style>
     .header-main {
+        @if(str_contains($setting->frontend_primary_color, 'gradient'))
+        background: {{ $setting->frontend_primary_color }} !important;
+        @else
         background-color: {{ $setting->frontend_primary_color }} !important;
+        @endif
     }
 
     .header-bottom {
+        @if(str_contains($setting->frontend_secondary_color, 'gradient'))
+        background: {{ $setting->frontend_secondary_color }} !important;
+        @else
         background-color: {{ $setting->frontend_secondary_color }} !important;
-
+        @endif
     }
 
     footer {
+        @if(str_contains($setting->frontend_secondary_color, 'gradient'))
+        background: {{ $setting->frontend_secondary_color }} !important;
+        @else
         background-color: {{ $setting->frontend_secondary_color }} !important;
-
+        @endif
     }
 
     .header-top {
+        @if(str_contains($setting->frontend_secondary_color, 'gradient'))
+        background: {{ $setting->frontend_secondary_color }} !important;
+        @else
         background-color: {{ $setting->frontend_secondary_color }} !important;
+        @endif
     }
 
     .btn-primary {
+        @if(str_contains($setting->frontend_primary_color, 'gradient'))
+        background: {{ $setting->frontend_primary_color }} !important;
+        @else
         background-color: {{ $setting->frontend_primary_color }} !important;
-
+        @endif
     }
 
     /* Header Main Glass for Dark Theme */

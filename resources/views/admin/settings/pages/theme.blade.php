@@ -59,21 +59,114 @@
             <h3 class="card-title" style="line-height: 36px;">{{ __('website_theme_style') }}</h3>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-3">
-                    <div class="card">
-                        <div class="card-header">{{ __('primary_color') }}</div>
-                        <div class="card-body">
-                            <div class="frontend-primary-color"></div>
+            <!-- Primary Gradient Selector -->
+            <div class="mb-4">
+                <h5 class="mb-3">{{ __('primary_gradient') }} ({{ __('main_site_gradient') }})</h5>
+                <div class="gradient-selector" data-target="frontend_primary_color">
+                    <div class="row">
+                        @php
+                        $primaryGradients = [
+                            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                            'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                            'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+                            'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
+                            'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                            'linear-gradient(135deg, #ff8a80 0%, #ea4c89 100%)',
+                            'linear-gradient(135deg, #8fd3f4 0%, #84fab0 100%)',
+                            'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)',
+                            'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)',
+                            'linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%)',
+                            'linear-gradient(135deg, #2196f3 0%, #21cbf3 100%)',
+                            'linear-gradient(135deg, #4568dc 0%, #b06ab3 100%)',
+                            'linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%)',
+                            'linear-gradient(135deg, #42275a 0%, #734b6d 100%)',
+                            'linear-gradient(135deg, #f8cdda 0%, #1d2b64 100%)',
+                            'linear-gradient(135deg, #e96443 0%, #904e95 100%)',
+                            'linear-gradient(135deg, #24fe41 0%, #fdbb2d 100%)',
+                            'linear-gradient(135deg, #df89b5 0%, #bfd9fe 100%)',
+                            'linear-gradient(135deg, #ed6ea0 0%, #ec8c69 100%)',
+                            'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)',
+                            'linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%)',
+                            'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
+                            'linear-gradient(135deg, #fd7f6f 0%, #7b68ee 100%)',
+                            'linear-gradient(135deg, #ffb3fd 0%, #8ec5fc 100%)',
+                            'linear-gradient(135deg, #96fbc4 0%, #f9f047 100%)'
+                        ];
+                        @endphp
+                        
+                        @foreach($primaryGradients as $index => $gradient)
+                        <div class="col-md-2 col-sm-3 col-4 mb-3">
+                            <div class="gradient-cube {{ $setting->frontend_primary_color == $gradient ? 'selected' : '' }}" 
+                                 data-gradient="{{ $gradient }}"
+                                 style="background: {{ $gradient }};"
+                                 title="Gradient {{ $index + 1 }}">
+                                @if($setting->frontend_primary_color == $gradient)
+                                    <i class="fas fa-check text-white"></i>
+                                @endif
+                            </div>
                         </div>
+                        @endforeach
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="card">
-                        <div class="card-header">{{ __('secondary_color') }}</div>
-                        <div class="card-body">
-                            <div class="frontend-secondary-color"></div>
+            </div>
+
+            <!-- Secondary Gradient Selector -->
+            <div class="mb-4">
+                <h5 class="mb-3">{{ __('secondary_gradient') }} ({{ __('top_bar_bottom_nav_gradient') }})</h5>
+                <div class="gradient-selector" data-target="frontend_secondary_color">
+                    <div class="row">
+                        @php
+                        $secondaryGradients = [
+                            'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                            'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)',
+                            'linear-gradient(135deg, #141e30 0%, #243b55 100%)',
+                            'linear-gradient(135deg, #000428 0%, #004e92 100%)',
+                            'linear-gradient(135deg, #203a43 0%, #2c5364 100%)',
+                            'linear-gradient(135deg, #0f0c29 0%, #302b63 100%)',
+                            'linear-gradient(135deg, #24243e 0%, #302b63 100%)',
+                            'linear-gradient(135deg, #29323c 0%, #485563 100%)',
+                            'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
+                            'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                            'linear-gradient(135deg, #0f3460 0%, #0d47a1 100%)',
+                            'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
+                            'linear-gradient(135deg, #263238 0%, #37474f 100%)',
+                            'linear-gradient(135deg, #212121 0%, #424242 100%)',
+                            'linear-gradient(135deg, #1b1b2f 0%, #162447 100%)',
+                            'linear-gradient(135deg, #2980b9 0%, #6bb6ff 100%)',
+                            'linear-gradient(135deg, #134e5e 0%, #71b280 100%)',
+                            'linear-gradient(135deg, #005c98 0%, #505bda 100%)',
+                            'linear-gradient(135deg, #833ab4 0%, #fd1d1d 100%)',
+                            'linear-gradient(135deg, #667db6 0%, #0082c8 100%)',
+                            'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+                            'linear-gradient(135deg, #3f51b5 0%, #2196f3 100%)',
+                            'linear-gradient(135deg, #9c27b0 0%, #673ab7 100%)',
+                            'linear-gradient(135deg, #607d8b 0%, #455a64 100%)',
+                            'linear-gradient(135deg, #37474f 0%, #263238 100%)',
+                            'linear-gradient(135deg, #1e88e5 0%, #1565c0 100%)',
+                            'linear-gradient(135deg, #424242 0%, #212121 100%)',
+                            'linear-gradient(135deg, #546e7a 0%, #37474f 100%)',
+                            'linear-gradient(135deg, #5e35b1 0%, #512da8 100%)',
+                            'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)'
+                        ];
+                        @endphp
+                        
+                        @foreach($secondaryGradients as $index => $gradient)
+                        <div class="col-md-2 col-sm-3 col-4 mb-3">
+                            <div class="gradient-cube {{ $setting->frontend_secondary_color == $gradient ? 'selected' : '' }}" 
+                                 data-gradient="{{ $gradient }}"
+                                 style="background: {{ $gradient }};"
+                                 title="Gradient {{ $index + 1 }}">
+                                @if($setting->frontend_secondary_color == $gradient)
+                                    <i class="fas fa-check text-white"></i>
+                                @endif
+                            </div>
                         </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -106,9 +199,9 @@
                         <input id="main_color_id" type="hidden" name="main_color" value="{{ $setting->main_color }}">
                         <input id="accent_color_id" type="hidden" name="accent_color"
                             value="{{ $setting->accent_color }}">
-                        <input id="frontend_primary_id" type="hidden" name="frontend_primary_color"
+                        <input id="frontend_primary_color_id" type="hidden" name="frontend_primary_color"
                             value="{{ $setting->frontend_primary_color }}">
-                        <input id="frontend_secondary_id" type="hidden" name="frontend_secondary_color"
+                        <input id="frontend_secondary_color_id" type="hidden" name="frontend_secondary_color"
                             value="{{ $setting->frontend_secondary_color }}">
                     </form>
                     <div class="row">
@@ -285,9 +378,112 @@
     </style>
 @endsection
 
+@section('style')
+<style>
+/* Gradient Cube Styles */
+.gradient-cube {
+    width: 100%;
+    height: 60px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.gradient-cube:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.gradient-cube.selected {
+    border-color: #007bff;
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.gradient-cube.selected::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border-radius: 15px;
+    z-index: -1;
+}
+
+.gradient-cube i {
+    font-size: 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.gradient-selector h5 {
+    color: #495057;
+    font-weight: 600;
+}
+
+.gradient-selector {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .gradient-cube {
+        height: 50px;
+    }
+    
+    .gradient-cube i {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .gradient-cube {
+        height: 45px;
+    }
+    
+    .gradient-cube i {
+        font-size: 14px;
+    }
+}
+</style>
+@endsection
+
 @section('script')
-    <script src="{{ asset('backend/plugins/pickr') }}/pickr.min.js"></script>
     <script>
+        // Gradient Selector Handler
+        $(document).ready(function() {
+            $('.gradient-cube').on('click', function() {
+                const gradient = $(this).data('gradient');
+                const selector = $(this).closest('.gradient-selector');
+                const target = selector.data('target');
+                
+                // Remove selected class from siblings
+                selector.find('.gradient-cube').removeClass('selected').find('i').remove();
+                
+                // Add selected class to clicked cube
+                $(this).addClass('selected').append('<i class="fas fa-check text-white"></i>');
+                
+                // Update hidden input
+                $(`#${target}_id`).val(gradient);
+                
+                // Show success message
+                toastr.success('Gradient selected! Click Update to save changes.');
+            });
+        });
+
         function layoutChange(value) {
             $('#layout_mode').val(value)
             $('#layout_form').submit()

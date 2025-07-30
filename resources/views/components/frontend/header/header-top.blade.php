@@ -1,4 +1,4 @@
-<div class="header-top bg-primary-800 dark:bg-gray-900/90 dark:backdrop-blur-xl dark:border-b dark:border-white/20 text-white/80 header-glass-dark">
+<div class="header-top header-secondary-bg dark:bg-gray-900/90 dark:backdrop-blur-xl dark:border-b dark:border-white/20 text-white/80 header-glass-dark">
     <div class="container">
 
         <div class="flex gap-3 justify-between items-center py-1.5">
@@ -826,7 +826,7 @@
 <!-- Bottom Navigation for Authenticated Users -->
 @auth('user')
 <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
-            <div class="bottom-nav-container bg-primary-800 dark:bg-gray-900/90 dark:backdrop-blur-xl border-t border-white/20 dark:border-white/20 shadow-lg">
+            <div class="bottom-nav-container header-secondary-bg dark:bg-gray-900/90 dark:backdrop-blur-xl border-t border-white/20 dark:border-white/20 shadow-lg">
         <div class="bottom-nav-grid grid grid-cols-5 gap-1 px-2 py-0">
             
             <!-- Home -->
@@ -1788,6 +1788,23 @@
         width: 16px;
         height: 16px;
     }
+}
+
+/* Dynamic Gradient Background Classes */
+.header-primary-bg {
+    @if(str_contains($setting->frontend_primary_color ?? '', 'gradient'))
+    background: {{ $setting->frontend_primary_color }} !important;
+    @else
+    background-color: {{ $setting->frontend_primary_color ?? '#667eea' }} !important;
+    @endif
+}
+
+.header-secondary-bg {
+    @if(str_contains($setting->frontend_secondary_color ?? '', 'gradient'))
+    background: {{ $setting->frontend_secondary_color }} !important;
+    @else
+    background-color: {{ $setting->frontend_secondary_color ?? '#1e3c72' }} !important;
+    @endif
 }
 
 /* Dark Theme Text Visibility Improvements */

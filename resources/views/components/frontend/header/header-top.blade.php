@@ -1,36 +1,13 @@
-<div class="header-top bg-primary-800 dark:bg-gray-900/95 dark:backdrop-blur-xl border-b border-primary-600 dark:border-gray-700/50 text-white/80">
+<div class="header-top bg-primary-800 dark:bg-gray-900/90 dark:backdrop-blur-xl dark:border-b dark:border-white/20 text-white/80 header-glass-dark">
     <div class="container">
-        <div class="py-1.5 lg:hidden border-b">
-            <button type="button" data-modal-target="locationModal" data-modal-toggle="locationModal"
-                class="inline-flex gap-1.5 items-center heading-07 transition-all duration-300 text-white/80 hover:text-white">
-                <x-svg.search-location-icon width="20" height="20" />
-                @if (selected_country())
-                    <span>{{ selected_country()->name }}</span>
-                @else
-                    <span>{{ __('all_country') }}</span>
-                @endif
-            </button>
-        </div>
+
         <div class="flex gap-3 justify-between items-center py-1.5">
             <ul class="lg:!inline-flex hidden flex-wrap gap-5 items-center">
                 <li>
                     <a href="{{ route('frontend.priceplan') }}"
                         class="heading-07 transition-all duration-300 text-white/80 hover:text-white">{{ __('pricing_plan') }}</a>
                 </li>
-                <!-- City List Modal Trigger Button Start -->
-                <li>
-                    <button type="button" data-modal-target="locationModal" data-modal-toggle="locationModal"
-                        class="inline-flex gap-1.5 items-center heading-07 transition-all duration-300 text-white/80 hover:text-white">
-                        <x-svg.search-location-icon width="20" height="20" />
-                        @if (selected_country())
-                            <span>{{ selected_country()->name }}</span>
-                        @else
-                            <span>{{ __('all_country') }}</span>
-                        @endif
-                    </button>
-                </li>
 
-                <!-- City List Modal Trigger Button End -->
 
             </ul>
 
@@ -885,6 +862,19 @@
 .glass-header .dark\\:text-white,
 .glass-header .dark\\:text-gray-400 {
     color: white !important;
+}
+
+/* Header Glass Dark Theme */
+.header-glass-dark {
+    position: relative;
+}
+
+.dark .header-glass-dark {
+    background: rgba(17, 24, 39, 0.9) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
 

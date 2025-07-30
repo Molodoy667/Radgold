@@ -266,9 +266,9 @@
 </footer>
 
 <style>
-/* Footer Dark Theme Background */
+/* Footer Theme Background */
 .footer-glass-bg {
-    background: rgba(255, 255, 255, 0.8) !important;
+    background: rgb(249, 250, 251) !important; /* Light gray for light theme */
     backdrop-filter: blur(20px) !important;
 }
 
@@ -285,8 +285,8 @@
     align-items: center !important;
     padding: 16px 20px !important;
     border-radius: 16px !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: rgba(0, 0, 0, 0.1) !important; /* Dark glass for light theme */
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
     backdrop-filter: blur(15px) !important;
     -webkit-backdrop-filter: blur(15px) !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -302,6 +302,7 @@
 .dark .footer-sub-touch-link {
     background: rgba(255, 255, 255, 0.12) !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(15px) !important;
     color: white !important; /* White text for dark theme */
 }
 
@@ -314,8 +315,13 @@
     left: -100% !important;
     width: 100% !important;
     height: 100% !important;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.2), transparent) !important; /* Dark shimmer for light theme */
     transition: left 0.5s !important;
+}
+
+.dark .footer-main-touch-link::before,
+.dark .footer-sub-touch-link::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important; /* Light shimmer for dark theme */
 }
 
 .footer-main-touch-link:hover::before,
@@ -326,8 +332,8 @@
 /* Footer Touch Link Hover Effects */
 .footer-main-touch-link:hover,
 .footer-sub-touch-link:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
+    background: rgba(0, 0, 0, 0.15) !important; /* Darker for light theme */
+    border-color: rgba(0, 0, 0, 0.3) !important;
     transform: translateY(-2px) scale(1.02) !important;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
 }
@@ -413,8 +419,8 @@
 
 /* Footer Submenu Styling */
 .footer-submenu {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(0, 0, 0, 0.05) !important; /* Dark for light theme */
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
     backdrop-filter: blur(15px) !important;
     -webkit-backdrop-filter: blur(15px) !important;
     border-radius: 12px !important;
@@ -433,8 +439,8 @@
 .footer-sub-touch-link {
     padding: 12px 16px !important;
     border-radius: 10px !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    background: rgba(0, 0, 0, 0.08) !important; /* Dark for light theme */
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
     margin-bottom: 4px !important;
 }
 
@@ -444,8 +450,8 @@
 }
 
 .footer-sub-touch-link:hover {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(255, 255, 255, 0.25) !important;
+    background: rgba(0, 0, 0, 0.12) !important; /* Darker for light theme */
+    border-color: rgba(0, 0, 0, 0.25) !important;
     transform: translateX(4px) scale(1.02) !important;
 }
 

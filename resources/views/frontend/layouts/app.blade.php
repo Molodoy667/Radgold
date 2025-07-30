@@ -14,6 +14,11 @@
         <meta name="keywords" content="{{ $setting->seo_meta_keywords }}">
     @endif
 
+    <!-- Browser Tab Theme Color (Always Active) -->
+    <meta name="theme-color" content="{{ empty($setting->frontend_secondary_color) ? '#1e3a8a' : $setting->frontend_secondary_color }}" />
+    <meta name="msapplication-navbutton-color" content="{{ empty($setting->frontend_secondary_color) ? '#1e3a8a' : $setting->frontend_secondary_color }}" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
     <!-- PWA Meta Theme color and link Start  -->
     @if ($setting->pwa_enable)
         <meta name="theme-color"

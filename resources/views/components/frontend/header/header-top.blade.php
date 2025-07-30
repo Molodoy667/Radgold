@@ -99,8 +99,8 @@
                             e.preventDefault();
                         }
                         
-                        // Open panel with swipe right from left edge (within 40px)
-                        if (!this.panelOpen && this.startX <= 40 && deltaX > 80) {
+                        // Open panel with swipe right from left side (expanded area - within 120px)
+                        if (!this.panelOpen && this.startX <= 120 && deltaX > 60) {
                             this.openPanel();
                             this.isDragging = false;
                         }
@@ -127,7 +127,13 @@
                 @touchstart="handleTouchStart($event)"
                 @touchmove="handleTouchMove($event)" 
                 @touchend="handleTouchEnd()"
-                class="touch-panel-wrapper">
+                class="touch-panel-wrapper"
+                x-init="
+                    // Add global touch listeners for swipe from anywhere on left side
+                    document.addEventListener('touchstart', handleTouchStart);
+                    document.addEventListener('touchmove', handleTouchMove);
+                    document.addEventListener('touchend', handleTouchEnd);
+                ">
                      
                     <!-- Touch Menu Button -->
                     <button @click="openPanel()" 
@@ -163,8 +169,8 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          @click="closePanel()"
-                         class="fixed inset-0 z-[999999] bg-black/80"
-                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important;">
+                         class="fixed inset-0 z-[99999999] bg-black/80"
+                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 99999999 !important;">
                          
                         <!-- Panel Container -->
                         <div @click.stop
@@ -947,6 +953,56 @@
     -webkit-backdrop-filter: blur(20px) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Dark Theme Text Visibility Improvements */
+.dark body {
+    background-color: #111827 !important;
+    color: #f9fafb !important;
+}
+
+.dark p, .dark span, .dark div, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: #e5e7eb !important;
+}
+
+.dark .text-gray-900 {
+    color: #f9fafb !important;
+}
+
+.dark .text-gray-800 {
+    color: #f3f4f6 !important;
+}
+
+.dark .text-gray-700 {
+    color: #e5e7eb !important;
+}
+
+.dark .text-gray-600 {
+    color: #d1d5db !important;
+}
+
+.dark .text-gray-500 {
+    color: #9ca3af !important;
+}
+
+.dark .border-gray-200 {
+    border-color: #374151 !important;
+}
+
+.dark .border-gray-100 {
+    border-color: #4b5563 !important;
+}
+
+.dark .bg-white {
+    background-color: #1f2937 !important;
+}
+
+.dark .bg-gray-50 {
+    background-color: #374151 !important;
+}
+
+.dark .bg-gray-100 {
+    background-color: #4b5563 !important;
 }
 
 

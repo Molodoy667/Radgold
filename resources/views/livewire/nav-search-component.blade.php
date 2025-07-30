@@ -31,7 +31,10 @@
                             placeholder="city" class="hidden">
                     @endif
                 </label>
-                <button type="submit" class=" {{ $landing == 'home1' ? 'absolute': '' }} top-0 ltr:right-0 rtl:left-0 py-2.5 bg-gray-700 text-white heading-07 rounded-lg px-4 hover:bg-primary-700">{{ __('search') }}</button>
+                <button type="submit" class=" {{ $landing == 'home1' ? 'absolute': '' }} top-0 ltr:right-0 rtl:left-0 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white heading-07 rounded-lg px-4 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2">
+                    <i class="fas fa-search text-sm"></i>
+                    {{ __('search') }}
+                </button>
             </form>
             <div x-show="isTyped" x-cloak @click.outside="isTyped = false">
                 @if (count($filter_ads) > 0)

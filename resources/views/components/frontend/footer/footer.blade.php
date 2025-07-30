@@ -266,16 +266,18 @@
 </footer>
 
 <style>
-/* Footer Theme Background */
+/* Footer Theme Background - Same as Header Top */
 .footer-glass-bg {
-    background-color: var(--primary-500) !important; /* Same as header for light theme */
+    background-color: var(--primary-800) !important; /* Same as header-top for light theme */
     backdrop-filter: blur(20px) !important;
+    color: rgba(255, 255, 255, 0.8) !important; /* Same text color as header-top */
 }
 
 .dark .footer-glass-bg {
-    background: rgba(17, 24, 39, 0.95) !important; /* Dark background for dark theme */
+    background: rgba(17, 24, 39, 0.9) !important; /* Same as header-top dark theme */
     backdrop-filter: blur(20px) !important;
-    border-top: 1px solid rgba(75, 85, 99, 0.5) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
 }
 
 /* Footer Glass Touch Links - Complete Styling */
@@ -285,8 +287,8 @@
     align-items: center !important;
     padding: 16px 20px !important;
     border-radius: 16px !important;
-    background: rgba(0, 0, 0, 0.1) !important; /* Dark glass for light theme */
-    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.1) !important; /* White glass for both themes */
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     backdrop-filter: blur(15px) !important;
     -webkit-backdrop-filter: blur(15px) !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -295,7 +297,7 @@
     position: relative !important;
     overflow: hidden !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
-    color: #1f2937 !important; /* Dark text for light theme */
+    color: rgba(255, 255, 255, 0.9) !important; /* White text for both themes */
 }
 
 .dark .footer-main-touch-link,
@@ -356,13 +358,13 @@
     flex: 1 !important;
     font-weight: 500 !important;
     font-size: 16px !important;
-    color: #1f2937 !important; /* Dark text for light theme */
+    color: rgba(255, 255, 255, 0.9) !important; /* White text for both themes */
     transition: all 0.3s ease !important;
 }
 
 .dark .footer-text,
 .dark .footer-sub-text {
-    color: white !important; /* White text for dark theme */
+    color: rgba(255, 255, 255, 0.9) !important; /* White text for dark theme */
 }
 
 .footer-main-touch-link:hover .footer-text,

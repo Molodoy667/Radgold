@@ -1,0 +1,16 @@
+{
+    "update": "Оновити",
+    "translate_language": "Перекласти мову",
+    "set_default_language": "Встановити мову за замовчуванням",
+    "language": "Мова",
+    "language_list": "Список мов",
+    "add_language": "Додати мову",
+    "edit_language": "Редагувати мову",
+    "name": "Назва",
+    "code": "Код",
+    "direction": "Напрямок",
+    "flag": "Прапор",
+    "actions": "Дії",
+    "save": "Зберегти",
+    "default": "За замовчуванням"
+}

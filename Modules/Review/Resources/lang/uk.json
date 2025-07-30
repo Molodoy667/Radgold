@@ -1,0 +1,20 @@
+{
+    "create_review" : "Створити відгук",
+    "back" : "Назад",
+    "name" : "Ім'я",
+    "enter_name" : "Введіть ім'я",
+    "comment" : "Коментар",
+    "enter_comment" : "Введіть коментар",
+    "star" : "Зірка",
+    "create" : "Створити",
+    "edit_review" : "Редагувати відгук",
+    "update" : "Оновити",
+    "review_list" : "Список відгуків",
+    "add_review" : "Додати відгук",
+    "action" : "Дія",
+    "are_you_sure_want_to_delete_this_item" : "Ви впевнені, що хочете видалити цей елемент?",
+    "select_user" : "Вибрати користувача",
+    "user_name" : "Ім'я користувача",
+    "select_product" : "Вибрати продукт",
+    "product" : "Продукт"
+}

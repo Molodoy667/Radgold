@@ -169,10 +169,10 @@
                                                  @endif
                                              </div>
                                              <div class="flex-1 min-w-0">
-                                                 <h2 class="text-lg font-semibold text-white truncate">
+                                                 <h2 class="text-lg font-semibold text-gray-800 dark:text-white truncate">
                                                      {{ authUser()->name }}
                                                  </h2>
-                                                 <p class="text-sm text-white/80 truncate">
+                                                 <p class="text-sm text-gray-600 dark:text-white/80 truncate">
                                                      {{ authUser()->email }}
                                                  </p>
                                              </div>
@@ -191,8 +191,8 @@
                                                                                                    <div class="touch-nav-icon bg-gradient-to-br from-blue-500 to-blue-600 icon-pulse">
                                                      <i class="fas fa-chart-line text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('overview') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('overview') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                                                                            <!-- My Ads -->
@@ -202,8 +202,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-orange-500 to-orange-600 icon-pulse">
                                                      <i class="fas fa-store text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('my_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('my_ads') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Post Listing -->
@@ -213,8 +213,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-purple-500 to-purple-600 icon-pulse">
                                                      <i class="fas fa-bullhorn text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('post_listing') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('post_listing') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Messages -->
@@ -224,8 +224,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-indigo-500 to-indigo-600 icon-pulse">
                                                      <i class="fas fa-paper-plane text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('message') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('message') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Favorites -->
@@ -235,8 +235,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-red-500 to-pink-600 icon-pulse">
                                                      <i class="fas fa-bookmark text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('favorite_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('favorite_ads') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                                                                           <!-- Public Profile -->
@@ -246,8 +246,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-green-500 to-green-600 icon-pulse">
                                                     <i class="fas fa-user text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('public_profile') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('public_profile') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Resubmission Request -->
@@ -257,8 +257,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-yellow-500 to-yellow-600 icon-pulse">
                                                     <i class="fas fa-undo text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('resubmission_request') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('resubmission_request') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Plans & Billing -->
@@ -268,8 +268,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
                                                     <i class="fas fa-credit-card text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('plans_billing') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('plans_billing') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Blocked Users -->
@@ -279,8 +279,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-red-500 to-red-600 icon-pulse">
                                                     <i class="fas fa-user-slash text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('Blocked List') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('Blocked List') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Affiliate System -->
@@ -290,14 +290,14 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-blue-500 to-blue-600 icon-pulse">
                                                     <i class="fas fa-share-alt text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">
                                                     @if (authUser()?->affiliate?->affiliate_code != null)
                                                         {{ __('affiliate_system') }}
                                                     @else
                                                         {{ __('become_an_affiliator') }}
                                                     @endif
                                                 </span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Verify Account -->
@@ -307,8 +307,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-teal-500 to-teal-600 icon-pulse">
                                                     <i class="fas fa-user-check text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('verify_account') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('verify_account') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Account Settings -->
@@ -318,8 +318,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-slate-500 to-slate-600 icon-pulse">
                                                     <i class="fas fa-user-cog text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('account_setting') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('account_setting') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                              <!-- ========================================
@@ -343,8 +343,8 @@
                                                             <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
                                                                 <i class="fas fa-dollar-sign text-white"></i>
                                                             </div>
-                                                            <span class="touch-nav-text text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
-                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                            <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
+                                                            <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow transition-transform duration-200" 
                                                                :class="currencyOpen ? 'rotate-90' : ''"></i>
                                                         </button>
                                                         
@@ -381,8 +381,8 @@
                                                             <div class="touch-nav-icon bg-gradient-to-br from-indigo-500 to-indigo-600 icon-pulse">
                                                                 <i class="fas fa-language text-white"></i>
                                                             </div>
-                                                            <span class="touch-nav-text text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
-                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                            <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
+                                                            <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow transition-transform duration-200" 
                                                                :class="languageOpen ? 'rotate-90' : ''"></i>
                                                         </button>
                                                         
@@ -494,8 +494,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-blue-500 to-blue-600 icon-pulse">
                                                      <i class="fas fa-house-user text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('home') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('home') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Browse Ads -->
@@ -505,8 +505,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-green-500 to-green-600 icon-pulse">
                                                      <i class="fas fa-binoculars text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('browse_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('browse_ads') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Categories -->
@@ -516,8 +516,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-purple-500 to-purple-600 icon-pulse">
                                                      <i class="fas fa-layer-group text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('categories') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('categories') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Pricing -->
@@ -527,8 +527,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-orange-500 to-orange-600 icon-pulse">
                                                      <i class="fas fa-gem text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('pricing_plan') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('pricing_plan') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Contact -->
@@ -538,8 +538,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-teal-500 to-teal-600 icon-pulse">
                                                      <i class="fas fa-envelope text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('contact') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('contact') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Language & Currency Settings Section for Guests -->
@@ -561,8 +561,8 @@
                                                             <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
                                                                 <i class="fas fa-dollar-sign text-white"></i>
                                                             </div>
-                                                            <span class="touch-nav-text text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
-                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                            <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
+                                                            <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow transition-transform duration-200" 
                                                                :class="currencyOpen ? 'rotate-90' : ''"></i>
                                                         </button>
                                                         
@@ -599,8 +599,8 @@
                                                             <div class="touch-nav-icon bg-gradient-to-br from-indigo-500 to-indigo-600 icon-pulse">
                                                                 <i class="fas fa-language text-white"></i>
                                                             </div>
-                                                            <span class="touch-nav-text text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
-                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                            <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
+                                                            <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow transition-transform duration-200" 
                                                                :class="languageOpen ? 'rotate-90' : ''"></i>
                                                         </button>
                                                         
@@ -634,8 +634,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-teal-500 to-teal-600 icon-pulse">
                                                      <i class="fas fa-phone-alt text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('contact') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('contact') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
                                          </nav>
                                      </div>
@@ -1337,6 +1337,15 @@
     color: white !important;
 }
 
+/* Additional text color fixes for light theme */
+.glass-header .text-white {
+    color: #374151 !important;
+}
+
+.dark .glass-header .text-white {
+    color: white !important;
+}
+
 /* Glass Header Styles */
 .glass-header {
     position: relative;
@@ -1355,16 +1364,22 @@
     pointer-events: none;
 }
 
-/* Glass Close Button */
+/* Glass Close Button - Light Theme */
 .glass-close-btn {
-    background: rgba(255, 255, 255, 0.15) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(156, 163, 175, 0.15) !important;
+    border: 1px solid rgba(156, 163, 175, 0.3);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
+}
+
+/* Glass Close Button - Dark Theme */
+.dark .glass-close-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .glass-close-btn::before {
@@ -1383,10 +1398,15 @@
 }
 
 .glass-close-btn:hover {
-    background: rgba(255, 255, 255, 0.25) !important;
-    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(156, 163, 175, 0.25) !important;
+    border-color: rgba(156, 163, 175, 0.4);
     transform: scale(1.1) rotate(90deg);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dark .glass-close-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .glass-close-btn:active {
@@ -1409,7 +1429,7 @@
     }
 }
 
-/* Universal Glass Text Override for Touch Panels */
+/* Universal Glass Text Override for Touch Panels - Light Theme */
 .glass-header *,
 .touch-nav-item * {
     color: #374151 !important;
@@ -1419,6 +1439,23 @@
 .dark .glass-header *,
 .dark .touch-nav-item * {
     color: white !important;
+}
+
+/* Specific text color overrides for light theme */
+.touch-nav-text {
+    color: #374151 !important;
+}
+
+.dark .touch-nav-text {
+    color: white !important;
+}
+
+.nav-arrow {
+    color: rgba(75, 85, 99, 0.7) !important;
+}
+
+.dark .nav-arrow {
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 /* Specific overrides for readability */

@@ -1218,63 +1218,22 @@
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
 }
 
 .touch-panel-container {
     z-index: 9999 !important;
     position: relative !important;
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
     transform: translateX(-100%) !important;
-}
-
-/* Touch Panel Show State */
-.touch-panel-overlay[x-show="true"] {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-.touch-panel-container[x-show="true"] {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateX(0) !important;
 }
 
 /* Ensure touch panel is above everything in dark theme */
 .dark .touch-panel-overlay {
     z-index: 9999 !important;
     background: rgba(0, 0, 0, 0.9) !important;
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
 }
 
 .dark .touch-panel-container {
     z-index: 9999 !important;
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    transform: translateX(-100%) !important;
-}
-
-/* Dark theme show state */
-.dark .touch-panel-overlay[x-show="true"] {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-.dark .touch-panel-container[x-show="true"] {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateX(0) !important;
 }
 
 .touch-nav-item .nav-arrow {

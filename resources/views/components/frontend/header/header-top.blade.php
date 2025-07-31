@@ -83,9 +83,9 @@
                          TOUCH MENU BUTTON - Кнопка открытия панели
                          ======================================== -->
                     <button @click="openPanel()" 
-                            class="touch-menu-btn w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 
-                                   border border-white/20 shadow-lg hover:shadow-xl
-                                   flex items-center justify-center relative overflow-hidden
+                            class="touch-menu-btn w-11 h-11 rounded-xl bg-white/10 dark:bg-gray-800/30 
+                                   border border-white/20 dark:border-gray-600/30 shadow-lg hover:shadow-xl
+                                   backdrop-blur-xl flex items-center justify-center relative overflow-hidden
                                    transition-all duration-300 ease-out transform
                                    hover:scale-110 active:scale-95 hover:rotate-180"
                             aria-label="Открыть мобильное меню"
@@ -128,7 +128,7 @@
                              x-transition:leave="transition-transform duration-200"
                              x-transition:leave-start="translate-x-0"
                              x-transition:leave-end="-translate-x-full"
-                             class="h-full w-80 bg-gradient-to-br from-blue-500/95 to-purple-600/95 dark:from-gray-800/95 dark:to-gray-900/95 backdrop-blur-xl shadow-2xl border-r border-white/20 dark:border-gray-700/30 panel-content"
+                             class="h-full w-80 bg-white/95 dark:bg-gradient-to-br dark:from-gray-800/95 dark:to-gray-900/95 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 dark:border-white/20 dark:border-gray-700/30 panel-content"
                              style="position: relative; z-index: 99999;">
                              
                                                          @auth('user')
@@ -140,7 +140,7 @@
                                      <!-- ========================================
                                           USER HEADER - Заголовок с информацией о пользователе
                                           ======================================== -->
-                                     <div class="p-6 bg-white/12 dark:bg-gray-800/30 backdrop-blur-xl border-b border-white/25 dark:border-gray-600/40 glass-header">
+                                     <div class="p-6 bg-gray-50/80 dark:bg-gray-800/30 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/25 dark:border-gray-600/40 glass-header">
                                          <!-- ========================================
                                               CLOSE BUTTON - Кнопка закрытия панели
                                               ======================================== -->
@@ -151,13 +151,13 @@
                                                         transition-all duration-300"
                                                  aria-label="Закрыть панель"
                                                  title="Закрыть">
-                                             <i class="fas fa-times text-white text-sm pulse-icon"></i>
+                                             <i class="fas fa-times text-gray-700 dark:text-white text-sm pulse-icon"></i>
                                          </button>
 
                                          <!-- ========================================
                                               USER PROFILE - Профиль пользователя
                                               ======================================== -->
-                                         <div class="flex items-center space-x-3 p-3 rounded-xl bg-white/10 dark:bg-gray-700/30 backdrop-blur-md border border-white/20 dark:border-gray-600/30">
+                                         <div class="flex items-center space-x-3 p-3 rounded-xl bg-white/60 dark:bg-gray-700/30 backdrop-blur-md border border-gray-200/50 dark:border-white/20 dark:border-gray-600/30">
                                              <div class="relative">
                                                  <img class="w-16 h-16 rounded-xl object-cover border-2 border-white/30" 
                                                       src="{{ authUser()->image_url }}" 
@@ -433,7 +433,7 @@
                                  <div class="h-full flex flex-col">
                                      
                                      <!-- Header for Guests - Glass Style -->
-                                     <div class="p-6 bg-white/12 dark:bg-gray-800/30 backdrop-blur-xl border-b border-white/25 dark:border-gray-600/40 glass-header">
+                                     <div class="p-6 bg-gray-50/80 dark:bg-gray-800/30 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/25 dark:border-gray-600/40 glass-header">
                                          <!-- ========================================
                                               CLOSE BUTTON - Кнопка закрытия панели
                                               ======================================== -->
@@ -444,13 +444,13 @@
                                                         transition-all duration-300"
                                                  aria-label="Закрыть панель"
                                                  title="Закрыть">
-                                             <i class="fas fa-times text-white text-sm pulse-icon"></i>
+                                             <i class="fas fa-times text-gray-700 dark:text-white text-sm pulse-icon"></i>
                                          </button>
 
                                          <!-- ========================================
                                               WELCOME MESSAGE - Приветственное сообщение
                                               ======================================== -->
-                                         <div class="text-center p-4 rounded-xl bg-white/10 dark:bg-gray-700/30 backdrop-blur-md border border-white/20 dark:border-gray-600/30">
+                                         <div class="text-center p-4 rounded-xl bg-white/60 dark:bg-gray-700/30 backdrop-blur-md border border-gray-200/50 dark:border-white/20 dark:border-gray-600/30">
                                                                                               <div class="w-16 h-16 mx-auto mb-3 bg-white/20 dark:bg-gray-600/40 rounded-xl flex items-center justify-center border border-white/30 dark:border-gray-500/50">
                                                  <i class="fas fa-user-circle text-white text-2xl"></i>
                                              </div>
@@ -721,9 +721,9 @@
                 <div class="flex-1 flex items-center justify-end gap-3 mx-4">
                     <!-- Search -->
                     <button @click="searchbar = !searchbar" 
-                            class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 
-                                   border border-white/20 shadow-lg hover:shadow-xl
-                                   flex items-center justify-center relative overflow-hidden
+                            class="w-11 h-11 rounded-xl bg-white/10 dark:bg-gray-800/30 
+                                   border border-white/20 dark:border-gray-600/30 shadow-lg hover:shadow-xl
+                                   backdrop-blur-xl flex items-center justify-center relative overflow-hidden
                                    transition-all duration-300 ease-out transform
                                    hover:scale-110 active:scale-95 group"
                             title="{{ __('search') }}">
@@ -739,9 +739,9 @@
 
                     <!-- Dark Mode Toggle -->
                     <button id="darkModeToggle" 
-                            class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 
-                                   border border-white/20 shadow-lg hover:shadow-xl
-                                   flex items-center justify-center relative overflow-hidden
+                            class="w-11 h-11 rounded-xl bg-white/10 dark:bg-gray-800/30 
+                                   border border-white/20 dark:border-gray-600/30 shadow-lg hover:shadow-xl
+                                   backdrop-blur-xl flex items-center justify-center relative overflow-hidden
                                    transition-all duration-300 ease-out transform
                                    hover:scale-110 active:scale-95 group"
                             title="{{ __('toggle_theme') }}">
@@ -980,8 +980,8 @@
     padding: 12px 16px;
     margin: 0 0 8px 0;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.12) !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(156, 163, 175, 0.3) !important;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -990,13 +990,13 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    color: white !important;
+    color: #374151 !important;
 }
 
 /* Universal glass hover for all themes */
 .touch-nav-item:hover {
-    background: rgba(255, 255, 255, 0.18) !important;
-    border-color: rgba(255, 255, 255, 0.35) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(156, 163, 175, 0.5) !important;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
@@ -1116,7 +1116,7 @@
     flex: 1;
     font-weight: 500;
     font-size: 15px;
-    color: white;
+    color: #374151;
     transition: all 0.3s ease;
 }
 
@@ -1319,12 +1319,21 @@
     color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* Glass Header Text Color - Universal White */
+/* Glass Header Text Color - Light Theme */
 .glass-header h2,
 .glass-header p,
 .glass-header span,
 .glass-header .text-lg,
 .glass-header .text-sm {
+    color: #374151 !important;
+}
+
+/* Glass Header Text Color - Dark Theme */
+.dark .glass-header h2,
+.dark .glass-header p,
+.dark .glass-header span,
+.dark .glass-header .text-lg,
+.dark .glass-header .text-sm {
     color: white !important;
 }
 
@@ -1403,6 +1412,12 @@
 /* Universal Glass Text Override for Touch Panels */
 .glass-header *,
 .touch-nav-item * {
+    color: #374151 !important;
+}
+
+/* Dark theme text override */
+.dark .glass-header *,
+.dark .touch-nav-item * {
     color: white !important;
 }
 
@@ -1436,6 +1451,7 @@
     visibility: visible !important;
     opacity: 1 !important;
     transform: translateX(0) !important;
+    z-index: 99999 !important;
 }
 
 .dark .glass-header {
@@ -1526,6 +1542,15 @@
     background: rgba(59, 130, 246, 0.15);
 }
 
+.dark .bottom-nav-item:hover,
+.dark .bottom-nav-item.active {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.dark .bottom-nav-item.active {
+    background: rgba(59, 130, 246, 0.25);
+}
+
 .bottom-nav-icon-wrapper {
     position: relative;
     display: flex;
@@ -1537,7 +1562,7 @@
 .bottom-nav-icon {
     width: 24px;
     height: 24px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(55, 65, 81, 0.8);
     transition: all 0.3s ease;
 }
 
@@ -1554,7 +1579,7 @@
 .bottom-nav-label {
     font-size: 9px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(55, 65, 81, 0.8);
     transition: all 0.3s ease;
     text-align: center;
     line-height: 1.1;

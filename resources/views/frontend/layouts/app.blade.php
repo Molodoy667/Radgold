@@ -45,7 +45,7 @@
     {!! $setting->header_css !!}
     {!! $setting->header_script !!}
     @livewireStyles
-    @vite(['resources/frontend/css/app.css', 'resources/frontend/js/app.js'])
+    @vite(['resources/frontend/css/app.css', 'resources/frontend/js/app.js', 'resources/css/app.css', 'resources/js/touch-sidebar.js'])
 </head>
 
 <style>

@@ -273,3 +273,47 @@ window.addEventListener('resize', () => {
         window.touchSidebar = null;
     }
 });
+
+// Alpine.js integration
+document.addEventListener('alpine:init', () => {
+    Alpine.data('touchSidebar', () => ({
+        sidebarOpen: false,
+        
+        openSidebar() {
+            this.sidebarOpen = true;
+            document.body.style.overflow = 'hidden';
+            
+            // Update touch sidebar state
+            if (window.touchSidebar) {
+                window.touchSidebar.isOpen = true;
+            }
+            
+            // Focus first element for accessibility
+            setTimeout(() => {
+                const sidebar = document.querySelector('.glass-sidebar');
+                const firstFocusable = sidebar?.querySelector('button:not([disabled]), a[href]');
+                firstFocusable?.focus();
+            }, 100);
+        },
+        
+        closeSidebar() {
+            this.sidebarOpen = false;
+            document.body.style.overflow = '';
+            
+            // Update touch sidebar state
+            if (window.touchSidebar) {
+                window.touchSidebar.isOpen = false;
+            }
+            
+            // Return focus to menu button
+            setTimeout(() => {
+                const menuButton = document.querySelector('.floating-menu-btn');
+                menuButton?.focus();
+            }, 200);
+        },
+        
+        toggle() {
+            this.sidebarOpen ? this.closeSidebar() : this.openSidebar();
+        }
+    }));
+});

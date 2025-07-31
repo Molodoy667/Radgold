@@ -59,15 +59,19 @@
             </div>
             <!-- City List Modal End -->
             <div class="flex lg:hidden items-center w-full justify-between gap-2">
-                <!-- Touch Panel System -->
+                <!-- ========================================
+                     TOUCH PANEL SYSTEM - Мобильная навигация
+                     ======================================== -->
                 <div x-data="{ 
                     panelOpen: false,
                     
+                    // Открытие панели с блокировкой скролла
                     openPanel() { 
                         this.panelOpen = true; 
                         document.body.style.overflow = 'hidden';
                     },
                     
+                    // Закрытие панели с восстановлением скролла
                     closePanel() { 
                         this.panelOpen = false; 
                         document.body.style.overflow = '';
@@ -75,27 +79,33 @@
                 }" 
                 class="touch-panel-wrapper">
                      
-                    <!-- Touch Menu Button -->
+                    <!-- ========================================
+                         TOUCH MENU BUTTON - Кнопка открытия панели
+                         ======================================== -->
                     <button @click="openPanel()" 
-                            class="touch-menu-btn w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 
-                                   border border-white/20 shadow-lg hover:shadow-xl
-                                   flex items-center justify-center relative overflow-hidden
+                            class="touch-menu-btn w-11 h-11 rounded-xl bg-white/10 dark:bg-gray-800/30 
+                                   border border-white/20 dark:border-gray-600/30 shadow-lg hover:shadow-xl
+                                   backdrop-blur-xl flex items-center justify-center relative overflow-hidden
                                    transition-all duration-300 ease-out transform
-                                   hover:scale-110 active:scale-95 hover:rotate-180">
-                        <!-- Icon with rotation animation -->
+                                   hover:scale-110 active:scale-95 hover:rotate-180"
+                            aria-label="Открыть мобильное меню"
+                            title="Открыть навигацию">
+                        <!-- Иконка с анимацией поворота -->
                         <i class="fas fa-bars text-white text-lg transition-transform duration-300" 
                            :class="panelOpen ? 'rotate-90' : ''"></i>
                         
-                        <!-- Animated background -->
+                        <!-- Анимированный фон при hover -->
                         <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                         
-                        <!-- Pulse effect -->
+                        <!-- Эффект пульсации -->
                         <div class="absolute inset-0 rounded-xl bg-white/30 scale-0 pulse-ring"></div>
                     </button>
 
 
 
-                    <!-- Touch Panel Overlay -->
+                    <!-- ========================================
+                         TOUCH PANEL OVERLAY - Затемнение фона
+                         ======================================== -->
                     <div x-show="panelOpen" 
                          x-transition:enter="transition-opacity duration-300"
                          x-transition:enter-start="opacity-0"
@@ -107,7 +117,9 @@
                          class="fixed inset-0 z-[9999] bg-black/80 touch-panel-overlay"
                          style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999 !important; background: rgba(0, 0, 0, 0.8) !important;">
                          
-                        <!-- Panel Container -->
+                        <!-- ========================================
+                             PANEL CONTAINER - Основной контейнер панели
+                             ======================================== -->
                         <div @click.stop class="touch-panel-container"
                              x-show="panelOpen"
                              x-transition:enter="transition-transform duration-300"
@@ -116,26 +128,36 @@
                              x-transition:leave="transition-transform duration-200"
                              x-transition:leave-start="translate-x-0"
                              x-transition:leave-end="-translate-x-full"
-                             class="h-full w-80 bg-gradient-to-br from-blue-500/95 to-purple-600/95 dark:from-gray-800/95 dark:to-gray-900/95 backdrop-blur-xl shadow-2xl border-r border-white/20 dark:border-gray-700/30 panel-content"
+                             class="h-full w-80 bg-white/95 dark:bg-gradient-to-br dark:from-gray-800/95 dark:to-gray-900/95 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 dark:border-white/20 dark:border-gray-700/30 panel-content"
                              style="position: relative; z-index: 99999;">
                              
                                                          @auth('user')
-                                 <!-- Authenticated User Panel -->
+                                 <!-- ========================================
+                                      AUTHENTICATED USER PANEL - Панель для авторизованных пользователей
+                                      ======================================== -->
                                  <div class="h-full flex flex-col">
                                      
-                                     <!-- Header with User Info - Glass Style -->
-                                     <div class="p-6 bg-white/12 dark:bg-gray-800/30 backdrop-blur-xl border-b border-white/25 dark:border-gray-600/40 glass-header">
-                                         <!-- Close button - Glass Pulsing -->
+                                     <!-- ========================================
+                                          USER HEADER - Заголовок с информацией о пользователе
+                                          ======================================== -->
+                                     <div class="p-6 bg-gray-50/80 dark:bg-gray-800/30 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/25 dark:border-gray-600/40 glass-header">
+                                         <!-- ========================================
+                                              CLOSE BUTTON - Кнопка закрытия панели
+                                              ======================================== -->
                                          <button @click="closePanel()" 
                                                  class="absolute top-4 right-4 w-10 h-10 rounded-xl
                                                         glass-close-btn
                                                         flex items-center justify-center
-                                                        transition-all duration-300">
-                                             <i class="fas fa-times text-white text-sm pulse-icon"></i>
+                                                        transition-all duration-300"
+                                                 aria-label="Закрыть панель"
+                                                 title="Закрыть">
+                                             <i class="fas fa-times text-gray-700 dark:text-white text-sm pulse-icon"></i>
                                          </button>
 
-                                                                                 <!-- User Profile Glass Container -->
-                                         <div class="flex items-center space-x-3 p-3 rounded-xl bg-white/10 dark:bg-gray-700/30 backdrop-blur-md border border-white/20 dark:border-gray-600/30">
+                                         <!-- ========================================
+                                              USER PROFILE - Профиль пользователя
+                                              ======================================== -->
+                                         <div class="flex items-center space-x-3 p-3 rounded-xl bg-white/60 dark:bg-gray-700/30 backdrop-blur-md border border-gray-200/50 dark:border-white/20 dark:border-gray-600/30">
                                              <div class="relative">
                                                  <img class="w-16 h-16 rounded-xl object-cover border-2 border-white/30" 
                                                       src="{{ authUser()->image_url }}" 
@@ -147,17 +169,19 @@
                                                  @endif
                                              </div>
                                              <div class="flex-1 min-w-0">
-                                                 <h2 class="text-lg font-semibold text-white truncate">
+                                                 <h2 class="text-lg font-semibold text-gray-800 dark:text-white truncate">
                                                      {{ authUser()->name }}
                                                  </h2>
-                                                 <p class="text-sm text-white/80 truncate">
+                                                 <p class="text-sm text-gray-600 dark:text-white/80 truncate">
                                                      {{ authUser()->email }}
                                                  </p>
                                              </div>
                                          </div>
                                      </div>
 
-                                                                         <!-- Navigation Menu -->
+                                         <!-- ========================================
+                                              NAVIGATION MENU - Основное меню навигации
+                                              ======================================== -->
                                      <div class="flex-1 overflow-y-auto py-4 px-4" style="max-height: calc(100vh - 200px); min-height: 400px;">
                                          <nav class="space-y-2">
                                                                                            <!-- Dashboard -->
@@ -167,8 +191,8 @@
                                                                                                    <div class="touch-nav-icon bg-gradient-to-br from-blue-500 to-blue-600 icon-pulse">
                                                      <i class="fas fa-chart-line text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('overview') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('overview') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                                                                            <!-- My Ads -->
@@ -178,8 +202,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-orange-500 to-orange-600 icon-pulse">
                                                      <i class="fas fa-store text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('my_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('my_ads') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Post Listing -->
@@ -189,8 +213,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-purple-500 to-purple-600 icon-pulse">
                                                      <i class="fas fa-bullhorn text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('post_listing') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('post_listing') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Messages -->
@@ -200,8 +224,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-indigo-500 to-indigo-600 icon-pulse">
                                                      <i class="fas fa-paper-plane text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('message') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('message') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Favorites -->
@@ -211,8 +235,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-red-500 to-pink-600 icon-pulse">
                                                      <i class="fas fa-bookmark text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('favorite_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('favorite_ads') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                                                                           <!-- Public Profile -->
@@ -222,8 +246,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-green-500 to-green-600 icon-pulse">
                                                     <i class="fas fa-user text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('public_profile') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('public_profile') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Resubmission Request -->
@@ -233,8 +257,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-yellow-500 to-yellow-600 icon-pulse">
                                                     <i class="fas fa-undo text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('resubmission_request') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('resubmission_request') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Plans & Billing -->
@@ -244,8 +268,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
                                                     <i class="fas fa-credit-card text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('plans_billing') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('plans_billing') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Blocked Users -->
@@ -255,8 +279,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-red-500 to-red-600 icon-pulse">
                                                     <i class="fas fa-user-slash text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('Blocked List') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('Blocked List') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Affiliate System -->
@@ -266,14 +290,14 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-blue-500 to-blue-600 icon-pulse">
                                                     <i class="fas fa-share-alt text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">
                                                     @if (authUser()?->affiliate?->affiliate_code != null)
                                                         {{ __('affiliate_system') }}
                                                     @else
                                                         {{ __('become_an_affiliator') }}
                                                     @endif
                                                 </span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Verify Account -->
@@ -283,8 +307,8 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-teal-500 to-teal-600 icon-pulse">
                                                     <i class="fas fa-user-check text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('verify_account') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('verify_account') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Account Settings -->
@@ -294,11 +318,13 @@
                                                 <div class="touch-nav-icon bg-gradient-to-br from-slate-500 to-slate-600 icon-pulse">
                                                     <i class="fas fa-user-cog text-white"></i>
                                                 </div>
-                                                <span class="touch-nav-text text-white">{{ __('account_setting') }}</span>
-                                                <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('account_setting') }}</span>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
-                                                                                         <!-- Language & Currency Settings Section -->
+                                             <!-- ========================================
+                                                  PREFERENCES SECTION - Секция настроек
+                                                  ======================================== -->
                                              <div class="border-t border-white/20 dark:border-gray-600/30 my-4 pt-4">
                                                 <div class="mb-3">
                                                     <h3 class="text-white/80 text-sm font-medium mb-3 px-2">{{ __('preferences') }}</h3>
@@ -317,8 +343,8 @@
                                                             <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
                                                                 <i class="fas fa-dollar-sign text-white"></i>
                                                             </div>
-                                                            <span class="touch-nav-text text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
-                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                            <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
+                                                            <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow transition-transform duration-200" 
                                                                :class="currencyOpen ? 'rotate-90' : ''"></i>
                                                         </button>
                                                         
@@ -355,8 +381,8 @@
                                                             <div class="touch-nav-icon bg-gradient-to-br from-indigo-500 to-indigo-600 icon-pulse">
                                                                 <i class="fas fa-language text-white"></i>
                                                             </div>
-                                                            <span class="touch-nav-text text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
-                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                            <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
+                                                            <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow transition-transform duration-200" 
                                                                :class="languageOpen ? 'rotate-90' : ''"></i>
                                                         </button>
                                                         
@@ -400,23 +426,31 @@
                                         </nav>
                                     </div>
                                 </div>
-                                                         @else
-                                 <!-- Guest User Panel -->
+                                 @else
+                                 <!-- ========================================
+                                      GUEST USER PANEL - Панель для гостей
+                                      ======================================== -->
                                  <div class="h-full flex flex-col">
                                      
                                      <!-- Header for Guests - Glass Style -->
-                                     <div class="p-6 bg-white/12 dark:bg-gray-800/30 backdrop-blur-xl border-b border-white/25 dark:border-gray-600/40 glass-header">
-                                         <!-- Close button - Glass Pulsing -->
+                                     <div class="p-6 bg-gray-50/80 dark:bg-gray-800/30 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/25 dark:border-gray-600/40 glass-header">
+                                         <!-- ========================================
+                                              CLOSE BUTTON - Кнопка закрытия панели
+                                              ======================================== -->
                                          <button @click="closePanel()" 
                                                  class="absolute top-4 right-4 w-10 h-10 rounded-xl
                                                         glass-close-btn
                                                         flex items-center justify-center
-                                                        transition-all duration-300">
-                                             <i class="fas fa-times text-white text-sm pulse-icon"></i>
+                                                        transition-all duration-300"
+                                                 aria-label="Закрыть панель"
+                                                 title="Закрыть">
+                                             <i class="fas fa-times text-gray-700 dark:text-white text-sm pulse-icon"></i>
                                          </button>
 
-                                         <!-- Welcome Message Glass Container -->
-                                         <div class="text-center p-4 rounded-xl bg-white/10 dark:bg-gray-700/30 backdrop-blur-md border border-white/20 dark:border-gray-600/30">
+                                         <!-- ========================================
+                                              WELCOME MESSAGE - Приветственное сообщение
+                                              ======================================== -->
+                                         <div class="text-center p-4 rounded-xl bg-white/60 dark:bg-gray-700/30 backdrop-blur-md border border-gray-200/50 dark:border-white/20 dark:border-gray-600/30">
                                                                                               <div class="w-16 h-16 mx-auto mb-3 bg-white/20 dark:bg-gray-600/40 rounded-xl flex items-center justify-center border border-white/30 dark:border-gray-500/50">
                                                  <i class="fas fa-user-circle text-white text-2xl"></i>
                                              </div>
@@ -429,7 +463,9 @@
                                          </div>
                                      </div>
 
-                                     <!-- Auth Buttons Glass -->
+                                     <!-- ========================================
+                                          AUTH BUTTONS - Кнопки аутентификации
+                                          ======================================== -->
                                      <div class="p-4 space-y-3 border-b border-white/20 dark:border-gray-600/30">
                                          <a href="{{ route('users.login') }}" 
                                             @click="closePanel()"
@@ -446,7 +482,9 @@
                                          </a>
                                      </div>
 
-                                                                         <!-- Navigation Menu for Guests -->
+                                         <!-- ========================================
+                                              GUEST NAVIGATION - Навигация для гостей
+                                              ======================================== -->
                                      <div class="flex-1 overflow-y-auto py-4 px-4" style="max-height: calc(100vh - 250px); min-height: 300px;">
                                          <nav class="space-y-2">
                                              <!-- Home -->
@@ -456,8 +494,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-blue-500 to-blue-600 icon-pulse">
                                                      <i class="fas fa-house-user text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('home') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('home') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Browse Ads -->
@@ -467,8 +505,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-green-500 to-green-600 icon-pulse">
                                                      <i class="fas fa-binoculars text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('browse_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('browse_ads') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Categories -->
@@ -478,8 +516,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-purple-500 to-purple-600 icon-pulse">
                                                      <i class="fas fa-layer-group text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('categories') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('categories') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Pricing -->
@@ -489,8 +527,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-orange-500 to-orange-600 icon-pulse">
                                                      <i class="fas fa-gem text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('pricing_plan') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('pricing_plan') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Contact -->
@@ -500,8 +538,8 @@
                                                  <div class="touch-nav-icon bg-gradient-to-br from-teal-500 to-teal-600 icon-pulse">
                                                      <i class="fas fa-envelope text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('contact') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('contact') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Language & Currency Settings Section for Guests -->
@@ -523,8 +561,8 @@
                                                             <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
                                                                 <i class="fas fa-dollar-sign text-white"></i>
                                                             </div>
-                                                            <span class="touch-nav-text text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
-                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                            <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
+                                                            <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow transition-transform duration-200" 
                                                                :class="currencyOpen ? 'rotate-90' : ''"></i>
                                                         </button>
                                                         
@@ -561,8 +599,8 @@
                                                             <div class="touch-nav-icon bg-gradient-to-br from-indigo-500 to-indigo-600 icon-pulse">
                                                                 <i class="fas fa-language text-white"></i>
                                                             </div>
-                                                            <span class="touch-nav-text text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
-                                                            <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
+                                                            <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
+                                                            <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow transition-transform duration-200" 
                                                                :class="languageOpen ? 'rotate-90' : ''"></i>
                                                         </button>
                                                         
@@ -589,97 +627,16 @@
                                                     </div>
                                                 @endif
                                              </div>
+                                             <!-- Contact -->
+                                             <a href="{{ route('frontend.contact') }}"
+                                                @click="closePanel()"
+                                                class="touch-nav-item nav-item-bounce">
+                                                 <div class="touch-nav-icon bg-gradient-to-br from-teal-500 to-teal-600 icon-pulse">
                                                      <i class="fas fa-phone-alt text-white"></i>
                                                  </div>
-                                                 <span class="touch-nav-text text-white">{{ __('contact') }}</span>
-                                                 <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
+                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('contact') }}</span>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
-
-                                                                                           <!-- Language & Currency Settings Section for Guests -->
-                                              <div class="border-t border-white/20 dark:border-gray-600/30 my-4 pt-4">
-                                                 <div class="mb-3">
-                                                     <h3 class="text-white/80 text-sm font-medium mb-3 px-2">{{ __('preferences') }}</h3>
-                                                 </div>
-
-                                                 @if ($setting->currency_changing && count($headerCurrencies))
-                                                     @php
-                                                         $currency_count = count($headerCurrencies) && count($headerCurrencies) > 1;
-                                                         $current_currency_code = currentCurrencyCode();
-                                                         $current_currency_symbol = currentCurrencySymbol();
-                                                     @endphp
-                                                     <!-- Currency Selector -->
-                                                     <div x-data="{ currencyOpen: false }" class="mb-3">
-                                                         <button @click="currencyOpen = !currencyOpen"
-                                                                 class="touch-nav-item nav-item-bounce w-full">
-                                                             <div class="touch-nav-icon bg-gradient-to-br from-emerald-500 to-emerald-600 icon-pulse">
-                                                                 <i class="fas fa-dollar-sign text-white"></i>
-                                                             </div>
-                                                             <span class="touch-nav-text text-white">{{ __('currency') }}: {{ $current_currency_code }}</span>
-                                                             <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
-                                                                :class="currencyOpen ? 'rotate-90' : ''"></i>
-                                                         </button>
-                                                         
-                                                         @if ($currency_count)
-                                                             <div x-show="currencyOpen" 
-                                                                  x-transition:enter="transition ease-out duration-200"
-                                                                  x-transition:enter-start="opacity-0 transform -translate-y-2"
-                                                                  x-transition:enter-end="opacity-100 transform translate-y-0"
-                                                                  x-transition:leave="transition ease-in duration-150"
-                                                                  x-transition:leave-start="opacity-100 transform translate-y-0"
-                                                                  x-transition:leave-end="opacity-0 transform -translate-y-2"
-                                                                  class="ml-12 mt-2 space-y-1">
-                                                                 @foreach ($headerCurrencies as $currency)
-                                                                     <a href="{{ route('changeCurrency', $currency->code) }}"
-                                                                        @click="closePanel()"
-                                                                        class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 dark:bg-gray-600/20 hover:bg-white/10 dark:hover:bg-gray-500/30 rounded-lg transition-all duration-200 {{ $current_currency_code === $currency->code ? 'bg-white/15 dark:bg-gray-500/40 ring-1 ring-white/20 dark:ring-gray-400/30' : '' }}">
-                                                                         <i class="fas fa-coins w-4 h-4 mr-2 text-emerald-400"></i>
-                                                                         <span>{{ $currency->code }} ({{ $currency->symbol }})</span>
-                                                                         @if ($current_currency_code === $currency->code)
-                                                                             <i class="fas fa-check ml-auto text-emerald-400"></i>
-                                                                         @endif
-                                                                     </a>
-                                                                 @endforeach
-                                                             </div>
-                                                         @endif
-                                                     </div>
-                                                 @endif
-
-                                                 @if ($language_enable && $setting->language_changing)
-                                                     <!-- Language Selector -->
-                                                     <div x-data="{ languageOpen: false }" class="mb-3">
-                                                         <button @click="languageOpen = !languageOpen"
-                                                                 class="touch-nav-item nav-item-bounce w-full">
-                                                             <div class="touch-nav-icon bg-gradient-to-br from-indigo-500 to-indigo-600 icon-pulse">
-                                                                 <i class="fas fa-language text-white"></i>
-                                                             </div>
-                                                             <span class="touch-nav-text text-white">{{ __('language') }}: {{ currentLanguage() ? currentLanguage()->name : 'Default' }}</span>
-                                                             <i class="fas fa-chevron-right text-white/70 nav-arrow transition-transform duration-200" 
-                                                                :class="languageOpen ? 'rotate-90' : ''"></i>
-                                                         </button>
-                                                         
-                                                         <div x-show="languageOpen" 
-                                                              x-transition:enter="transition ease-out duration-200"
-                                                              x-transition:enter-start="opacity-0 transform -translate-y-2"
-                                                              x-transition:enter-end="opacity-100 transform translate-y-0"
-                                                              x-transition:leave="transition ease-in duration-150"
-                                                              x-transition:leave-start="opacity-100 transform translate-y-0"
-                                                              x-transition:leave-end="opacity-0 transform -translate-y-2"
-                                                              class="ml-12 mt-2 space-y-1">
-                                                             @foreach ($languages as $lang)
-                                                                 <a href="{{ route('changeLanguage', $lang->code) }}"
-                                                                    @click="closePanel()"
-                                                                    class="flex items-center px-3 py-2 text-sm text-white/90 hover:text-white bg-white/5 dark:bg-gray-600/20 hover:bg-white/10 dark:hover:bg-gray-500/30 rounded-lg transition-all duration-200 {{ currentLanguage()->name == $lang->name ? 'bg-white/15 dark:bg-gray-500/40 ring-1 ring-white/20 dark:ring-gray-400/30' : '' }}">
-                                                                     <i class="fas fa-globe w-4 h-4 mr-2 text-indigo-400"></i>
-                                                                     <span>{{ $lang->name }}</span>
-                                                                     @if (currentLanguage()->name == $lang->name)
-                                                                         <i class="fas fa-check ml-auto text-indigo-400"></i>
-                                                                     @endif
-                                                                 </a>
-                                                             @endforeach
-                                                         </div>
-                                                     </div>
-                                                 @endif
-                                             </div>
                                          </nav>
                                      </div>
                                 </div>
@@ -690,7 +647,9 @@
                         <div @click="closePanel()" class="absolute inset-0 -z-10"></div>
                     </div>
 
-                    <!-- Floating Close Button (shows when panel is open) -->
+                    <!-- ========================================
+                         FLOATING CLOSE BUTTON - Плавающая кнопка закрытия
+                         ======================================== -->
                     <div x-show="panelOpen" 
                          x-transition:enter="transition-all ease-out duration-500 delay-300"
                          x-transition:enter-start="opacity-0 scale-0 translate-x-full"
@@ -737,13 +696,17 @@
                         </div>
                     </div>
 
-                    <!-- Logout Forms -->
+                    <!-- ========================================
+                         LOGOUT FORMS - Формы для выхода
+                         ======================================== -->
                     <form id="auth-logout-form" action="{{ route('frontend.logout') }}" method="POST" class="hidden">
                         @csrf
                     </form>
                 </div>
 
-                <!-- Logo (after touch panel) -->
+                <!-- ========================================
+                     LOGO - Логотип сайта
+                     ======================================== -->
                 <div class="flex-shrink-0 mx-3">
                     <a href="{{ route('frontend.index') }}" class="block">
                         <img class="h-8 w-auto max-w-[120px] lg:max-w-[160px]" 
@@ -752,13 +715,15 @@
                     </a>
                 </div>
 
-                <!-- Simplified Top Navigation -->
+                <!-- ========================================
+                     TOP NAVIGATION - Верхняя навигация
+                     ======================================== -->
                 <div class="flex-1 flex items-center justify-end gap-3 mx-4">
                     <!-- Search -->
                     <button @click="searchbar = !searchbar" 
-                            class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 
-                                   border border-white/20 shadow-lg hover:shadow-xl
-                                   flex items-center justify-center relative overflow-hidden
+                            class="w-11 h-11 rounded-xl bg-white/10 dark:bg-gray-800/30 
+                                   border border-white/20 dark:border-gray-600/30 shadow-lg hover:shadow-xl
+                                   backdrop-blur-xl flex items-center justify-center relative overflow-hidden
                                    transition-all duration-300 ease-out transform
                                    hover:scale-110 active:scale-95 group"
                             title="{{ __('search') }}">
@@ -774,9 +739,9 @@
 
                     <!-- Dark Mode Toggle -->
                     <button id="darkModeToggle" 
-                            class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 
-                                   border border-white/20 shadow-lg hover:shadow-xl
-                                   flex items-center justify-center relative overflow-hidden
+                            class="w-11 h-11 rounded-xl bg-white/10 dark:bg-gray-800/30 
+                                   border border-white/20 dark:border-gray-600/30 shadow-lg hover:shadow-xl
+                                   backdrop-blur-xl flex items-center justify-center relative overflow-hidden
                                    transition-all duration-300 ease-out transform
                                    hover:scale-110 active:scale-95 group"
                             title="{{ __('toggle_theme') }}">
@@ -800,7 +765,9 @@
     </div>
 </div>
 
-<!-- Bottom Navigation for Authenticated Users -->
+<!-- ========================================
+     BOTTOM NAVIGATION - Нижняя навигация для авторизованных пользователей
+     ======================================== -->
 @auth('user')
 <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
             <div class="bottom-nav-container header-secondary-bg dark:bg-gray-900/90 dark:backdrop-blur-xl border-t border-white/20 dark:border-white/20 shadow-lg">
@@ -897,7 +864,9 @@
     </div>
 </div>
 
-<!-- Logout Form -->
+<!-- ========================================
+     LOGOUT FORM - Форма для выхода из системы
+     ======================================== -->
 <form id="logout-form" action="{{ route('frontend.logout') }}" method="POST" class="hidden">
     @csrf
 </form>
@@ -905,16 +874,22 @@
 
 @push('js')
     <script>
+        /**
+         * ========================================
+         * TOUCH PANEL JAVASCRIPT - JavaScript функциональность
+         * ========================================
+         */
+        
         document.addEventListener("DOMContentLoaded", function() {
-            // Select the input field and the list items
+            // Поиск по странам в модальном окне
             const searchInput = document.getElementById("search-input");
             const countryListItems = document.querySelectorAll(".city-list ul li");
 
-            // Add an event listener to the input field
+            // Обработчик ввода в поле поиска
             searchInput.addEventListener("input", function() {
-                const inputValue = searchInput.value.toLowerCase().trim(); // Trim whitespace
+                const inputValue = searchInput.value.toLowerCase().trim(); // Убираем пробелы
 
-                // Sort the list items based on input matching the first word
+                // Фильтрация элементов списка по введенному тексту
                 countryListItems.forEach(function(item) {
                     const countryName = item.textContent.toLowerCase();
                     const firstWord = countryName.split(" ")[0];
@@ -930,16 +905,23 @@
             });
         });
 
-        // Simple panel functionality  
-        // All needed functionality is already in Alpine.js x-data
+        // Вся основная функциональность панели реализована через Alpine.js x-data
+        // Дополнительная логика не требуется
     </script>
 @endpush
 
-<!-- Font Awesome CDN -->
+<!-- ========================================
+     FONT AWESOME CDN - Подключение иконок
+     ======================================== -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+<!-- ========================================
+     TOUCH PANEL STYLES - Стили для тач панели
+     ======================================== -->
 <style>
-/* Touch Menu Button Animations */
+/* ========================================
+   TOUCH MENU BUTTON ANIMATIONS - Анимации кнопки меню
+   ======================================== */
 .touch-menu-btn {
     animation: breathe 3s ease-in-out infinite;
 }
@@ -998,8 +980,8 @@
     padding: 12px 16px;
     margin: 0 0 8px 0;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.12) !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(156, 163, 175, 0.3) !important;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1008,13 +990,13 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    color: white !important;
+    color: #374151 !important;
 }
 
 /* Universal glass hover for all themes */
 .touch-nav-item:hover {
-    background: rgba(255, 255, 255, 0.18) !important;
-    border-color: rgba(255, 255, 255, 0.35) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(156, 163, 175, 0.5) !important;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
@@ -1046,12 +1028,7 @@
     left: 100%;
 }
 
-.touch-nav-item:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
-}
+/* Removed duplicate hover styles */
 
 .touch-nav-item:hover .touch-nav-icon {
     transform: scale(1.1) rotate(5deg);
@@ -1134,7 +1111,7 @@
     flex: 1;
     font-weight: 500;
     font-size: 15px;
-    color: white;
+    color: #374151;
     transition: all 0.3s ease;
 }
 
@@ -1314,7 +1291,6 @@
 .touch-panel-container {
     z-index: 9999 !important;
     position: relative !important;
-    transform: translateX(-100%) !important;
     max-width: 320px !important;
     width: 100% !important;
     overflow: hidden !important;
@@ -1337,12 +1313,30 @@
     color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* Glass Header Text Color - Universal White */
+/* Glass Header Text Color - Light Theme */
 .glass-header h2,
 .glass-header p,
 .glass-header span,
 .glass-header .text-lg,
 .glass-header .text-sm {
+    color: #374151 !important;
+}
+
+/* Glass Header Text Color - Dark Theme */
+.dark .glass-header h2,
+.dark .glass-header p,
+.dark .glass-header span,
+.dark .glass-header .text-lg,
+.dark .glass-header .text-sm {
+    color: white !important;
+}
+
+/* Additional text color fixes for light theme */
+.glass-header .text-white {
+    color: #374151 !important;
+}
+
+.dark .glass-header .text-white {
     color: white !important;
 }
 
@@ -1364,16 +1358,22 @@
     pointer-events: none;
 }
 
-/* Glass Close Button */
+/* Glass Close Button - Light Theme */
 .glass-close-btn {
-    background: rgba(255, 255, 255, 0.15) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(156, 163, 175, 0.15) !important;
+    border: 1px solid rgba(156, 163, 175, 0.3);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
+}
+
+/* Glass Close Button - Dark Theme */
+.dark .glass-close-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .glass-close-btn::before {
@@ -1392,10 +1392,15 @@
 }
 
 .glass-close-btn:hover {
-    background: rgba(255, 255, 255, 0.25) !important;
-    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(156, 163, 175, 0.25) !important;
+    border-color: rgba(156, 163, 175, 0.4);
     transform: scale(1.1) rotate(90deg);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dark .glass-close-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .glass-close-btn:active {
@@ -1418,18 +1423,48 @@
     }
 }
 
-/* Universal Glass Text Override for Touch Panels */
+/* Universal Glass Text Override for Touch Panels - Light Theme */
 .glass-header *,
 .touch-nav-item * {
+    color: #374151 !important;
+}
+
+/* Dark theme text override */
+.dark .glass-header *,
+.dark .touch-nav-item * {
     color: white !important;
 }
 
-/* Specific overrides for readability */
+/* Specific text color overrides for light theme */
+.touch-nav-text {
+    color: #374151 !important;
+}
+
+.dark .touch-nav-text {
+    color: white !important;
+}
+
+.nav-arrow {
+    color: rgba(75, 85, 99, 0.7) !important;
+}
+
+.dark .nav-arrow {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Specific overrides for readability - Dark theme only */
+.dark .glass-header .text-gray-900,
+.dark .glass-header .text-gray-600,
+.dark .glass-header .dark\\:text-white,
+.dark .glass-header .dark\\:text-gray-400 {
+    color: white !important;
+}
+
+/* Light theme text colors */
 .glass-header .text-gray-900,
 .glass-header .text-gray-600,
-.glass-header .dark\\:text-white,
-.glass-header .dark\\:text-gray-400 {
-    color: white !important;
+.glass-header .text-gray-800 {
+    color: #374151 !important;
 }
 
 /* Header Glass Dark Theme */
@@ -1454,6 +1489,7 @@
     visibility: visible !important;
     opacity: 1 !important;
     transform: translateX(0) !important;
+    z-index: 99999 !important;
 }
 
 .dark .glass-header {
@@ -1544,6 +1580,15 @@
     background: rgba(59, 130, 246, 0.15);
 }
 
+.dark .bottom-nav-item:hover,
+.dark .bottom-nav-item.active {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.dark .bottom-nav-item.active {
+    background: rgba(59, 130, 246, 0.25);
+}
+
 .bottom-nav-icon-wrapper {
     position: relative;
     display: flex;
@@ -1555,7 +1600,7 @@
 .bottom-nav-icon {
     width: 24px;
     height: 24px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(55, 65, 81, 0.8);
     transition: all 0.3s ease;
 }
 
@@ -1572,7 +1617,7 @@
 .bottom-nav-label {
     font-size: 9px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(55, 65, 81, 0.8);
     transition: all 0.3s ease;
     text-align: center;
     line-height: 1.1;

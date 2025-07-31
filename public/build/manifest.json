@@ -11,8 +11,13 @@
     "isEntry": true,
     "src": "resources/backend/app.css"
   },
+  "resources/css/app.css": {
+    "file": "assets/app-3e6fa436.css",
+    "isEntry": true,
+    "src": "resources/css/app.css"
+  },
   "resources/frontend/css/app.css": {
-    "file": "assets/app-32e3e752.css",
+    "file": "assets/app-db9bcb4c.css",
     "isEntry": true,
     "src": "resources/frontend/css/app.css"
   },
@@ -50,5 +55,10 @@
     ],
     "isEntry": true,
     "src": "resources/frontend/js/vue-config.js"
+  },
+  "resources/js/touch-sidebar.js": {
+    "file": "assets/touch-sidebar-7910bc6a.js",
+    "isEntry": true,
+    "src": "resources/js/touch-sidebar.js"
   }
 }

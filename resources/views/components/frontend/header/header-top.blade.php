@@ -97,12 +97,12 @@
 
                     <!-- Touch Panel Overlay -->
                     <div x-show="panelOpen" 
-                         x-transition:enter="transition-all ease-out duration-400"
-                         x-transition:enter-start="opacity-0 scale-95"
-                         x-transition:enter-end="opacity-100 scale-100"
-                         x-transition:leave="transition-all ease-in duration-300"
-                         x-transition:leave-start="opacity-100 scale-100"
-                         x-transition:leave-end="opacity-0 scale-95"
+                         x-transition:enter="transition-opacity duration-300"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         x-transition:leave="transition-opacity duration-200"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
                          @click="closePanel()"
                          class="fixed inset-0 z-[9999] bg-black/80 touch-panel-overlay"
                          style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999 !important; background: rgba(0, 0, 0, 0.8) !important;">
@@ -110,12 +110,12 @@
                         <!-- Panel Container -->
                         <div @click.stop class="touch-panel-container"
                              x-show="panelOpen"
-                             x-transition:enter="transform transition-all ease-out duration-400"
-                             x-transition:enter-start="-translate-x-full opacity-0 scale-95"
-                             x-transition:enter-end="translate-x-0 opacity-100 scale-100"
-                             x-transition:leave="transform transition-all ease-in duration-300"
-                             x-transition:leave-start="translate-x-0 opacity-100 scale-100"
-                             x-transition:leave-end="-translate-x-full opacity-0 scale-95"
+                             x-transition:enter="transition-transform duration-300"
+                             x-transition:enter-start="-translate-x-full"
+                             x-transition:enter-end="translate-x-0"
+                             x-transition:leave="transition-transform duration-200"
+                             x-transition:leave-start="translate-x-0"
+                             x-transition:leave-end="-translate-x-full"
                              class="h-full w-80 bg-gradient-to-br from-blue-500/95 to-purple-600/95 dark:from-gray-800/95 dark:to-gray-900/95 backdrop-blur-xl shadow-2xl border-r border-white/20 dark:border-gray-700/30 panel-content"
                              style="position: relative; z-index: 99999;">
                              
@@ -1218,21 +1218,63 @@
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
 }
 
 .touch-panel-container {
     z-index: 9999 !important;
     position: relative !important;
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateX(-100%) !important;
+}
+
+/* Touch Panel Show State */
+.touch-panel-overlay[x-show="true"] {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.touch-panel-container[x-show="true"] {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateX(0) !important;
 }
 
 /* Ensure touch panel is above everything in dark theme */
 .dark .touch-panel-overlay {
     z-index: 9999 !important;
     background: rgba(0, 0, 0, 0.9) !important;
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
 }
 
 .dark .touch-panel-container {
     z-index: 9999 !important;
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateX(-100%) !important;
+}
+
+/* Dark theme show state */
+.dark .touch-panel-overlay[x-show="true"] {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.dark .touch-panel-container[x-show="true"] {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateX(0) !important;
 }
 
 .touch-nav-item .nav-arrow {

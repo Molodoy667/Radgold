@@ -1028,12 +1028,7 @@
     left: 100%;
 }
 
-.touch-nav-item:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
-}
+/* Removed duplicate hover styles */
 
 .touch-nav-item:hover .touch-nav-icon {
     transform: scale(1.1) rotate(5deg);
@@ -1296,7 +1291,6 @@
 .touch-panel-container {
     z-index: 9999 !important;
     position: relative !important;
-    transform: translateX(-100%) !important;
     max-width: 320px !important;
     width: 100% !important;
     overflow: hidden !important;
@@ -1574,38 +1568,25 @@
     height: 54px;
     text-decoration: none;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(156, 163, 175, 0.2);
 }
 
 .bottom-nav-item:hover,
 .bottom-nav-item.active {
     transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(156, 163, 175, 0.4);
+    background: rgba(59, 130, 246, 0.1);
 }
 
 .bottom-nav-item.active {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(156, 163, 175, 0.5);
-}
-
-.dark .bottom-nav-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(59, 130, 246, 0.15);
 }
 
 .dark .bottom-nav-item:hover,
 .dark .bottom-nav-item.active {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(59, 130, 246, 0.2);
 }
 
 .dark .bottom-nav-item.active {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(59, 130, 246, 0.25);
 }
 
 .bottom-nav-icon-wrapper {
@@ -1629,13 +1610,8 @@
 
 .bottom-nav-item:hover .bottom-nav-icon,
 .bottom-nav-item.active .bottom-nav-icon {
-    color: #374151;
+    color: #3b82f6;
     transform: scale(1.1);
-}
-
-.dark .bottom-nav-item:hover .bottom-nav-icon,
-.dark .bottom-nav-item.active .bottom-nav-icon {
-    color: white;
 }
 
 .bottom-nav-label {
@@ -1658,12 +1634,7 @@
 
 .bottom-nav-item:hover .bottom-nav-label,
 .bottom-nav-item.active .bottom-nav-label {
-    color: #374151;
-}
-
-.dark .bottom-nav-item:hover .bottom-nav-label,
-.dark .bottom-nav-item.active .bottom-nav-label {
-    color: white;
+    color: #3b82f6;
 }
 
 .bottom-nav-badge {
@@ -1694,45 +1665,26 @@
 .create-button-wrapper {
     width: 44px;
     height: 44px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(156, 163, 175, 0.3);
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
     transition: all 0.3s ease;
     margin-bottom: 2px;
 }
 
 .create-button:hover .create-button-wrapper {
     transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(156, 163, 175, 0.5);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.dark .create-button-wrapper {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.dark .create-button:hover .create-button-wrapper {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4);
 }
 
 .create-icon {
     width: 24px;
     height: 24px;
-    color: #374151;
-    stroke-width: 3;
-}
-
-.dark .create-icon {
     color: white;
+    stroke-width: 3;
 }
 
 /* Dark Theme Bottom Navigation */
@@ -1741,12 +1693,27 @@
     border-top-color: rgba(75, 85, 99, 0.5) !important;
 }
 
+.dark .bottom-nav-item:hover,
+.dark .bottom-nav-item.active {
+    background: rgba(59, 130, 246, 0.2);
+}
+
 .dark .bottom-nav-icon {
-    color: rgba(255, 255, 255, 0.8);
+    color: #9ca3af;
+}
+
+.dark .bottom-nav-item:hover .bottom-nav-icon,
+.dark .bottom-nav-item.active .bottom-nav-icon {
+    color: #60a5fa;
 }
 
 .dark .bottom-nav-label {
-    color: rgba(255, 255, 255, 0.8);
+    color: #9ca3af;
+}
+
+.dark .bottom-nav-item:hover .bottom-nav-label,
+.dark .bottom-nav-item.active .bottom-nav-label {
+    color: #60a5fa;
 }
 
 .dark .bottom-nav-badge {

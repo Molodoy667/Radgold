@@ -62,115 +62,18 @@
                 <!-- Touch Panel System -->
                 <div x-data="{ 
                     panelOpen: false,
-                    startX: 0,
-                    startY: 0,
-                    currentX: 0,
-                    currentY: 0,
-                    isDragging: false,
-                    touchArea: null,
                     
                     openPanel() { 
                         this.panelOpen = true; 
                         document.body.style.overflow = 'hidden';
-                        this.addPulseEffect();
                     },
                     
                     closePanel() { 
                         this.panelOpen = false; 
                         document.body.style.overflow = '';
-                    },
-                    
-                    handleTouchStart(e) {
-                        // Безпечна перевірка на існування touches
-                        if (!e.touches || !e.touches[0]) return;
-                        
-                        this.startX = e.touches[0].clientX;
-                        this.startY = e.touches[0].clientY;
-                        this.isDragging = true;
-                    },
-                    
-                    handleTouchMove(e) {
-                        if (!this.isDragging) return;
-                        
-                        // Безпечна перевірка на існування touches
-                        if (!e.touches || !e.touches[0]) return;
-                        
-                        this.currentX = e.touches[0].clientX;
-                        this.currentY = e.touches[0].clientY;
-                        
-                        const deltaX = this.currentX - this.startX;
-                        const deltaY = Math.abs(this.currentY - this.startY);
-                        
-                        // Prevent default scrolling for horizontal swipes
-                        if (Math.abs(deltaX) > deltaY && Math.abs(deltaX) > 15) {
-                            e.preventDefault();
-                        }
-                        
-                        // Open panel with swipe right from left edge (150px from left side)
-                        if (!this.panelOpen && this.startX <= 150 && deltaX > 60) {
-                            this.openPanel();
-                            this.isDragging = false;
-                        }
-                        
-                        // Close panel with swipe left
-                        if (this.panelOpen && deltaX < -80) {
-                            this.closePanel();
-                            this.isDragging = false;
-                        }
-                    },
-                    
-                    handleTouchEnd() {
-                        this.isDragging = false;
-                    },
-                    
-                    addPulseEffect() {
-                        const button = this.$el.querySelector('.touch-menu-btn');
-                        if (button) {
-                            button.classList.add('pulse-effect');
-                            setTimeout(() => button.classList.remove('pulse-effect'), 600);
-                        }
                     }
                 }" 
-                @touchstart="handleTouchStart($event)"
-                @touchmove="handleTouchMove($event)" 
-                @touchend="handleTouchEnd()"
-                class="touch-panel-wrapper"
-                x-init="
-                    // Add touch area for left edge swipe detection
-                    this.touchArea = document.createElement('div');
-                    this.touchArea.style.cssText = 'position: fixed; top: 0; left: 0; width: 150px; height: 100vh; z-index: 9997; pointer-events: auto;';
-                    
-                    // Безпечна обробка подій з перевіркою контексту
-                    const handleTouchStartSafe = (e) => {
-                        if (this.handleTouchStart) {
-                            this.handleTouchStart(e);
-                        }
-                    };
-                    
-                    const handleTouchMoveSafe = (e) => {
-                        if (this.handleTouchMove) {
-                            this.handleTouchMove(e);
-                        }
-                    };
-                    
-                    const handleTouchEndSafe = (e) => {
-                        if (this.handleTouchEnd) {
-                            this.handleTouchEnd(e);
-                        }
-                    };
-                    
-                    this.touchArea.addEventListener('touchstart', handleTouchStartSafe, { passive: false });
-                    this.touchArea.addEventListener('touchmove', handleTouchMoveSafe, { passive: false });
-                    this.touchArea.addEventListener('touchend', handleTouchEndSafe, { passive: false });
-                    document.body.appendChild(this.touchArea);
-                    
-                    // Безпечний cleanup
-                    this.$el.addEventListener('alpine:destroying', () => {
-                        if (this.touchArea && document.body.contains(this.touchArea)) {
-                            document.body.removeChild(this.touchArea);
-                        }
-                    });
-                ">
+                class="touch-panel-wrapper">
                      
                     <!-- Touch Menu Button -->
                     <button @click="openPanel()" 
@@ -190,53 +93,7 @@
                         <div class="absolute inset-0 rounded-xl bg-white/30 scale-0 pulse-ring"></div>
                     </button>
 
-                    <!-- Beautiful Pulsing Swipe Indicator -->
-                    <div x-show="!panelOpen" 
-                         x-transition:enter="transition-all ease-out duration-500"
-                         x-transition:enter-start="opacity-0 scale-0 -translate-x-full"
-                         x-transition:enter-end="opacity-100 scale-100 translate-x-0"
-                         x-transition:leave="transition-all ease-in duration-300"
-                         x-transition:leave-start="opacity-100 scale-100 translate-x-0"
-                         x-transition:leave-end="opacity-0 scale-0 -translate-x-full"
-                         class="fixed left-0 top-1/2 transform -translate-y-1/2 z-[999998] swipe-indicator">
-                        
-                        <!-- Main Pulsing Button -->
-                        <button @click="openPanel()" 
-                                class="relative w-12 h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 
-                                       rounded-r-2xl shadow-lg hover:shadow-xl transition-all duration-300
-                                       flex items-center justify-center group overflow-hidden
-                                       hover:w-16 hover:scale-110 active:scale-95
-                                       border-2 border-white/20 hover:border-white/40">
-                            
-                            <!-- Animated Background -->
-                            <div class="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 
-                                        opacity-0 group-hover:opacity-100 transition-opacity duration-500
-                                        animate-gradient-x"></div>
-                            
-                            <!-- Arrow Icon -->
-                            <i class="fas fa-chevron-right text-white text-lg relative z-10 
-                                      group-hover:translate-x-1 transition-transform duration-300
-                                      drop-shadow-sm"></i>
-                            
-                            <!-- Pulse Rings -->
-                            <div class="absolute inset-0 rounded-r-2xl border-2 border-white/30 
-                                        animate-ping opacity-75"></div>
-                            <div class="absolute inset-0 rounded-r-2xl border-2 border-white/20 
-                                        animate-pulse"></div>
-                        </button>
-                        
-                        <!-- Tooltip -->
-                        <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 
-                                    opacity-0 group-hover:opacity-100 transition-all duration-300
-                                    pointer-events-none">
-                            <div class="bg-black/80 text-white text-xs px-2 py-1 rounded 
-                                        whitespace-nowrap backdrop-blur-sm">
-                                {{ __('swipe_or_tap_to_open') }}
-                                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 
-                                            w-2 h-2 bg-black/80 rotate-45"></div>
-                            </div>
-                        </div>
-                    </div>
+
 
                     <!-- Touch Panel Overlay -->
                     <div x-show="panelOpen" 
@@ -1022,35 +879,7 @@
     }
 }
 
-/* Swipe Indicator */
-.swipe-indicator {
-    animation: swipe-hint 4s ease-in-out infinite;
-    position: fixed !important;
-    left: 0 !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    z-index: 9998 !important;
-}
 
-/* Dark theme swipe indicator positioning fix */
-.dark .swipe-indicator {
-    position: fixed !important;
-    left: 0 !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    z-index: 9998 !important;
-}
-
-@keyframes swipe-hint {
-    0%, 80%, 100% {
-        opacity: 0.3;
-        transform: translateY(-50%) translateX(0);
-    }
-    40% {
-        opacity: 0.8;
-        transform: translateY(-50%) translateX(5px);
-    }
-}
 
 .writing-vertical {
     writing-mode: vertical-lr;
@@ -1281,27 +1110,7 @@
     animation: gradient-x 3s ease infinite;
 }
 
-/* Enhanced Swipe Indicator Styles */
-.swipe-indicator button {
-    position: relative;
-    overflow: visible;
-}
 
-.swipe-indicator button::before {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
-    border-radius: inherit;
-    z-index: -1;
-    animation: rotate-gradient 3s linear infinite;
-    opacity: 0.7;
-}
-
-@keyframes rotate-gradient {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
 
 /* Navigation Icons Unified Styling */
 .nav-icon-container {

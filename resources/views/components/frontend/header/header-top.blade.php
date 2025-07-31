@@ -248,7 +248,7 @@
                          x-transition:leave-end="opacity-0 scale-95"
                          @click="closePanel()"
                          class="fixed inset-0 z-[9999] bg-black/80 touch-panel-overlay"
-                         style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999 !important; background: rgba(0, 0, 0, 0.8) !important;"
+                         style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999 !important; background: rgba(0, 0, 0, 0.8) !important;">
                          
                         <!-- Panel Container -->
                         <div @click.stop class="touch-panel-container"
@@ -1420,16 +1420,10 @@
 .dark .touch-panel-overlay {
     z-index: 9999 !important;
     background: rgba(0, 0, 0, 0.9) !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
 }
 
 .dark .touch-panel-container {
     z-index: 9999 !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
 }
 
 .touch-nav-item .nav-arrow {
@@ -1905,86 +1899,40 @@
     background-color: #4b5563 !important;
 }
 
-/* Z-Index Management for Touch Panel - REASONABLE VALUES */
-.touch-panel-overlay {
-    z-index: 9999 !important;
-}
-
+/* Touch Panel Wrapper Positioning */
 .touch-panel-wrapper {
     z-index: 9998 !important;
     position: relative !important;
-}
-
-.touch-panel-container {
-    z-index: 9999 !important;
-    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    vertical-align: middle !important;
 }
 
 /* Touch button - high but reasonable z-index */
 .touch-menu-btn {
     position: relative !important;
     z-index: 10000 !important;
-}
-
-/* Touch button positioning fixes - CAREFUL APPROACH */
-.touch-menu-btn {
-    position: relative !important;
     vertical-align: middle !important;
     top: auto !important;
     transform: none !important;
 }
 
+/* Dark theme touch button */
 .dark .touch-menu-btn {
     position: relative !important;
     top: auto !important;
     vertical-align: middle !important;
     transform: none !important;
+    z-index: 10000 !important;
 }
 
-/* Touch panel wrapper positioning */
-.touch-panel-wrapper {
-    display: inline-flex !important;
-    align-items: center !important;
-    vertical-align: middle !important;
-}
-
+/* Dark theme touch panel wrapper */
 .dark .touch-panel-wrapper {
     display: inline-flex !important;
     align-items: center !important;
     vertical-align: middle !important;
     position: relative !important;
     z-index: 9998 !important;
-}
-
-/* Dark theme touch panel visibility fixes */
-.dark .touch-panel-overlay[x-show="true"],
-.dark .touch-panel-container[x-show="true"] {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Dark theme touch panel animation fixes */
-.dark .touch-panel-container[x-transition\\:enter],
-.dark .touch-panel-container[x-transition\\:enter-start],
-.dark .touch-panel-container[x-transition\\:enter-end] {
-    display: block !important;
-    visibility: visible !important;
-}
-
-/* Dark theme touch panel force visibility */
-.dark .touch-panel-overlay[x-show],
-.dark .touch-panel-container[x-show] {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Dark theme touch panel overlay background fix */
-.dark .touch-panel-overlay {
-    background: rgba(0, 0, 0, 0.9) !important;
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
 }
 
 

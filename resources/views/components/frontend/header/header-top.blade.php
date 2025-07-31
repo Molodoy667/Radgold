@@ -192,7 +192,7 @@
                                                      <i class="fas fa-chart-line text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('overview') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                                                                            <!-- My Ads -->
@@ -203,7 +203,7 @@
                                                      <i class="fas fa-store text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('my_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Post Listing -->
@@ -214,7 +214,7 @@
                                                      <i class="fas fa-bullhorn text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('post_listing') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Messages -->
@@ -225,7 +225,7 @@
                                                      <i class="fas fa-paper-plane text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('message') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                              <!-- Favorites -->
@@ -236,7 +236,7 @@
                                                      <i class="fas fa-bookmark text-white"></i>
                                                  </div>
                                                  <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('favorite_ads') }}</span>
-                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                 <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                              </a>
 
                                                                                           <!-- Public Profile -->
@@ -247,7 +247,7 @@
                                                     <i class="fas fa-user text-white"></i>
                                                 </div>
                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('public_profile') }}</span>
-                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Resubmission Request -->
@@ -258,7 +258,7 @@
                                                     <i class="fas fa-undo text-white"></i>
                                                 </div>
                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('resubmission_request') }}</span>
-                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Plans & Billing -->
@@ -269,7 +269,7 @@
                                                     <i class="fas fa-credit-card text-white"></i>
                                                 </div>
                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('plans_billing') }}</span>
-                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Blocked Users -->
@@ -280,7 +280,7 @@
                                                     <i class="fas fa-user-slash text-white"></i>
                                                 </div>
                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('Blocked List') }}</span>
-                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Affiliate System -->
@@ -297,7 +297,7 @@
                                                         {{ __('become_an_affiliator') }}
                                                     @endif
                                                 </span>
-                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Verify Account -->
@@ -308,7 +308,7 @@
                                                     <i class="fas fa-user-check text-white"></i>
                                                 </div>
                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('verify_account') }}</span>
-                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                             <!-- Account Settings -->
@@ -319,7 +319,7 @@
                                                     <i class="fas fa-user-cog text-white"></i>
                                                 </div>
                                                 <span class="touch-nav-text text-gray-800 dark:text-white">{{ __('account_setting') }}</span>
-                                                <i class="fas fa-chevron-right text-gray-600 dark:text-gray-600 dark:text-white/70 nav-arrow"></i>
+                                                <i class="fas fa-chevron-right text-gray-600 dark:text-white/70 nav-arrow"></i>
                                             </a>
 
                                              <!-- ========================================
@@ -1458,12 +1458,19 @@
     color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* Specific overrides for readability */
+/* Specific overrides for readability - Dark theme only */
+.dark .glass-header .text-gray-900,
+.dark .glass-header .text-gray-600,
+.dark .glass-header .dark\\:text-white,
+.dark .glass-header .dark\\:text-gray-400 {
+    color: white !important;
+}
+
+/* Light theme text colors */
 .glass-header .text-gray-900,
 .glass-header .text-gray-600,
-.glass-header .dark\\:text-white,
-.glass-header .dark\\:text-gray-400 {
-    color: white !important;
+.glass-header .text-gray-800 {
+    color: #374151 !important;
 }
 
 /* Header Glass Dark Theme */
@@ -1567,25 +1574,38 @@
     height: 54px;
     text-decoration: none;
     cursor: pointer;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(156, 163, 175, 0.2);
 }
 
 .bottom-nav-item:hover,
 .bottom-nav-item.active {
     transform: translateY(-2px);
-    background: rgba(59, 130, 246, 0.1);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(156, 163, 175, 0.4);
 }
 
 .bottom-nav-item.active {
-    background: rgba(59, 130, 246, 0.15);
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(156, 163, 175, 0.5);
+}
+
+.dark .bottom-nav-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dark .bottom-nav-item:hover,
 .dark .bottom-nav-item.active {
-    background: rgba(59, 130, 246, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .dark .bottom-nav-item.active {
-    background: rgba(59, 130, 246, 0.25);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .bottom-nav-icon-wrapper {
@@ -1609,8 +1629,13 @@
 
 .bottom-nav-item:hover .bottom-nav-icon,
 .bottom-nav-item.active .bottom-nav-icon {
-    color: #3b82f6;
+    color: #374151;
     transform: scale(1.1);
+}
+
+.dark .bottom-nav-item:hover .bottom-nav-icon,
+.dark .bottom-nav-item.active .bottom-nav-icon {
+    color: white;
 }
 
 .bottom-nav-label {
@@ -1633,7 +1658,12 @@
 
 .bottom-nav-item:hover .bottom-nav-label,
 .bottom-nav-item.active .bottom-nav-label {
-    color: #3b82f6;
+    color: #374151;
+}
+
+.dark .bottom-nav-item:hover .bottom-nav-label,
+.dark .bottom-nav-item.active .bottom-nav-label {
+    color: white;
 }
 
 .bottom-nav-badge {
@@ -1664,26 +1694,45 @@
 .create-button-wrapper {
     width: 44px;
     height: 44px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(156, 163, 175, 0.3);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     margin-bottom: 2px;
 }
 
 .create-button:hover .create-button-wrapper {
     transform: scale(1.1);
-    box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4);
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(156, 163, 175, 0.5);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.dark .create-button-wrapper {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .create-button:hover .create-button-wrapper {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .create-icon {
     width: 24px;
     height: 24px;
-    color: white;
+    color: #374151;
     stroke-width: 3;
+}
+
+.dark .create-icon {
+    color: white;
 }
 
 /* Dark Theme Bottom Navigation */
@@ -1692,27 +1741,12 @@
     border-top-color: rgba(75, 85, 99, 0.5) !important;
 }
 
-.dark .bottom-nav-item:hover,
-.dark .bottom-nav-item.active {
-    background: rgba(59, 130, 246, 0.2);
-}
-
 .dark .bottom-nav-icon {
-    color: #9ca3af;
-}
-
-.dark .bottom-nav-item:hover .bottom-nav-icon,
-.dark .bottom-nav-item.active .bottom-nav-icon {
-    color: #60a5fa;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .dark .bottom-nav-label {
-    color: #9ca3af;
-}
-
-.dark .bottom-nav-item:hover .bottom-nav-label,
-.dark .bottom-nav-item.active .bottom-nav-label {
-    color: #60a5fa;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .dark .bottom-nav-badge {

@@ -426,7 +426,7 @@
                                         </nav>
                                     </div>
                                 </div>
-                                                         @else
+                                 @else
                                  <!-- ========================================
                                       GUEST USER PANEL - Панель для гостей
                                       ======================================== -->
@@ -637,10 +637,6 @@
                                                  <span class="touch-nav-text text-white">{{ __('contact') }}</span>
                                                  <i class="fas fa-chevron-right text-white/70 nav-arrow"></i>
                                              </a>
-                                         </nav>
-                                     </div>
-                                </div>
-                            @endauth
                                          </nav>
                                      </div>
                                 </div>

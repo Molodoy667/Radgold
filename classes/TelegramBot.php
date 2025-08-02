@@ -159,7 +159,18 @@ class TelegramBot {
     }
     
     private function handleHelp($chatId) {
-        $this->sendMessage($chatId, $this->config['messages']['help']);
+        // Получаем текст помощи из базы данных
+        $helpText = $this->db->fetch(
+            'SELECT setting_value FROM bot_settings WHERE setting_key = "help_text"'
+        );
+        
+        if ($helpText && !empty($helpText['setting_value'])) {
+            $text = $helpText['setting_value'];
+        } else {
+            $text = $this->config['messages']['help'];
+        }
+        
+        $this->sendMessage($chatId, $text);
     }
     
     private function handleCreateDeal($chatId, $userId) {
@@ -246,11 +257,20 @@ class TelegramBot {
     }
     
     private function handleSupport($chatId) {
-        $text = "📞 <b>Техническая поддержка</b>\n\n";
-        $text .= "Если у вас возникли вопросы или проблемы, обратитесь к администратору:\n\n";
-        $text .= "📧 Email: support@escrowbot.com\n";
-        $text .= "💬 Telegram: @support_bot\n\n";
-        $text .= "⏰ Время работы: 24/7";
+        // Получаем текст поддержки из базы данных
+        $supportText = $this->db->fetch(
+            'SELECT setting_value FROM bot_settings WHERE setting_key = "support_text"'
+        );
+        
+        if ($supportText && !empty($supportText['setting_value'])) {
+            $text = $supportText['setting_value'];
+        } else {
+            $text = "📞 <b>Техническая поддержка</b>\n\n";
+            $text .= "Если у вас возникли вопросы или проблемы, обратитесь к администратору:\n\n";
+            $text .= "📧 Email: support@escrowbot.com\n";
+            $text .= "💬 Telegram: @support_bot\n\n";
+            $text .= "⏰ Время работы: 24/7";
+        }
         
         $this->sendMessage($chatId, $text);
     }
@@ -305,6 +325,22 @@ class TelegramBot {
                 $this->handleStart($chatId, $userId);
                 break;
                 
+            case 'my_deals':
+                $this->showMyDeals($chatId, $messageId, $userId);
+                break;
+                
+            case 'show_balance':
+                $this->showBalance($chatId, $messageId, $userId);
+                break;
+                
+            case 'withdraw':
+                $this->showWithdrawForm($chatId, $messageId, $userId);
+                break;
+                
+            case 'create_deal_menu':
+                $this->handleCreateDealCallback($chatId, $messageId, $userId);
+                break;
+                
             default:
                 if (strpos($data, 'payment_') === 0) {
                     $this->processPaymentCallback($chatId, $messageId, $userId, $data);
@@ -312,6 +348,8 @@ class TelegramBot {
                     $this->processAmountCallback($chatId, $messageId, $userId, $data);
                 } elseif (strpos($data, 'deal_amount_') === 0) {
                     $this->processDealAmountCallback($chatId, $messageId, $userId, $data);
+                } elseif (strpos($data, 'withdraw_') === 0) {
+                    $this->processWithdrawCallback($chatId, $messageId, $userId, $data);
                 } elseif (strpos($data, 'deal_') === 0) {
                     $this->processDealCallback($chatId, $messageId, $userId, $data);
                 }
@@ -507,6 +545,9 @@ class TelegramBot {
             $tempData = json_decode($userData['temp_data'], true);
             if ($tempData['step'] === 'enter_amount') {
                 $this->handleAmountInput($chatId, $userId, $text, $tempData['payment_method']);
+                return;
+            } elseif ($tempData['step'] === 'withdraw_amount') {
+                $this->handleWithdrawAmountInput($chatId, $userId, $text);
                 return;
             } elseif (strpos($tempData['step'], 'create_deal_') === 0) {
                 $this->handleDealCreationStep($chatId, $userId, $text, $tempData);
@@ -797,5 +838,216 @@ class TelegramBot {
         } catch (Exception $e) {
             $this->sendMessage($chatId, "❌ Ошибка создания сделки: " . $e->getMessage());
         }
+    }
+    
+    private function showMyDeals($chatId, $messageId, $userId) {
+        $deal = new Deal($this->db);
+        $deals = $deal->getUserDeals($userId);
+        
+        if (empty($deals)) {
+            $text = "📋 <b>Ваши сделки</b>\n\n";
+            $text .= "У вас пока нет сделок.\n";
+            $text .= "Создайте первую сделку, чтобы начать работу с гарантом!";
+            
+            $keyboard = [
+                'inline_keyboard' => [
+                    [['text' => '💼 Создать сделку', 'callback_data' => 'create_deal_menu']],
+                    [['text' => '🏠 Главное меню', 'callback_data' => 'main_menu']]
+                ]
+            ];
+        } else {
+            $text = "📋 <b>Ваши сделки</b>\n\n";
+            
+            foreach (array_slice($deals, 0, 5) as $dealData) {
+                $status = $this->getStatusEmoji($dealData['status']);
+                $role = '';
+                if ($dealData['seller_id'] == $userId) $role = '💰 Продавец';
+                if ($dealData['buyer_id'] == $userId) $role = '🛒 Покупатель';
+                
+                $text .= "🔹 <b>#{$dealData['deal_number']}</b> {$role}\n";
+                $text .= "📝 {$dealData['title']}\n";
+                $text .= "💰 " . number_format($dealData['amount'], 2) . " ₽\n";
+                $text .= "📊 {$status}\n";
+                $text .= "📅 " . date('d.m.Y H:i', strtotime($dealData['created_at'])) . "\n\n";
+            }
+            
+            if (count($deals) > 5) {
+                $text .= "... и еще " . (count($deals) - 5) . " сделок\n\n";
+            }
+            
+            $keyboard = [
+                'inline_keyboard' => [
+                    [['text' => '💼 Создать сделку', 'callback_data' => 'create_deal_menu']],
+                    [['text' => '🔄 Обновить', 'callback_data' => 'my_deals']],
+                    [['text' => '🏠 Главное меню', 'callback_data' => 'main_menu']]
+                ]
+            ];
+        }
+        
+        $this->editMessage($chatId, $messageId, $text, $keyboard);
+    }
+    
+    private function showBalance($chatId, $messageId, $userId) {
+        $user = new User($this->db);
+        $userData = $user->getUser($userId);
+        
+        $text = "💰 <b>Ваш баланс:</b> " . number_format($userData['balance'], 2) . " ₽\n\n";
+        $text .= "📊 <b>Статистика:</b>\n";
+        $text .= "⭐ Рейтинг: " . number_format($userData['rating'], 1) . "/5.0\n";
+        $text .= "📈 Сделок завершено: {$userData['deals_count']}\n";
+        $text .= "✅ Верификация: " . ($userData['is_verified'] ? 'Пройдена' : 'Не пройдена');
+        
+        $keyboard = [
+            'inline_keyboard' => [
+                [['text' => '💳 Пополнить баланс', 'callback_data' => 'add_balance']],
+                [['text' => '💸 Вывести средства', 'callback_data' => 'withdraw']],
+                [['text' => '🏠 Главное меню', 'callback_data' => 'main_menu']]
+            ]
+        ];
+        
+        $this->editMessage($chatId, $messageId, $text, $keyboard);
+    }
+    
+    private function showWithdrawForm($chatId, $messageId, $userId) {
+        $user = new User($this->db);
+        $userData = $user->getUser($userId);
+        
+        if ($userData['balance'] < 100) {
+            $text = "💸 <b>Вывод средств</b>\n\n";
+            $text .= "❌ Недостаточно средств для вывода\n";
+            $text .= "Минимальная сумма вывода: 100 ₽\n";
+            $text .= "Ваш баланс: " . number_format($userData['balance'], 2) . " ₽";
+            
+            $keyboard = [
+                'inline_keyboard' => [
+                    [['text' => '💳 Пополнить баланс', 'callback_data' => 'add_balance']],
+                    [['text' => '🔙 Назад', 'callback_data' => 'show_balance']]
+                ]
+            ];
+        } else {
+            $text = "💸 <b>Вывод средств</b>\n\n";
+            $text .= "💰 Доступно для вывода: " . number_format($userData['balance'], 2) . " ₽\n\n";
+            $text .= "💵 <b>Выберите сумму для вывода:</b>\n";
+            $text .= "• Минимум: 100 ₽\n";
+            $text .= "• Максимум: " . number_format($userData['balance'], 2) . " ₽\n\n";
+            $text .= "✏️ Отправьте сообщение с суммой для вывода";
+            
+            // Сохраняем состояние вывода средств
+            $this->db->query(
+                'UPDATE users SET temp_data = ? WHERE telegram_id = ?',
+                [json_encode(['step' => 'withdraw_amount']), $userId]
+            );
+            
+            $keyboard = [
+                'inline_keyboard' => [
+                    [['text' => '💰 100 ₽', 'callback_data' => 'withdraw_100']],
+                    [['text' => '💰 500 ₽', 'callback_data' => 'withdraw_500']],
+                    [['text' => '💰 1000 ₽', 'callback_data' => 'withdraw_1000']],
+                    [['text' => '💸 Весь баланс', 'callback_data' => 'withdraw_all']],
+                    [['text' => '🔙 Назад', 'callback_data' => 'show_balance']]
+                ]
+            ];
+        }
+        
+        $this->editMessage($chatId, $messageId, $text, $keyboard);
+    }
+    
+    private function processWithdrawCallback($chatId, $messageId, $userId, $data) {
+        $user = new User($this->db);
+        $userData = $user->getUser($userId);
+        
+        $amount = 0;
+        if ($data === 'withdraw_100') $amount = 100;
+        elseif ($data === 'withdraw_500') $amount = 500;
+        elseif ($data === 'withdraw_1000') $amount = 1000;
+        elseif ($data === 'withdraw_all') $amount = $userData['balance'];
+        
+        if ($amount > 0) {
+            $this->processWithdrawRequest($chatId, $messageId, $userId, $amount);
+        }
+    }
+    
+    private function processWithdrawRequest($chatId, $messageId, $userId, $amount) {
+        $user = new User($this->db);
+        $userData = $user->getUser($userId);
+        
+        if ($amount > $userData['balance']) {
+            $this->editMessage($chatId, $messageId, "❌ Недостаточно средств на балансе");
+            return;
+        }
+        
+        if ($amount < 100) {
+            $this->editMessage($chatId, $messageId, "❌ Минимальная сумма вывода: 100 ₽");
+            return;
+        }
+        
+        // Создаем заявку на вывод
+        $requestId = $this->db->insert('withdrawal_requests', [
+            'user_id' => $userId,
+            'amount' => $amount,
+            'status' => 'pending',
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+        
+        // Очищаем временные данные
+        $this->db->query('UPDATE users SET temp_data = NULL WHERE telegram_id = ?', [$userId]);
+        
+        $text = "✅ <b>Заявка на вывод создана!</b>\n\n";
+        $text .= "📋 Номер заявки: <b>#{$requestId}</b>\n";
+        $text .= "💰 Сумма: " . number_format($amount, 2) . " ₽\n";
+        $text .= "📅 Дата: " . date('d.m.Y H:i') . "\n\n";
+        $text .= "⏳ <b>Статус:</b> Ожидает обработки\n\n";
+        $text .= "📞 Администратор свяжется с вами для уточнения реквизитов вывода.\n";
+        $text .= "⏰ Обработка заявок: в течение 24 часов";
+        
+        $keyboard = [
+            'inline_keyboard' => [
+                [['text' => '💰 Баланс', 'callback_data' => 'show_balance']],
+                [['text' => '🏠 Главное меню', 'callback_data' => 'main_menu']]
+            ]
+        ];
+        
+        if ($messageId) {
+            $this->editMessage($chatId, $messageId, $text, $keyboard);
+        } else {
+            $this->sendMessage($chatId, $text, $keyboard);
+        }
+    }
+    
+    private function handleWithdrawAmountInput($chatId, $userId, $text) {
+        $amount = floatval(str_replace([' ', ','], ['', '.'], $text));
+        
+        if ($amount < 100) {
+            $this->sendMessage($chatId, "❌ Минимальная сумма вывода: 100 ₽");
+            return;
+        }
+        
+        $user = new User($this->db);
+        $userData = $user->getUser($userId);
+        
+        if ($amount > $userData['balance']) {
+            $this->sendMessage($chatId, "❌ Недостаточно средств на балансе: " . number_format($userData['balance'], 2) . " ₽");
+            return;
+        }
+        
+        $this->processWithdrawRequest($chatId, null, $userId, $amount);
+    }
+    
+    private function handleCreateDealCallback($chatId, $messageId, $userId) {
+        $keyboard = [
+            'inline_keyboard' => [
+                [['text' => '🛒 Я покупатель', 'callback_data' => 'create_deal_buyer']],
+                [['text' => '💰 Я продавец', 'callback_data' => 'create_deal_seller']],
+                [['text' => '❌ Отмена', 'callback_data' => 'cancel']]
+            ]
+        ];
+        
+        $text = "💼 <b>Создание новой сделки</b>\n\n";
+        $text .= "Выберите вашу роль в сделке:\n\n";
+        $text .= "🛒 <b>Покупатель</b> - вы покупаете товар/услугу\n";
+        $text .= "💰 <b>Продавец</b> - вы продаете товар/услугу\n\n";
+        $text .= "ℹ️ Комиссия сервиса: {$this->config['escrow']['commission_percent']}%";
+        
+        $this->editMessage($chatId, $messageId, $text, $keyboard);
     }
 }

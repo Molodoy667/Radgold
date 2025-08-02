@@ -97,6 +97,12 @@ $recentUsers = $db->fetchAll('SELECT * FROM users ORDER BY created_at DESC LIMIT
                     <a class="nav-link" href="payment_settings.php">
                         <i class="bi bi-wallet2 me-2"></i> Реквизиты
                     </a>
+                    <a class="nav-link" href="withdrawals.php">
+                        <i class="bi bi-cash-stack me-2"></i> Вывод средств
+                    </a>
+                    <a class="nav-link" href="content.php">
+                        <i class="bi bi-file-text me-2"></i> Контент
+                    </a>
                     <a class="nav-link" href="logs.php">
                         <i class="bi bi-journal-text me-2"></i> Логи
                     </a>

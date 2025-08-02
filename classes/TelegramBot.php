@@ -161,13 +161,14 @@ class TelegramBot {
     private function handleHelp($chatId) {
         // Получаем текст помощи из базы данных
         $helpText = $this->db->fetch(
-            'SELECT setting_value FROM bot_settings WHERE setting_key = "help_text"'
+            'SELECT setting_value FROM bot_settings WHERE setting_key = ?',
+            ['help_text']
         );
         
         if ($helpText && !empty($helpText['setting_value'])) {
             $text = $helpText['setting_value'];
         } else {
-            $text = $this->config['messages']['help'];
+            $text = $this->config['messages']['help'] ?? "📋 Помощь временно недоступна";
         }
         
         $this->sendMessage($chatId, $text);
@@ -259,7 +260,8 @@ class TelegramBot {
     private function handleSupport($chatId) {
         // Получаем текст поддержки из базы данных
         $supportText = $this->db->fetch(
-            'SELECT setting_value FROM bot_settings WHERE setting_key = "support_text"'
+            'SELECT setting_value FROM bot_settings WHERE setting_key = ?',
+            ['support_text']
         );
         
         if ($supportText && !empty($supportText['setting_value'])) {
@@ -267,8 +269,8 @@ class TelegramBot {
         } else {
             $text = "📞 <b>Техническая поддержка</b>\n\n";
             $text .= "Если у вас возникли вопросы или проблемы, обратитесь к администратору:\n\n";
-            $text .= "📧 Email: support@escrowbot.com\n";
-            $text .= "💬 Telegram: @support_bot\n\n";
+            $text .= "📧 Email: support@gamegarant.com\n";
+            $text .= "💬 Telegram: @gamegarant_support\n\n";
             $text .= "⏰ Время работы: 24/7";
         }
         

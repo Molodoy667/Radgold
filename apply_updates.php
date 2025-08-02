@@ -12,14 +12,16 @@ try {
     // Добавляем поле temp_data если его нет
     echo "1. Добавление поля temp_data в таблицу users...\n";
     try {
-        $db->query("ALTER TABLE users ADD COLUMN temp_data TEXT NULL AFTER updated_at");
-        echo "   ✅ Поле temp_data добавлено\n";
-    } catch (Exception $e) {
-        if (strpos($e->getMessage(), 'Duplicate column name') !== false) {
-            echo "   ℹ️  Поле temp_data уже существует\n";
+        // Проверяем, существует ли поле
+        $columns = $db->fetchAll("SHOW COLUMNS FROM users LIKE 'temp_data'");
+        if (empty($columns)) {
+            $db->query("ALTER TABLE users ADD COLUMN temp_data TEXT NULL");
+            echo "   ✅ Поле temp_data добавлено\n";
         } else {
-            echo "   ❌ Ошибка: " . $e->getMessage() . "\n";
+            echo "   ℹ️  Поле temp_data уже существует\n";
         }
+    } catch (Exception $e) {
+        echo "   ❌ Ошибка: " . $e->getMessage() . "\n";
     }
     
     // Добавляем настройки платежных систем
@@ -59,21 +61,23 @@ try {
     echo "\n4. Добавление индексов для оптимизации...\n";
     
     $indexes = [
-        'idx_payments_status' => 'CREATE INDEX idx_payments_status ON payments(status)',
-        'idx_payments_user_id' => 'CREATE INDEX idx_payments_user_id ON payments(user_id)',
-        'idx_users_temp_data' => 'CREATE INDEX idx_users_temp_data ON users(temp_data(100))'
+        'idx_payments_status' => ['table' => 'payments', 'column' => 'status'],
+        'idx_payments_user_id' => ['table' => 'payments', 'column' => 'user_id'],
+        'idx_users_temp_data' => ['table' => 'users', 'column' => 'temp_data(100)']
     ];
     
-    foreach ($indexes as $indexName => $sql) {
+    foreach ($indexes as $indexName => $info) {
         try {
-            $db->query($sql);
-            echo "   ✅ Индекс {$indexName} создан\n";
-        } catch (Exception $e) {
-            if (strpos($e->getMessage(), 'Duplicate key name') !== false) {
-                echo "   ℹ️  Индекс {$indexName} уже существует\n";
+            // Проверяем, существует ли индекс
+            $existingIndexes = $db->fetchAll("SHOW INDEX FROM {$info['table']} WHERE Key_name = '{$indexName}'");
+            if (empty($existingIndexes)) {
+                $db->query("CREATE INDEX {$indexName} ON {$info['table']}({$info['column']})");
+                echo "   ✅ Индекс {$indexName} создан\n";
             } else {
-                echo "   ❌ Ошибка создания индекса {$indexName}: " . $e->getMessage() . "\n";
+                echo "   ℹ️  Индекс {$indexName} уже существует\n";
             }
+        } catch (Exception $e) {
+            echo "   ℹ️  Индекс {$indexName}: " . $e->getMessage() . "\n";
         }
     }
     
@@ -89,9 +93,8 @@ try {
                 admin_comment TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                INDEX idx_user_id (user_id),
-                INDEX idx_status (status),
-                FOREIGN KEY (user_id) REFERENCES users(telegram_id) ON DELETE CASCADE
+                INDEX idx_wr_user_id (user_id),
+                INDEX idx_wr_status (status)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
         echo "   ✅ Таблица withdrawal_requests создана\n";

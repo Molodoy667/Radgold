@@ -323,6 +323,8 @@ class TelegramBot {
                 break;
                 
             case 'main_menu':
+                // Очищаем temp_data при возврате в главное меню
+                $this->db->query('UPDATE users SET temp_data = NULL WHERE telegram_id = ?', [$userId]);
                 $this->deleteMessage($chatId, $messageId);
                 $this->handleStart($chatId, $userId);
                 break;
@@ -539,7 +541,52 @@ class TelegramBot {
     }
     
     private function processText($chatId, $userId, $text) {
-        // Проверяем, не ожидает ли пользователь ввода суммы
+        // Сначала проверяем основные команды и кнопки меню
+        switch ($text) {
+            case '/start':
+                // Очищаем temp_data при старте
+                $this->db->query('UPDATE users SET temp_data = NULL WHERE telegram_id = ?', [$userId]);
+                $this->handleStart($chatId, $userId);
+                return;
+                
+            case '💼 Создать сделку':
+                // Очищаем temp_data при переходе к созданию сделки
+                $this->db->query('UPDATE users SET temp_data = NULL WHERE telegram_id = ?', [$userId]);
+                $this->handleCreateDeal($chatId, $userId);
+                return;
+                
+            case '📋 Мои сделки':
+                // Очищаем temp_data при переходе к сделкам
+                $this->db->query('UPDATE users SET temp_data = NULL WHERE telegram_id = ?', [$userId]);
+                $this->handleMyDeals($chatId, $userId);
+                return;
+                
+            case '💰 Баланс':
+                // Очищаем temp_data при переходе к балансу
+                $this->db->query('UPDATE users SET temp_data = NULL WHERE telegram_id = ?', [$userId]);
+                $this->handleBalance($chatId, $userId);
+                return;
+                
+            case '👤 Профиль':
+                // Очищаем temp_data при переходе к профилю
+                $this->db->query('UPDATE users SET temp_data = NULL WHERE telegram_id = ?', [$userId]);
+                $this->handleProfile($chatId, $userId);
+                return;
+                
+            case '❓ Помощь':
+                // Очищаем temp_data при переходе к помощи
+                $this->db->query('UPDATE users SET temp_data = NULL WHERE telegram_id = ?', [$userId]);
+                $this->handleHelp($chatId);
+                return;
+                
+            case '📞 Поддержка':
+                // Очищаем temp_data при переходе к поддержке
+                $this->db->query('UPDATE users SET temp_data = NULL WHERE telegram_id = ?', [$userId]);
+                $this->handleSupport($chatId);
+                return;
+        }
+        
+        // Если это не команда меню, проверяем temp_data для специальных состояний
         $user = new User($this->db);
         $userData = $user->getUser($userId);
         
@@ -557,35 +604,8 @@ class TelegramBot {
             }
         }
         
-        // Обработка текстовых сообщений (кнопки клавиатуры)
-        switch ($text) {
-            case '💼 Создать сделку':
-                $this->handleCreateDeal($chatId, $userId);
-                break;
-                
-            case '📋 Мои сделки':
-                $this->handleMyDeals($chatId, $userId);
-                break;
-                
-            case '💰 Баланс':
-                $this->handleBalance($chatId, $userId);
-                break;
-                
-            case '👤 Профиль':
-                $this->handleProfile($chatId, $userId);
-                break;
-                
-            case '❓ Помощь':
-                $this->handleHelp($chatId);
-                break;
-                
-            case '📞 Поддержка':
-                $this->handleSupport($chatId);
-                break;
-                
-            default:
-                $this->sendMessage($chatId, "❓ Используйте кнопки меню или команды для навигации.");
-        }
+        // Если ничего не подошло
+        $this->sendMessage($chatId, "❓ Используйте кнопки меню или команды для навигации.");
     }
     
     private function handleAmountInput($chatId, $userId, $text, $method) {

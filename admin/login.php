@@ -29,7 +29,7 @@ if (isset($_SESSION['admin_logged_in'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход в админ-панель - Escrow Bot</title>
+    <title>Вход в админ-панель - Game Garant by Неадекват</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -87,7 +87,7 @@ if (isset($_SESSION['admin_logged_in'])) {
                 <i class="bi bi-shield-check fs-1 text-white"></i>
             </div>
             <h2 class="mb-4">Админ-панель</h2>
-            <p class="text-muted mb-4">Escrow Bot Management</p>
+            <p class="text-muted mb-4">Game Garant by Неадекват Management</p>
         </div>
 
         <?php if ($error): ?>

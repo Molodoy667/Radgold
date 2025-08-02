@@ -1,0 +1,78 @@
+Railway Deployment Guide for Telegram Garant Bot
+==============================================
+
+0. Prerequisites
+----------------
+* GitHub repository `Molodoy667/Radgold` with the **Pytons** branch contains the bot code.
+* You have a Railway account (https://railway.app) and are logged-in.
+* A bot token from @BotFather and, если нужно, Qiwi-API токен.
+
+1. Prepare the repository (locally, once)
+-----------------------------------------
+1.  Inside the root of the project add a **requirements.txt** file:
+    ````text
+    pyTelegramBotAPI==4.12.0
+    requests==2.31.0
+    ````
+    Commit & push it to the *Pytons* branch – Railway will install these packages automatically.
+
+2.  (Опционально) Переместите файл базы SQLite в отдельную директорию и измените путь в `config.py`, чтобы облегчить подключение тома (volume) Railway.
+    Напр.:
+    * Создайте каталог `data` и переместите `db.db` туда → `data/db.db`.
+    * В `config.py` замените строку:
+      ```python
+      db = 'data/db.db'
+      ```
+    Commit & push.
+
+2. Создание проекта Railway
+---------------------------
+1. На dashboard Railway нажмите **New Project** → **Deploy from GitHub Repo**.
+2. Дайте Railway доступ к вашему репозиторию, выберите **Radgold** и ветку **Pytons**.
+3. Railway проанализирует репозиторий и определит среду `Python`.
+4. В разделе **Variables** нажмите *New Variable* и добавьте:
+   ```text
+   TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   ADMIN_ID=123456789
+   ADMIN2_ID=987654321      # если нужно
+   NUMBER_QIWI=+70000000000 # номер кошелька
+   TOKEN_QIWI=xxxxxxxxxxxxxxxx
+   ```
+   Вместо того чтобы хардкодить значения в `config.py`, можете прочитать их так:
+   ```python
+   import os
+   TOKEN = os.getenv('TOKEN')
+   admin = int(os.getenv('ADMIN_ID'))
+   admin2 = int(os.getenv('ADMIN2_ID', 0))
+   number_qiwi = os.getenv('NUMBER_QIWI')
+   token_qiwi = os.getenv('TOKEN_QIWI')
+   ```
+
+5. Вкладка **Settings → Deployments**
+   * **Install Command**: `pip install -r requirements.txt`
+   * **Start Command**  : `python main.py`
+
+3. Настройка постоянного хранения данных (Volume)
+-------------------------------------------------
+SQLite-файл стирается при каждом новом деплое, поэтому создайте Volume:
+1. Откройте вкладку **Add New** → **Storage** → **Create Volume**.
+2. Укажите путь монтирования `/app/data` (или тот, что вы задали).
+3. Railway автоматически примонтирует том; файл `db.db` будет жить там между релизами.
+
+4. Деплой
+---------
+Нажмите **Deploy**. Railway выполнит билд (установит зависимости) и запустит `python main.py`. В журнале логов вы увидите строки TeleBot вроде `* Running on polling`. Бот онлайн!
+
+5. Обновления
+-------------
+1. Меняете код → commit → push в ветку **Pytons** → Railway автодеплой.
+2. Переменная/секрет изменился → редактируете в **Variables** и перезапускаете сервис.
+
+6. Полезные советы
+------------------
+* Ограничение free-плана Railway: 512 MB RAM, 0.2 vCPU, 5 000 часов/месяц.
+* Если бот перестал отвечать, смотрите **Logs**.
+* Для локальной отладки используйте `python main.py`. Данные в Railway-томе не затронутся.
+* Помните, что Qiwi запретил прямые запросы из многих дата-центров. При ошибках проверьте IP-блок.
+
+Готово! Теперь ваш Telegram-бот развёрнут на Railway и работает 24/7.

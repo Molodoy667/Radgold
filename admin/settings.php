@@ -101,6 +101,9 @@ foreach ($settingsData as $setting) {
                     <a class="nav-link" href="payments.php">
                         <i class="bi bi-credit-card me-2"></i> Платежи
                     </a>
+                    <a class="nav-link" href="payment_settings.php">
+                        <i class="bi bi-wallet2 me-2"></i> Реквизиты
+                    </a>
                     <a class="nav-link" href="logs.php">
                         <i class="bi bi-journal-text me-2"></i> Логи
                     </a>

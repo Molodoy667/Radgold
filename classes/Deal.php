@@ -42,6 +42,41 @@ class Deal {
         return $dealId;
     }
     
+    public function createSimpleDeal($creatorId, $title, $description, $amount, $role) {
+        // Создаем сделку с одним участником (создателем)
+        $sellerId = ($role === 'seller') ? $creatorId : null;
+        $buyerId = ($role === 'buyer') ? $creatorId : null;
+        
+        $dealNumber = 'D' . date('Ymd') . rand(1000, 9999);
+        
+        while ($this->getDealByNumber($dealNumber)) {
+            $dealNumber = 'D' . date('Ymd') . rand(1000, 9999);
+        }
+        
+        // Получаем настройки
+        $settings = $this->getSettings();
+        $commission = ($amount * $settings['commission_percent']) / 100;
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+' . $settings['deal_timeout_hours'] . ' hours'));
+        
+        $dealId = $this->db->insert('deals', [
+            'deal_number' => $dealNumber,
+            'seller_id' => $sellerId,
+            'buyer_id' => $buyerId,
+            'title' => $title,
+            'description' => $description,
+            'amount' => $amount,
+            'commission' => $commission,
+            'status' => 'waiting_participant',
+            'expires_at' => $expiresAt,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+        
+        $roleText = ($role === 'seller') ? 'продавцом' : 'покупателем';
+        $this->addDealMessage($dealId, 0, "Сделка #{$dealNumber} создана пользователем как {$roleText}. Ожидается второй участник.", true);
+        
+        return $dealId;
+    }
+    
     public function getDeal($dealId) {
         return $this->db->fetch(
             'SELECT * FROM deals WHERE id = :deal_id',

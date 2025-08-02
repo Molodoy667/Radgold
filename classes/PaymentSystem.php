@@ -9,7 +9,7 @@ class PaymentSystem {
         $this->config = $config;
     }
     
-    public function createPayment($dealId, $userId, $amount, $method = 'yoomoney') {
+    public function createPayment($dealId, $userId, $amount, $method = 'sberbank') {
         // Создаем запись о платеже
         $paymentId = $this->db->insert('payments', [
             'deal_id' => $dealId,
@@ -20,87 +20,89 @@ class PaymentSystem {
             'created_at' => date('Y-m-d H:i:s')
         ]);
         
-        // Генерируем ссылку на оплату в зависимости от метода
+        // Генерируем инструкции для оплаты в зависимости от метода
         switch ($method) {
-            case 'yoomoney':
-                return $this->createYooMoneyPayment($paymentId, $amount);
-            case 'qiwi':
-                return $this->createQiwiPayment($paymentId, $amount);
+            case 'sberbank':
+                return $this->createSberbankPayment($paymentId, $amount);
+            case 'mir_card':
+                return $this->createMirCardPayment($paymentId, $amount);
+            case 'manual_card':
+                return $this->createManualCardPayment($paymentId, $amount);
             default:
                 throw new Exception('Неподдерживаемый метод оплаты');
         }
     }
     
-    private function createYooMoneyPayment($paymentId, $amount) {
-        $params = [
-            'receiver' => $this->config['payments']['yoomoney_wallet'],
-            'quickpay-form' => 'shop',
-            'targets' => "Оплата сделки #{$paymentId}",
-            'paymentType' => 'SB',
-            'sum' => $amount,
-            'label' => $paymentId
-        ];
-        
-        $url = 'https://yoomoney.ru/quickpay/confirm.xml?' . http_build_query($params);
+    private function createSberbankPayment($paymentId, $amount) {
+        // Получаем данные Сбербанка из настроек
+        $sberbankData = $this->getPaymentSetting('sberbank_data');
         
         return [
             'payment_id' => $paymentId,
-            'payment_url' => $url,
-            'method' => 'yoomoney'
+            'method' => 'sberbank',
+            'instructions' => [
+                'title' => '💳 Оплата через Сбербанк',
+                'steps' => [
+                    '1️⃣ Откройте приложение Сбербанк Онлайн',
+                    '2️⃣ Выберите "Переводы" → "По номеру телефона"',
+                    '3️⃣ Укажите номер: ' . ($sberbankData['phone'] ?? '+7XXXXXXXXXX'),
+                    '4️⃣ Сумма: ' . number_format($amount, 2) . ' ₽',
+                    '5️⃣ Комментарий: #' . $paymentId,
+                    '6️⃣ Подтвердите перевод'
+                ],
+                'card_number' => $sberbankData['card_number'] ?? 'Не указан',
+                'phone' => $sberbankData['phone'] ?? 'Не указан',
+                'holder_name' => $sberbankData['holder_name'] ?? 'Не указан'
+            ]
         ];
     }
     
-    private function createQiwiPayment($paymentId, $amount) {
-        // Интеграция с QIWI API
-        $billId = 'bill_' . $paymentId . '_' . time();
+    private function createMirCardPayment($paymentId, $amount) {
+        // Получаем данные карты МИР из настроек
+        $mirData = $this->getPaymentSetting('mir_card_data');
         
-        $data = [
-            'amount' => [
-                'currency' => 'RUB',
-                'value' => number_format($amount, 2, '.', '')
-            ],
-            'comment' => "Оплата сделки #{$paymentId}",
-            'expirationDateTime' => date('c', strtotime('+1 hour')),
-            'customer' => [],
-            'customFields' => [
-                'paySourcesFilter' => 'qw,card'
+        return [
+            'payment_id' => $paymentId,
+            'method' => 'mir_card',
+            'instructions' => [
+                'title' => '💳 Оплата на карту МИР',
+                'steps' => [
+                    '1️⃣ Откройте банковское приложение',
+                    '2️⃣ Выберите "Переводы на карту"',
+                    '3️⃣ Номер карты: ' . ($mirData['card_number'] ?? 'XXXX XXXX XXXX XXXX'),
+                    '4️⃣ Сумма: ' . number_format($amount, 2) . ' ₽',
+                    '5️⃣ Назначение: Платеж #' . $paymentId,
+                    '6️⃣ Подтвердите перевод'
+                ],
+                'card_number' => $mirData['card_number'] ?? 'Не указан',
+                'holder_name' => $mirData['holder_name'] ?? 'Не указан',
+                'bank_name' => $mirData['bank_name'] ?? 'Не указан'
             ]
         ];
+    }
+    
+    private function createManualCardPayment($paymentId, $amount) {
+        // Получаем данные дополнительной карты из настроек
+        $cardData = $this->getPaymentSetting('manual_card_data');
         
-        $headers = [
-            'Authorization: Bearer ' . $this->config['payments']['qiwi_token'],
-            'Content-Type: application/json',
-            'Accept: application/json'
+        return [
+            'payment_id' => $paymentId,
+            'method' => 'manual_card',
+            'instructions' => [
+                'title' => '💳 Перевод на карту',
+                'steps' => [
+                    '1️⃣ Откройте банковское приложение',
+                    '2️⃣ Переводы → На карту другого банка',
+                    '3️⃣ Номер карты: ' . ($cardData['card_number'] ?? 'XXXX XXXX XXXX XXXX'),
+                    '4️⃣ Сумма: ' . number_format($amount, 2) . ' ₽',
+                    '5️⃣ Назначение: Пополнение #' . $paymentId,
+                    '6️⃣ Подтвердите операцию'
+                ],
+                'card_number' => $cardData['card_number'] ?? 'Не указан',
+                'holder_name' => $cardData['holder_name'] ?? 'Не указан',
+                'bank_name' => $cardData['bank_name'] ?? 'Не указан'
+            ]
         ];
-        
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.qiwi.com/partner/bill/v1/bills/{$billId}");
-        curl_setopt($ch, CURLOPT_PUT, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        
-        if ($httpCode === 200) {
-            $result = json_decode($response, true);
-            
-            // Сохраняем ID счета в базе
-            $this->db->update('payments', [
-                'payment_id' => $billId
-            ], 'id = :id', ['id' => $paymentId]);
-            
-            return [
-                'payment_id' => $paymentId,
-                'payment_url' => $result['payUrl'],
-                'method' => 'qiwi',
-                'bill_id' => $billId
-            ];
-        } else {
-            throw new Exception('Ошибка создания счета QIWI');
-        }
     }
     
     public function checkPaymentStatus($paymentId) {
@@ -113,183 +115,159 @@ class PaymentSystem {
             return false;
         }
         
-        switch ($payment['payment_method']) {
-            case 'yoomoney':
-                return $this->checkYooMoneyPayment($payment);
-            case 'qiwi':
-                return $this->checkQiwiPayment($payment);
-            default:
-                return false;
-        }
-    }
-    
-    private function checkYooMoneyPayment($payment) {
-        // Для YooMoney проверка через webhook или API истории операций
-        // Здесь упрощенная версия - в реальности нужно использовать API
+        // Для ручных методов оплаты статус обновляется администратором
         return $payment['status'] === 'completed';
     }
     
-    private function checkQiwiPayment($payment) {
-        if (!$payment['payment_id']) {
+    public function confirmPayment($paymentId, $adminId = null) {
+        $payment = $this->db->fetch('SELECT * FROM payments WHERE id = :id', ['id' => $paymentId]);
+        
+        if (!$payment || $payment['status'] !== 'pending') {
             return false;
         }
         
-        $headers = [
-            'Authorization: Bearer ' . $this->config['payments']['qiwi_token'],
-            'Accept: application/json'
-        ];
+        $this->db->beginTransaction();
         
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.qiwi.com/partner/bill/v1/bills/{$payment['payment_id']}");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        
-        if ($httpCode === 200) {
-            $result = json_decode($response, true);
+        try {
+            // Обновляем статус платежа
+            $this->db->update('payments', [
+                'status' => 'completed',
+                'updated_at' => date('Y-m-d H:i:s')
+            ], 'id = :id', ['id' => $paymentId]);
             
-            if ($result['status']['value'] === 'PAID') {
-                $this->updatePaymentStatus($payment['id'], 'completed');
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    public function updatePaymentStatus($paymentId, $status) {
-        $this->db->update('payments', [
-            'status' => $status,
-            'updated_at' => date('Y-m-d H:i:s')
-        ], 'id = :id', ['id' => $paymentId]);
-        
-        // Если платеж завершен, обновляем статус сделки
-        if ($status === 'completed') {
-            $payment = $this->db->fetch('SELECT * FROM payments WHERE id = :id', ['id' => $paymentId]);
-            if ($payment) {
+            // Если это пополнение баланса (deal_id = 0 или NULL)
+            if (!$payment['deal_id']) {
+                // Пополняем баланс пользователя
+                require_once 'User.php';
+                $user = new User($this->db);
+                $user->updateBalance($payment['user_id'], $payment['amount'], 'add');
+            } else {
                 // Обновляем статус сделки на "оплачена"
                 $this->db->update('deals', [
                     'status' => 'paid',
                     'payment_method' => $payment['payment_method'],
-                    'payment_id' => $payment['payment_id']
+                    'updated_at' => date('Y-m-d H:i:s')
                 ], 'id = :id', ['id' => $payment['deal_id']]);
                 
-                // Добавляем системное сообщение
+                // Добавляем системное сообщение к сделке
                 require_once 'Deal.php';
                 $deal = new Deal($this->db);
-                $deal->addDealMessage($payment['deal_id'], 0, "Платеж успешно обработан", true);
+                $deal->addDealMessage($payment['deal_id'], 0, "Платеж подтвержден администратором", true);
             }
+            
+            // Логируем действие администратора
+            if ($adminId) {
+                $this->db->insert('admin_logs', [
+                    'admin_id' => $adminId,
+                    'action' => 'confirm_payment',
+                    'target_type' => 'payment',
+                    'target_id' => $paymentId,
+                    'details' => "Подтвержден платеж на сумму {$payment['amount']} руб.",
+                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+            
+            $this->db->commit();
+            return true;
+            
+        } catch (Exception $e) {
+            $this->db->rollback();
+            return false;
         }
     }
     
-    public function refundPayment($paymentId, $reason = '') {
+    public function rejectPayment($paymentId, $reason = '', $adminId = null) {
         $payment = $this->db->fetch('SELECT * FROM payments WHERE id = :id', ['id' => $paymentId]);
         
-        if (!$payment || $payment['status'] !== 'completed') {
+        if (!$payment || $payment['status'] !== 'pending') {
             return false;
         }
         
-        // Логика возврата средств (зависит от платежной системы)
-        switch ($payment['payment_method']) {
-            case 'yoomoney':
-                // Для YooMoney возврат через API
-                $refunded = $this->refundYooMoneyPayment($payment, $reason);
-                break;
-            case 'qiwi':
-                // Для QIWI возврат через API
-                $refunded = $this->refundQiwiPayment($payment, $reason);
-                break;
-            default:
-                $refunded = false;
+        $this->db->update('payments', [
+            'status' => 'failed',
+            'updated_at' => date('Y-m-d H:i:s')
+        ], 'id = :id', ['id' => $paymentId]);
+        
+        // Логируем действие администратора
+        if ($adminId) {
+            $this->db->insert('admin_logs', [
+                'admin_id' => $adminId,
+                'action' => 'reject_payment',
+                'target_type' => 'payment',
+                'target_id' => $paymentId,
+                'details' => "Отклонен платеж на сумму {$payment['amount']} руб. Причина: {$reason}",
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
         }
         
-        if ($refunded) {
-            $this->updatePaymentStatus($paymentId, 'refunded');
-            
-            // Возвращаем средства на баланс пользователя
-            require_once 'User.php';
-            $user = new User($this->db);
-            $user->updateBalance($payment['user_id'], $payment['amount'], 'add');
-        }
-        
-        return $refunded;
-    }
-    
-    private function refundYooMoneyPayment($payment, $reason) {
-        // Упрощенная версия - в реальности нужно использовать API возвратов
-        return true;
-    }
-    
-    private function refundQiwiPayment($payment, $reason) {
-        // Упрощенная версия - в реальности нужно использовать API возвратов
         return true;
     }
     
     public function getPaymentMethods() {
         return [
-            'yoomoney' => [
-                'name' => 'ЮMoney',
-                'icon' => '💳',
-                'enabled' => !empty($this->config['payments']['yoomoney_token'])
+            'sberbank' => [
+                'name' => 'Сбербанк',
+                'icon' => '🟢',
+                'description' => 'Перевод через Сбербанк Онлайн',
+                'enabled' => true
             ],
-            'qiwi' => [
-                'name' => 'QIWI',
-                'icon' => '🥝',
-                'enabled' => !empty($this->config['payments']['qiwi_token'])
+            'mir_card' => [
+                'name' => 'Карта МИР',
+                'icon' => '💳',
+                'description' => 'Перевод на карту МИР',
+                'enabled' => true
+            ],
+            'manual_card' => [
+                'name' => 'Банковская карта',
+                'icon' => '💰',
+                'description' => 'Перевод на банковскую карту',
+                'enabled' => true
             ]
         ];
     }
     
-    public function processWebhook($method, $data) {
-        switch ($method) {
-            case 'yoomoney':
-                return $this->processYooMoneyWebhook($data);
-            case 'qiwi':
-                return $this->processQiwiWebhook($data);
-            default:
-                return false;
+    private function getPaymentSetting($key) {
+        $setting = $this->db->fetch(
+            'SELECT setting_value FROM bot_settings WHERE setting_key = :key',
+            ['key' => $key]
+        );
+        
+        return $setting ? json_decode($setting['setting_value'], true) : [];
+    }
+    
+    public function updatePaymentSetting($key, $data) {
+        $existingSetting = $this->db->fetch(
+            'SELECT id FROM bot_settings WHERE setting_key = :key',
+            ['key' => $key]
+        );
+        
+        if ($existingSetting) {
+            $this->db->update('bot_settings', [
+                'setting_value' => json_encode($data),
+                'updated_at' => date('Y-m-d H:i:s')
+            ], 'setting_key = :key', ['key' => $key]);
+        } else {
+            $this->db->insert('bot_settings', [
+                'setting_key' => $key,
+                'setting_value' => json_encode($data),
+                'description' => 'Настройки платежной системы',
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
         }
     }
     
-    private function processYooMoneyWebhook($data) {
-        // Обработка webhook от YooMoney
-        if (isset($data['label']) && isset($data['withdraw_amount'])) {
-            $paymentId = $data['label'];
-            $amount = $data['withdraw_amount'];
-            
-            // Проверяем существование платежа
-            $payment = $this->db->fetch('SELECT * FROM payments WHERE id = :id', ['id' => $paymentId]);
-            
-            if ($payment && $payment['amount'] == $amount) {
-                $this->updatePaymentStatus($paymentId, 'completed');
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    private function processQiwiWebhook($data) {
-        // Обработка webhook от QIWI
-        if (isset($data['bill']['billId']) && isset($data['bill']['status']['value'])) {
-            $billId = $data['bill']['billId'];
-            $status = $data['bill']['status']['value'];
-            
-            $payment = $this->db->fetch(
-                'SELECT * FROM payments WHERE payment_id = :bill_id',
-                ['bill_id' => $billId]
-            );
-            
-            if ($payment) {
-                $newStatus = $status === 'PAID' ? 'completed' : 'failed';
-                $this->updatePaymentStatus($payment['id'], $newStatus);
-                return true;
-            }
-        }
-        
-        return false;
+    public function getPendingPayments() {
+        return $this->db->fetchAll('
+            SELECT p.*, 
+                   u.first_name, u.last_name, u.username,
+                   d.deal_number, d.title as deal_title
+            FROM payments p
+            LEFT JOIN users u ON p.user_id = u.telegram_id
+            LEFT JOIN deals d ON p.deal_id = d.id
+            WHERE p.status = "pending"
+            ORDER BY p.created_at DESC
+        ');
     }
 }
